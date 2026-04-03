@@ -22,8 +22,7 @@
 - Development RoadMap [docs/ROADMAP.md](docs/ROADMAP.md): **MANDATORY** - Defines "in what order" to build (implementation phases)
 
 ## Workflow
-> Before starting any implementation task, load the `workflow-interactive` skill.
-> For Agent Teams parallel work, invoke `/workflow-team lead` or `/workflow-team teammate`.
+> Before starting any implementation task, load the `harness-pipeline` skill.
 
 ## Code Conventions [MANDATORY]
 

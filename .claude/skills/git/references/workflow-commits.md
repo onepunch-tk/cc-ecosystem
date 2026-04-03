@@ -1,6 +1,6 @@
 # Workflow Commit & Merge Conventions
 
-Commit and merge conventions for workflow agents (interactive, team).
+Commit and merge conventions for harness-pipeline.
 
 > **Format**: Follow [commit-prefix-rules.md](./commit-prefix-rules.md) — emoji + type + Korean description required.
 
