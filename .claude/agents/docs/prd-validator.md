@@ -103,8 +103,8 @@ Determine which PRD generator was used based on the document structure:
 
 **Platform-Specific Verification Focus:**
 
-- **Web**: React Router Framework v7 compatibility, SSR/CSR boundary, TailwindCSS v4, shadcn/ui
-- **Backend**: NestJS/Hono version, ORM compatibility (Drizzle/Prisma), Supabase features, JWT/auth library
+- **Web**: React Router Framework compatibility, SSR/CSR boundary, TailwindCSS, shadcn/ui
+- **Backend**: NestJS version, ORM compatibility (Drizzle/Prisma), Supabase features, JWT/auth library
 - **Mobile**: Expo SDK version, React Native version, native module compatibility, EAS Build support
 
 **Recording Format:**
@@ -552,4 +552,3 @@ Record the reasoning process in detail within <thinking> tags for each area.
 5. **Systematic Process**: More complete verification process with added Step 0 and Step 2.5
 
 Using this improved prompt for PRD validation now enables more accurate and balanced technical verification.
-```

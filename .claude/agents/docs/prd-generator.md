@@ -55,10 +55,10 @@ These items are ALWAYS excluded regardless of scale:
 - Development workflow
 - Personas
 
-**Conditionally excluded (Small only, included in Medium):**
+**Included in Medium only (excluded from Small):**
 
-- ~~Security requirements~~ → Medium: include Authentication & RBAC section
-- ~~API routes~~ → Medium: include API Overview section
+- Authentication & RBAC section
+- API Overview section
 
 ## Document Consistency Principles (CRITICAL)
 
@@ -75,11 +75,12 @@ These items are ALWAYS excluded regardless of scale:
 
 ### 1. Project Core
 
-**Small** (2 lines):
+**Small** (2-3 items):
 - **Purpose**: Core problem this project solves (1 line)
 - **Target Users**: Specific user segment (1 line)
+- **Scope Note**: Key constraint or boundary, if any (1 line, optional)
 
-**Medium** (4-6 lines):
+**Medium** (4-6 items):
 - **Purpose**: Core problem this project solves (1 line)
 - **Target Users**: Specific user segments by role (1-2 lines)
 - **Key Constraints**: Technical or business constraints (1 line)
@@ -155,7 +156,7 @@ Exactly 5 items per page:
 ### 8. Tech Stack (Latest Versions Required)
 
 - Detailed tech stack categorized by purpose
-- **MUST specify latest versions**: React Router Framework v7, React 19, etc.
+- **MUST resolve versions from package.json** before writing
 - Recommend modern web development stack based on React Router Framework
 
 ### 9. Security & Auth Overview (Medium ONLY)
@@ -258,24 +259,24 @@ Exactly 5 items per page:
 
 ### Frontend Framework
 
-- **React Router Framework v7** - React full-stack framework
-- **TypeScript 5.6+** - Type safety
-- **React 19** - UI library
+- **React Router Framework [version from package.json]** - React full-stack framework
+- **TypeScript [version from package.json]** - Type safety
+- **React [version from package.json]** - UI library
 
 ### Styling & UI
 
-- **TailwindCSS v4** - Utility CSS framework
-- **shadcn/ui** - React component library
-- **Lucide React** - Icon library
+- **TailwindCSS [version from package.json]** - Utility CSS framework
+- **shadcn/ui [version from package.json]** - React component library
+- **Lucide React [version from package.json]** - Icon library
 
 ### Forms & Validation
 
-- **React Hook Form 7.x** - Form state management
-- **Zod** - Schema validation library
+- **React Hook Form [version from package.json]** - Form state management
+- **Zod [version from package.json]** - Schema validation library
 
 ### Backend & Database
 
-- **Supabase** - BaaS (Auth, Database, Realtime subscriptions)
+- **Supabase [version from package.json]** - BaaS (Auth, Database, Realtime subscriptions)
 - **PostgreSQL** - Relational database
 
 ### Deployment & Hosting
@@ -284,7 +285,7 @@ Exactly 5 items per page:
 
 ### Package Management
 
-- **bun** - Dependency management
+- **bun [version from package.json]** - Dependency management
 ```
 
 ### Medium Scale Template
@@ -448,24 +449,24 @@ Exactly 5 items per page:
 
 ### Frontend Framework
 
-- **React Router Framework v7** - React full-stack framework
-- **TypeScript 5.6+** - Type safety
-- **React 19** - UI library
+- **React Router Framework [version from package.json]** - React full-stack framework
+- **TypeScript [version from package.json]** - Type safety
+- **React [version from package.json]** - UI library
 
 ### Styling & UI
 
-- **TailwindCSS v4** - Utility CSS framework
-- **shadcn/ui** - React component library
-- **Lucide React** - Icon library
+- **TailwindCSS [version from package.json]** - Utility CSS framework
+- **shadcn/ui [version from package.json]** - React component library
+- **Lucide React [version from package.json]** - Icon library
 
 ### Forms & Validation
 
-- **React Hook Form 7.x** - Form state management
-- **Zod** - Schema validation library
+- **React Hook Form [version from package.json]** - Form state management
+- **Zod [version from package.json]** - Schema validation library
 
 ### Backend & Database
 
-- **Supabase** - BaaS (Auth, Database, Realtime subscriptions)
+- **Supabase [version from package.json]** - BaaS (Auth, Database, Realtime subscriptions)
 - **PostgreSQL** - Relational database
 
 ### Deployment & Hosting
@@ -474,7 +475,7 @@ Exactly 5 items per page:
 
 ### Package Management
 
-- **bun** - Dependency management
+- **bun [version from package.json]** - Dependency management
 ```
 
 ## Writing Guidelines
@@ -483,16 +484,16 @@ Exactly 5 items per page:
 2. **User Perspective**: Focus on features users use, not technical implementation
 3. **Development Ready**: Level where developers can start coding just by reading this document
 4. **MVP Scope**: Include only minimum features essential for project success, defer supplementary features to post-MVP
-5. **Latest Tech**: **MUST specify current latest versions** (React Router Framework v7, React 19, etc.)
+5. **Latest Tech**: **MUST resolve versions from package.json** before writing tech stack
 6. **Page Limits**:
    - Small: Maximum **2 A4 pages**
    - Medium: Maximum **5 A4 pages**
 
 ## Tech Stack Selection Principles
 
-- **Latest Versions Required**: Use latest versions like React Router Framework v7, React 19, TailwindCSS v4
-- **React Router Framework v7**: Latest App Router, improved performance, React 19 support
-- **TailwindCSS v4**: Leverage new CSS engine without config file
+- **Latest Versions Required**: Use latest versions of React Router Framework, React, TailwindCSS
+- **React Router Framework**: Latest App Router, improved performance, React support
+- **TailwindCSS**: Leverage new CSS engine without config file
 - **TypeScript**: Code stability with latest type system
 - **Supabase**: Minimize backend infrastructure, realtime features
 - **Prioritize low learning curve and well-documented latest technologies**
@@ -502,10 +503,10 @@ Exactly 5 items per page:
 
 **When writing tech stack, ALWAYS include**:
 
-- React Router Framework v7 (current latest version)
-- React 19 (current latest version)
-- TailwindCSS v4 (new approach without config file)
-- Verify and specify latest version for each technology
+- React Router Framework (resolve version from package.json)
+- React (resolve version from package.json)
+- TailwindCSS (resolve version from package.json)
+- Verify and specify actual version from package.json for each technology
 
 ## Processing Workflow (Consistency Assurance)
 
@@ -518,7 +519,7 @@ Exactly 5 items per page:
 7. Design menu structure - Complete navigation system (linked to Feature IDs, no URL paths)
 8. Page-by-page detailed feature specification - MUST include implemented Feature IDs (page names only)
 9. Minimize required data models
-10. **Latest version** React Router Framework v7
+10. **Resolve versions** from package.json for tech stack
 11. **(Medium) Define security & auth overview**
 12. **Execute consistency validation checklist**
 13. Output in template format

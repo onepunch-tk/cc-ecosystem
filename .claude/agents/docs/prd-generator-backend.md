@@ -57,10 +57,10 @@ These items are ALWAYS excluded regardless of scale:
 - Development workflow
 - Personas
 
-**Conditionally excluded (Small only, included in Medium):**
+**Included in Medium only (excluded from Small):**
 
-- ~~Security architecture~~ → Medium: include Authentication & Authorization section
-- ~~Event/message flows~~ → Medium: include Event Architecture section
+- Authentication & Authorization section
+- Event Architecture section
 
 ## Document Consistency Principles (CRITICAL)
 
@@ -77,11 +77,12 @@ These items are ALWAYS excluded regardless of scale:
 
 ### 1. Project Core
 
-**Small** (2 lines):
+**Small** (2-3 items):
 - **Purpose**: Core problem this API solves (1 line)
 - **Consumers**: Who/what consumes this API (1 line)
+- **Scope Note**: Key constraint or boundary, if any (1 line, optional)
 
-**Medium** (4-6 lines):
+**Medium** (4-6 items):
 - **Purpose**: Core problem this API solves (1 line)
 - **Consumers**: API consumer types - web client, mobile app, third-party, internal service (1-2 lines)
 - **Key Constraints**: Technical or business constraints (1 line)
@@ -172,7 +173,7 @@ For each key endpoint, specify:
 ### 9. Tech Stack (Latest Versions Required)
 
 - Detailed tech stack categorized by purpose
-- **MUST specify latest versions**
+- **MUST resolve versions from package.json** before writing
 - Recommend modern backend stack
 
 ### 10. Event & Integration Architecture (Medium ONLY)
@@ -302,25 +303,25 @@ For each key endpoint, specify:
 
 ### Runtime & Framework
 
-- **NestJS 11+** - API framework
-- **TypeScript 5.6+** - Type safety
-- **Node.js 22 LTS** - Runtime
+- **NestJS [version from package.json]** - API framework
+- **TypeScript [version from package.json]** - Type safety
+- **Node.js [version from package.json]** - Runtime
 
 ### Database & ORM
 
-- **PostgreSQL 16+** - Relational database
-- **Drizzle ORM** or **Prisma 6+** - Type-safe ORM
-- **Supabase** - BaaS option (Auth, Database, Storage)
+- **PostgreSQL** - Relational database
+- **Drizzle ORM [version from package.json]** or **Prisma [version from package.json]** - Type-safe ORM
+- **Supabase [version from package.json]** - BaaS option (Auth, Database, Storage)
 
 ### Validation & Serialization
 
-- **class-validator 0.14+** - Decorator-based validation
-- **class-transformer** - Serialization / DTO transformation
-- **Zod** - Schema validation (pipes, standalone)
+- **class-validator [version from package.json]** - Decorator-based validation
+- **class-transformer [version from package.json]** - Serialization / DTO transformation
+- **Zod [version from package.json]** - Schema validation (pipes, standalone)
 
 ### Authentication
 
-- **better-auth** or **Passport.js** - Auth library
+- **better-auth [version from package.json]** or **Passport.js [version from package.json]** - Auth library
 - **JWT** - Token-based authentication
 
 ### Deployment
@@ -329,7 +330,7 @@ For each key endpoint, specify:
 
 ### Package Management
 
-- **bun** - Dependency management
+- **bun [version from package.json]** - Dependency management
 ```
 
 ### Medium Scale Template
@@ -505,30 +506,30 @@ For each key endpoint, specify:
 
 ### Runtime & Framework
 
-- **NestJS 11+** - API framework
-- **TypeScript 5.6+** - Type safety
-- **Node.js 22 LTS** - Runtime
+- **NestJS [version from package.json]** - API framework
+- **TypeScript [version from package.json]** - Type safety
+- **Node.js [version from package.json]** - Runtime
 
 ### Database & ORM
 
-- **PostgreSQL 16+** - Relational database
-- **Drizzle ORM** or **Prisma 6+** - Type-safe ORM
-- **Supabase** - BaaS option
+- **PostgreSQL** - Relational database
+- **Drizzle ORM [version from package.json]** or **Prisma [version from package.json]** - Type-safe ORM
+- **Supabase [version from package.json]** - BaaS option
 
 ### Validation & Serialization
 
-- **class-validator 0.14+** - Decorator-based validation
-- **class-transformer** - Serialization / DTO transformation
-- **Zod** - Schema validation (pipes, standalone)
+- **class-validator [version from package.json]** - Decorator-based validation
+- **class-transformer [version from package.json]** - Serialization / DTO transformation
+- **Zod [version from package.json]** - Schema validation (pipes, standalone)
 
 ### Authentication
 
-- **better-auth** or **Supabase Auth** - Auth provider
+- **better-auth [version from package.json]** or **Supabase Auth [version from package.json]** - Auth provider
 - **JWT** - Token-based authentication
 
 ### Message Queue (if applicable)
 
-- **BullMQ** or **Supabase Realtime** - Async job processing
+- **BullMQ [version from package.json]** or **Supabase Realtime [version from package.json]** - Async job processing
 
 ### Deployment
 
@@ -536,7 +537,7 @@ For each key endpoint, specify:
 
 ### Package Management
 
-- **bun** - Dependency management
+- **bun [version from package.json]** - Dependency management
 ```
 
 ## Writing Guidelines
@@ -545,7 +546,7 @@ For each key endpoint, specify:
 2. **Consumer Perspective**: Focus on what consumers can do with the API, not internal implementation
 3. **Development Ready**: Level where developers can start coding just by reading this document
 4. **MVP Scope**: Include only minimum features essential for project success
-5. **Latest Tech**: **MUST specify current latest versions**
+5. **Latest Tech**: **MUST resolve versions from package.json** before writing tech stack
 6. **Contract First**: Endpoint specifications should be clear enough to generate client SDKs
 7. **Page Limits**:
    - Small: Maximum **2 A4 pages**
@@ -557,8 +558,8 @@ For each key endpoint, specify:
 - **NestJS**: TypeScript-first, decorator-based API framework with enterprise-grade architecture
 - **class-validator + class-transformer**: NestJS standard validation/serialization pipeline
 - **Drizzle ORM or Prisma**: Type-safe database access
-- **Supabase**: Minimize infrastructure, leverage built-in auth and realtime
 - **Zod**: Schema validation for pipes and standalone use cases
+- **Supabase**: Minimize infrastructure, leverage built-in auth and realtime
 - **Prioritize type safety and developer experience**
 - **Prioritize active community and long-term supported technologies**
 
@@ -573,7 +574,7 @@ For each key endpoint, specify:
 7. Design endpoint groups - Complete API surface (linked to Feature IDs)
 8. Request/response specifications - Schema definitions for key endpoints
 9. Design required data models
-10. **Latest version** tech stack
+10. **Resolve versions** from package.json for tech stack
 11. **(Medium) Define event architecture and integrations**
 12. **Execute consistency validation checklist**
 13. Output in template format

@@ -58,11 +58,11 @@ These items are ALWAYS excluded regardless of scale:
 - Personas
 - Web-specific features (SSR, SEO, etc.)
 
-**Conditionally excluded (Small only, included in Medium):**
+**Included in Medium only (excluded from Small):**
 
-- ~~Push notification strategy~~ → Medium: include Notification Architecture section
-- ~~Offline/sync strategy~~ → Medium: include Offline & Data Sync section
-- ~~Device feature integration~~ → Medium: include Device Capabilities section
+- Notification Architecture section
+- Offline & Data Sync section
+- Device Capabilities section
 
 ## Document Consistency Principles (CRITICAL)
 
@@ -79,11 +79,12 @@ These items are ALWAYS excluded regardless of scale:
 
 ### 1. Project Core
 
-**Small** (2 lines):
+**Small** (2-3 items):
 - **Purpose**: Core problem this app solves (1 line)
 - **Target Users**: Specific user segment (1 line)
+- **Scope Note**: Key constraint or platform target, if any (1 line, optional)
 
-**Medium** (4-6 lines):
+**Medium** (4-6 items):
 - **Purpose**: Core problem this app solves (1 line)
 - **Target Users**: Specific user segments by role (1-2 lines)
 - **Platform**: iOS, Android, or both (1 line)
@@ -167,7 +168,7 @@ Exactly 6 items per screen:
 ### 8. Tech Stack (Latest Versions Required)
 
 - Detailed tech stack categorized by purpose
-- **MUST specify latest versions**
+- **MUST resolve versions from package.json** before writing
 - Recommend modern React Native (Expo) stack
 
 ### 9. Device Capabilities & Platform (Medium ONLY)
@@ -286,33 +287,33 @@ Exactly 6 items per screen:
 
 ### Core Framework
 
-- **Expo SDK 55+** - React Native development platform
-- **React Native 0.83+** - Mobile UI framework (New Architecture only)
-- **TypeScript 5.7+** - Type safety
-- **React 19.2** - UI library
-- **Expo Router v55** - File-based navigation
+- **Expo SDK [version from package.json]** - React Native development platform
+- **React Native [version from package.json]** - Mobile UI framework (New Architecture only)
+- **TypeScript [version from package.json]** - Type safety
+- **React [version from package.json]** - UI library
+- **Expo Router [version from package.json]** - File-based navigation
 
 ### UI & Styling
 
-- **NativeWind v4** (TailwindCSS) - Utility styling
-- **Unistyles 3.0** - C++ powered StyleSheet with superpowers (theming, responsive, variants)
-- **React Native Reusables** - shadcn/ui for React Native
-- **Lucide React Native** - Icon library
+- **NativeWind [version from package.json]** (TailwindCSS) - Utility styling
+- **Unistyles [version from package.json]** - C++ powered StyleSheet with superpowers (theming, responsive, variants)
+- **React Native Reusables [version from package.json]** - shadcn/ui for React Native
+- **Lucide React Native [version from package.json]** - Icon library
 
 ### State & Data
 
-- **TanStack Query v5** - Server state management
-- **Zustand** - Client state management
-- **MMKV** - Fast local storage
+- **TanStack Query [version from package.json]** - Server state management
+- **Zustand [version from package.json]** - Client state management
+- **MMKV [version from package.json]** - Fast local storage
 
 ### Forms & Validation
 
-- **React Hook Form 7.x** - Form state management
-- **Zod** - Schema validation
+- **React Hook Form [version from package.json]** - Form state management
+- **Zod [version from package.json]** - Schema validation
 
 ### Backend & Database
 
-- **Supabase** - BaaS (Auth, Database, Storage)
+- **Supabase [version from package.json]** - BaaS (Auth, Database, Storage)
 
 ### Deployment
 
@@ -321,7 +322,7 @@ Exactly 6 items per screen:
 
 ### Package Management
 
-- **bun** - Dependency management
+- **bun [version from package.json]** - Dependency management
 ```
 
 ### Medium Scale Template
@@ -499,42 +500,42 @@ Exactly 6 items per screen:
 
 ### Core Framework
 
-- **Expo SDK 55+** - React Native development platform
-- **React Native 0.83+** - Mobile UI framework (New Architecture only)
-- **TypeScript 5.7+** - Type safety
-- **React 19.2** - UI library
-- **Expo Router v55** - File-based navigation
+- **Expo SDK [version from package.json]** - React Native development platform
+- **React Native [version from package.json]** - Mobile UI framework (New Architecture only)
+- **TypeScript [version from package.json]** - Type safety
+- **React [version from package.json]** - UI library
+- **Expo Router [version from package.json]** - File-based navigation
 
 ### UI & Styling
 
-- **NativeWind v4** (TailwindCSS) - Utility styling
-- **Unistyles 3.0** - C++ powered StyleSheet with superpowers (theming, responsive, variants)
-- **React Native Reusables** - shadcn/ui for React Native
-- **Lucide React Native** - Icon library
-- **React Native Reanimated 3** - Animations
+- **NativeWind [version from package.json]** (TailwindCSS) - Utility styling
+- **Unistyles [version from package.json]** - C++ powered StyleSheet with superpowers (theming, responsive, variants)
+- **React Native Reusables [version from package.json]** - shadcn/ui for React Native
+- **Lucide React Native [version from package.json]** - Icon library
+- **React Native Reanimated [version from package.json]** - Animations
 
 ### State & Data
 
-- **TanStack Query v5** - Server state + offline support
-- **Zustand** - Client state management
-- **MMKV** - Fast local storage
-- **Expo SQLite** - Structured local database (if needed)
+- **TanStack Query [version from package.json]** - Server state + offline support
+- **Zustand [version from package.json]** - Client state management
+- **MMKV [version from package.json]** - Fast local storage
+- **Expo SQLite [version from package.json]** - Structured local database (if needed)
 
 ### Forms & Validation
 
-- **React Hook Form 7.x** - Form state management
-- **Zod** - Schema validation
+- **React Hook Form [version from package.json]** - Form state management
+- **Zod [version from package.json]** - Schema validation
 
 ### Device Features
 
-- **expo-camera** - Camera access
-- **expo-location** - GPS/Location
-- **expo-notifications** - Push notifications
-- **expo-local-authentication** - Biometric auth
+- **expo-camera [version from package.json]** - Camera access
+- **expo-location [version from package.json]** - GPS/Location
+- **expo-notifications [version from package.json]** - Push notifications
+- **expo-local-authentication [version from package.json]** - Biometric auth
 
 ### Backend & Database
 
-- **Supabase** - BaaS (Auth, Database, Realtime, Storage)
+- **Supabase [version from package.json]** - BaaS (Auth, Database, Realtime, Storage)
 
 ### Deployment
 
@@ -544,7 +545,7 @@ Exactly 6 items per screen:
 
 ### Package Management
 
-- **bun** - Dependency management
+- **bun [version from package.json]** - Dependency management
 ```
 
 ## Writing Guidelines
@@ -553,7 +554,7 @@ Exactly 6 items per screen:
 2. **User Perspective**: Focus on gestures and interactions users perform, not technical implementation
 3. **Development Ready**: Level where developers can start coding just by reading this document
 4. **MVP Scope**: Include only minimum features essential for project success
-5. **Latest Tech**: **MUST specify current latest versions** (Expo SDK 55+, React Native 0.83+, etc.)
+5. **Latest Tech**: **MUST resolve versions from package.json** before writing tech stack
 6. **Mobile-First Thinking**: Consider touch targets, gesture patterns, screen real estate
 7. **Page Limits**:
    - Small: Maximum **2 A4 pages**
@@ -562,10 +563,10 @@ Exactly 6 items per screen:
 ## Tech Stack Selection Principles
 
 - **Latest Versions Required**: Use latest versions of frameworks and tools
-- **Expo SDK 55+**: Managed workflow for faster development (New Architecture only)
-- **Expo Router v55**: File-based navigation consistent with web patterns
-- **NativeWind v4**: TailwindCSS for React Native, consistent with web styling
-- **Unistyles 3.0**: C++ powered alternative/complement to NativeWind for advanced theming and responsive styles
+- **Expo SDK**: Managed workflow for faster development (New Architecture only)
+- **Expo Router**: File-based navigation consistent with web patterns
+- **NativeWind**: TailwindCSS for React Native, consistent with web styling
+- **Unistyles**: C++ powered alternative/complement to NativeWind for advanced theming and responsive styles
 - **React Native Reusables**: shadcn/ui port for React Native
 - **Supabase**: Minimize backend infrastructure, leverage built-in auth and realtime
 - **Prioritize Expo ecosystem for maximum compatibility**
@@ -582,7 +583,7 @@ Exactly 6 items per screen:
 7. Design tab/navigation structure - Complete navigation tree (linked to Feature IDs)
 8. Screen-by-screen detailed feature specification - MUST include implemented Feature IDs
 9. Minimize required data models, specify local vs server storage
-10. **Latest version** Expo + React Native stack
+10. **Resolve versions** from package.json for tech stack
 11. **(Medium) Define device capabilities, notifications, and offline strategy**
 12. **Execute consistency validation checklist**
 13. Output in template format
