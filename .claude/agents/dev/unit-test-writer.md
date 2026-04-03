@@ -1,6 +1,6 @@
 ---
 name: unit-test-writer
-description: "use proactively, Use this agent when: 1) Writing tests for specific files, 2) Adding test coverage to new features, 3) Fixing failing tests. Writes unit tests following TDD principles."
+description: "Use this agent proactively when: 1) Writing tests for specific files, 2) Adding test coverage to new features, 3) Fixing failing tests. Writes unit tests following TDD principles.\n\nExamples:\n\n<example>\nContext: User wants to add tests for a new utility function.\nuser: \"I just created a date formatting utility, please write tests\"\nassistant: \"I'll launch the unit-test-writer agent to create TDD tests for the date formatting utility.\"\n<commentary>\nSince tests need to be written for a specific file, use the unit-test-writer agent.\n</commentary>\n</example>\n\n<example>\nContext: TDD Red phase in development workflow.\nuser: \"Start the TDD cycle for the invoice service\"\nassistant: \"I'll run the unit-test-writer agent to create failing tests first (Red phase).\"\n<commentary>\nTDD cycle begins with writing failing tests. Launch unit-test-writer for the Red phase.\n</commentary>\n</example>"
 model: sonnet
 color: green
 ---

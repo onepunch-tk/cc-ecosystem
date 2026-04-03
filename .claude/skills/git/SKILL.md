@@ -3,7 +3,6 @@ name: git
 description: |
   Git automation skill. Provides task selection UI when /git command is executed.
   Choose from commit, push, sync, merge operations.
-model: sonnet
 allowed-tools:
   - Bash
   - Read

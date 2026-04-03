@@ -135,23 +135,28 @@ Return ONLY this structured summary to Supervisor:
 
 ---
 
-## Error Handling
+## Error Handling (3-Strike Protocol)
 
 ```
-IF code-reviewer fails:
-  1. Log error
-  2. Continue with E2E testing
-  3. Mark code review as "Incomplete" in summary
+IF code-reviewer spawn fails:
+  1. Retry SAME approach (1 attempt)
+  2. Retry with simplified review scope (1 attempt)
+  3. After 3 total failures:
+     → Mark code review as "Incomplete" in summary
+     → Continue with E2E testing
+     → Return summary with Status: CONDITIONAL
 
-IF e2e-tester fails:
-  1. Log error
-  2. Mark E2E as "Incomplete" in summary
-  3. Return summary with Status: CONDITIONAL
+IF e2e-tester spawn fails:
+  1. Retry SAME approach (1 attempt)
+  2. Retry with reduced test scope (1 attempt)
+  3. After 3 total failures:
+     → Mark E2E as "Incomplete" in summary
+     → Return summary with Status: CONDITIONAL
 
-IF both fail:
+IF both fail after retries:
   1. Return summary with Status: FAIL
-  2. Include error details
-  3. Recommend manual review
+  2. Include all error details and retry history
+  3. Recommend: ESCALATE to human for manual review
 ```
 
 ---

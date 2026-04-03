@@ -45,6 +45,10 @@ If agent-browser is not installed, detect the project's package manager and inst
 | `yarn.lock` | `yarn global add agent-browser` |
 | `package-lock.json` | `npm install -g agent-browser` |
 
+> **CRITICAL: After installing agent-browser, you MUST restart the entire E2E testing process from Step 1.**
+> Do NOT proceed directly to Step 3. Re-run `agent-browser --help` to verify the installation succeeded.
+> If installation fails after 2 attempts, STOP and report the failure to the user with the error details.
+
 ### Step 3: Install Chromium Browser
 Ensure the browser is installed:
 ```bash

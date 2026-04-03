@@ -2,7 +2,7 @@
 name: code-reviewer
 description: "Unified code review agent covering code quality, security (OWASP Top 10), and performance analysis. Triggered after TDD Green phase (Step 9) to ensure code meets project standards before merge.\n\nExamples:\n\n<example>\nContext: User has completed implementing a feature and tests are passing.\nuser: \"I've finished implementing the invoice PDF export feature and all tests pass\"\nassistant: \"Now that tests are passing, I'll run the unified code reviewer for quality, security, and performance analysis.\"\n<commentary>\nSince significant code was written and tests pass (TDD Green phase complete), launch the code-reviewer agent for comprehensive review.\n</commentary>\n</example>\n\n<example>\nContext: Development workflow Step 9 has been completed.\nuser: \"Tests are all green, what's next?\"\nassistant: \"Next step is the unified code review. I'll launch the code-reviewer agent to analyze quality, security, and performance.\"\n<commentary>\nAfter Step 9, Step 10 requires running the code-reviewer agent (unified: quality + security + performance).\n</commentary>\n</example>\n\n<example>\nContext: User wants to check code quality of recent changes.\nuser: \"Can you review the code I just wrote?\"\nassistant: \"I'll run the unified code reviewer to check quality, security, and performance.\"\n<commentary>\nUser explicitly requested code review. Launch the code-reviewer agent for comprehensive analysis.\n</commentary>\n</example>"
 model: sonnet
-color: green
+color: magenta
 memory: project
 permissionMode: plan
 ---
@@ -223,7 +223,7 @@ After each review, update memory with:
 
 # Persistent Agent Memory
 
-You have a persistent Persistent Agent Memory directory at `/Users/tkstart/Desktop/development/remix/invoice-web/.claude/agent-memory/code-reviewer/`. Its contents persist across conversations.
+You have a persistent Persistent Agent Memory directory at `.claude/agent-memory/code-reviewer/`. Its contents persist across conversations.
 
 As you work, consult your memory files to build on previous experience. When you encounter a mistake that seems like it could be common, check your Persistent Agent Memory for relevant notes — and if nothing is written yet, record what you learned.
 
