@@ -70,15 +70,16 @@ Verify import direction follows CA layer rules:
 **How to check**:
 ```
 For each changed file:
-  1. Identify its CA layer from file path (domain/, application/, infrastructure/, presentation/)
-  2. Scan all import statements
-  3. Flag any import that violates the table above as severity=High
+  1. Read docs/PROJECT-STRUCTURE.md to identify actual CA layer directory names
+  2. Identify the file's CA layer from its path using the layer definitions above
+  3. Scan all import statements
+  4. Flag any import that violates the table above as severity=High
 ```
 
 **Common violations**:
-- Domain file importing from `infrastructure/` (e.g., ORM entity in domain)
+- Domain layer file importing from Infrastructure layer (e.g., ORM entity in domain)
 - Application service directly importing a concrete repository instead of a port interface
-- Domain file importing framework packages (`@nestjs/*`, `react`, `express`)
+- Domain layer file importing framework packages (`@nestjs/*`, `react`, `express`)
 
 #### 4.4 Patterns & Reusability (Medium-Critical)
 - [ ] No magic numbers/strings

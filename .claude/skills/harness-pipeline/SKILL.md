@@ -57,14 +57,16 @@ Mode Detection Algorithm:
 
 ### CA File Placement Rules (Phase 1)
 
-When planning file locations, follow the CA layer for each file type:
+When planning file locations, refer to the **CA template loaded in Step 2b** and `docs/PROJECT-STRUCTURE.md` for actual layer paths. Place each file type in the matching CA layer:
 
-| File Type | CA Layer | Example Path |
-|-----------|----------|-------------|
-| Entity, Schema, VO, Error | **Domain** | `domain/{feature}/` |
-| Service, Port, DTO, Mapper | **Application** | `application/{feature}/` |
-| Repository impl, API client, Config | **Infrastructure** | `infrastructure/` |
-| Controller, Route, Component, Hook | **Presentation** | `presentation/` or `routes/` |
+| File Type | CA Layer |
+|-----------|----------|
+| Entity, Schema, VO, Error | **Domain** (innermost) |
+| Service, Port, DTO, Mapper | **Application** |
+| Repository impl, API client, Config | **Infrastructure** |
+| Controller, Route, Component, Hook | **Presentation** (outermost) |
+
+> Use the template's **"File Location Summary by Task"** table for exact directory paths — do NOT assume fixed folder names.
 
 > **Dependency Rule**: Domain ← Application ← Infrastructure/Presentation. Inner layers MUST NOT import from outer layers.
 

@@ -57,13 +57,14 @@ Source → Test path mapping:
 
 | Source Path | Test Path |
 |-------------|-----------|
-| `app/domain/user/user.entity.ts` | `__tests__/domain/user/user.entity.test.ts` |
-| `app/domain/user/email.vo.ts` | `__tests__/domain/user/email.vo.test.ts` |
-| `app/domain/user/user.schema.ts` | `__tests__/domain/user/user.schema.test.ts` |
-| `app/application/auth/auth.service.ts` | `__tests__/application/auth/auth.service.test.ts` |
-| `app/presentation/components/Button.tsx` | `__tests__/presentation/components/Button.test.tsx` |
+| `{root}/{domain-layer}/user/user.entity.ts` | `__tests__/{domain-layer}/user/user.entity.test.ts` |
+| `{root}/{domain-layer}/user/email.vo.ts` | `__tests__/{domain-layer}/user/email.vo.test.ts` |
+| `{root}/{app-layer}/auth/auth.service.ts` | `__tests__/{app-layer}/auth/auth.service.test.ts` |
+| `{root}/{presentation-layer}/components/Button.tsx` | `__tests__/{presentation-layer}/components/Button.test.tsx` |
 
-**Pattern**: Replace root folder with `__tests__/` and add `.test` before extension.
+> `{root}`, `{domain-layer}`, `{app-layer}`, `{presentation-layer}` are actual paths from `docs/PROJECT-STRUCTURE.md`.
+
+**Pattern**: Replace root folder with `__tests__/`, mirror the CA layer path, and add `.test` before extension.
 
 ---
 
