@@ -105,6 +105,40 @@ These items are ALWAYS excluded regardless of scale:
 - Deep link entry points
 - **(Medium)**: Separate flows per role where they diverge
 
+### 3.5. Domain Model Overview (Medium ONLY — DDD Projects)
+
+> Include when the app has complex business logic warranting DDD (e.g., offline-first apps with conflict resolution, complex state machines).
+> Skip for simple CRUD mobile apps.
+
+**Bounded Contexts** (identify from feature groups):
+
+| Bounded Context | Type | Core Responsibility |
+|-----------------|------|---------------------|
+| [Context Name] | Core/Supporting/Generic | [What this context owns] |
+
+**Ubiquitous Language** (key domain terms):
+
+| Term | Definition | Context |
+|------|-----------|---------|
+| [Domain Term] | [Business-language definition] | [Bounded Context] |
+
+**Key Aggregates** (per context):
+
+| Aggregate | Context | Key Invariants | Offline-capable |
+|-----------|---------|----------------|-----------------|
+| [Name] | [Context] | [Rules that must always hold] | Yes/No |
+
+**Domain Events** (key state transitions):
+
+| Event | Source Aggregate | Subscribers | Sync Strategy |
+|-------|-----------------|-------------|---------------|
+| [EventName] | [Aggregate] | [Who listens] | Immediate/Queued |
+
+> **Mobile-Specific DDD Notes**:
+> - Value Objects should be shared between mobile and backend for consistent validation
+> - Domain Events may need offline queue support
+> - Aggregate state transitions must account for optimistic updates
+
 ### 4. Feature Specifications (MVP Focus) - Consistency Baseline
 
 - Include only essential features for MVP
@@ -576,17 +610,19 @@ Exactly 6 items per screen:
 
 1. Analyze user request
 2. **Detect project scale** (Small or Medium) based on Scale Detection criteria
-3. **Design complete user journey flow** - Screen navigation flow (screen names only)
-4. **(Medium) Define user roles and permission matrix**
-5. **Extract MVP essential features only and assign IDs** - Small: F001 format / Medium: F-DOMAIN-001 format
-6. **Map implementation screen names per feature** - Connect as F001 → Home Screen format
-7. Design tab/navigation structure - Complete navigation tree (linked to Feature IDs)
-8. Screen-by-screen detailed feature specification - MUST include implemented Feature IDs
-9. Minimize required data models, specify local vs server storage
-10. **Resolve versions** from package.json for tech stack
-11. **(Medium) Define device capabilities, notifications, and offline strategy**
-12. **Execute consistency validation checklist**
-13. Output in template format
+3. **(Medium/DDD) Identify Bounded Contexts, Ubiquitous Language, and key Aggregates**
+4. **Design complete user journey flow** - Screen navigation flow (screen names only)
+5. **(Medium) Define user roles and permission matrix**
+6. **Extract MVP essential features only and assign IDs** - Small: F001 format / Medium: F-DOMAIN-001 format
+7. **Map implementation screen names per feature** - Connect as F001 → Home Screen format
+8. Design tab/navigation structure - Complete navigation tree (linked to Feature IDs)
+9. Screen-by-screen detailed feature specification - MUST include implemented Feature IDs
+10. Minimize required data models, specify local vs server storage
+11. **Resolve versions** from package.json for tech stack
+12. **(Medium) Define device capabilities, notifications, and offline strategy**
+13. **(Medium/DDD) Validate domain model — aggregates map to features, offline strategy aligns with domain events**
+14. **Execute consistency validation checklist**
+15. Output in template format
 
 ## Consistency Validation Checklist (Required Before PRD Completion)
 

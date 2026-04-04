@@ -64,9 +64,11 @@
 **Role**: Business rules and entity definitions (100% framework-agnostic, shareable with web)
 
 **Contains**:
-- Entity - Core business objects
+- Models - Client-side domain models (read models / aggregates)
+- Value Objects - Immutable value types shared between mobile and backend
+- Schemas - Zod validation schemas (mirrors domain invariants)
+- Events - Client-side domain events (for state synchronization)
 - Types - Domain-related TypeScript types
-- Schemas - Zod validation schemas
 - Errors - Domain-specific error classes
 
 **⚠️ Restrictions**:
@@ -79,10 +81,39 @@
 {DOMAIN_STRUCTURE}
 ```
 
+**DDD Structure** (when using DDD architecture):
+```
+src/domain/
+├── [context]/                        # Per Bounded Context
+│   ├── models/
+│   │   ├── [aggregate].model.ts      # Client-side read model
+│   │   └── [value-object].vo.ts      # Value Objects (shared with backend)
+│   ├── schemas/
+│   │   ├── [aggregate].schema.ts     # Zod validation (mirrors invariants)
+│   │   └── [command].schema.ts       # Command validation
+│   ├── events/
+│   │   └── [domain-event].event.ts   # Client-side domain events
+│   ├── errors/
+│   │   └── [domain-error].error.ts   # Domain-specific errors
+│   └── types.ts                       # Domain type definitions
+└── shared/
+    └── value-objects/
+        ├── money.vo.ts                # Shared Value Objects
+        └── email.vo.ts
+```
+
+**Mobile-Specific DDD Patterns**:
+- **Shared Value Objects**: Same validation logic as server-side, 100% shareable
+- **Offline Domain Events**: Events queued locally when offline, synced on reconnect
+- **Optimistic Aggregates**: Client-side state transitions before server confirmation
+- **Command Schemas**: Zod schemas validate commands before sending to server
+
 **When to use**:
 - Adding new business concepts (e.g., orders, products, payments)
 - When API request/response validation schemas are needed
 - Defining custom business errors
+- Creating shared Value Objects with consistent validation across platforms
+- Defining domain events for offline state synchronization
 
 **Example entities/schemas**:
 {DOMAIN_EXAMPLES}

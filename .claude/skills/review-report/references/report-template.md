@@ -23,6 +23,7 @@
 | Code Quality | 0 | 0 | 0 | 0 |
 | Security | 0 | 0 | 0 | 0 |
 | Performance | 0 | 0 | 0 | 0 |
+| DDD Architecture | 0 | 0 | 0 | 0 |
 | **Total** | **0** | **0** | **0** | **0** |
 
 **Overall Grade**: [A-F]
@@ -101,6 +102,22 @@
 | A08 - Data Integrity | - | - |
 | A09 - Logging Failures | - | - |
 | A10 - SSRF | - | - |
+
+---
+
+## DDD Architecture Compliance (DDD Projects Only)
+
+> Only include this section if the project uses DDD (`docs/domain/` exists)
+
+| Check | Status | Notes |
+|-------|--------|-------|
+| Domain layer purity (zero external deps) | - | - |
+| Aggregates reference by ID only | - | - |
+| State changes raise Domain Events | - | - |
+| Value Objects are immutable | - | - |
+| Invariants enforced in Aggregate Root | - | - |
+| Ubiquitous Language consistency | - | - |
+| Cross-context communication via events | - | - |
 
 ---
 
