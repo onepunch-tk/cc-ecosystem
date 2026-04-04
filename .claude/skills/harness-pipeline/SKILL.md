@@ -47,7 +47,7 @@ Mode Detection Algorithm:
 | Step | Action |
 |------|--------|
 | 1 | Enter `PlanMode` |
-| 2 | Read `CLAUDE.md`, `docs/ROADMAP.md` |
+| 2 | Read `CLAUDE.md`. Read `docs/ROADMAP.md` if it exists (skip if not — e.g., bug fix without roadmap) |
 | 2a | **CA Structure Check**: Read `docs/PROJECT-STRUCTURE.md`. If it does NOT exist → auto-invoke `project-structure` skill to generate it from the CA template |
 | 2b | **Load CA Template**: Detect framework type and load the matching CA template from `.claude/skills/project-structure/references/` (react-router, nestjs, or expo). Use the template's **File Location Summary by Task** table as the file placement guide |
 | 3 | Analyze current state thoroughly |
