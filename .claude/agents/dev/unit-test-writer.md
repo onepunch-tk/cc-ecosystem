@@ -74,6 +74,7 @@ This skill provides:
 1. Read source file
 2. Check TDD Skill's test exclusion patterns
 3. Determine test path following naming conventions
+4. When writing tests for **multiple files**, follow TDD Skill's **TDD Priority Order** — write Domain layer tests first, then Application, Infrastructure, Presentation last
 
 ### Step 4: Check Existing Utilities
 

@@ -69,6 +69,9 @@ Execute the Red-Green TDD cycle independently and return a concise summary to th
 
 ```
 1. Write minimal code to pass tests
+   Follow CA Inside-Out order (see TDD skill's "TDD Priority Order"):
+     Domain → Application → Infrastructure → Presentation
+   Domain code MUST NOT import from outer layers.
 2. Run: {pkg_cmd} test
 3. Verify ALL tests pass
 4. Run: {pkg_cmd} test:coverage

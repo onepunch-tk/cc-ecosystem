@@ -2,6 +2,7 @@
 name: harness-pipeline
 description: |
   Unified development pipeline for all implementation tasks.
+  Clean Architecture is the default — file placement follows CA layer templates.
   Auto-detects execution mode (Sequential, Delegated, Team) based on task scope.
   Covers single-file fixes through cross-cutting multi-agent parallel work.
   Do NOT use for research, documentation-only, or planning-only tasks.
@@ -10,6 +11,8 @@ description: |
 # Harness Pipeline
 
 Unified development pipeline. Follow these steps **sequentially**. Each step MUST complete before proceeding.
+
+**Architecture**: Clean Architecture (4-layer) is the default for all projects.
 
 ---
 
@@ -44,11 +47,28 @@ Mode Detection Algorithm:
 | Step | Action |
 |------|--------|
 | 1 | Enter `PlanMode` |
-| 2 | Read `CLAUDE.md`, `docs/PROJECT-STRUCTURE.md`, `docs/ROADMAP.md` |
+| 2 | Read `CLAUDE.md`. Read `docs/ROADMAP.md` if it exists (skip if not — e.g., bug fix without roadmap) |
+| 2a | **CA Structure Check**: Read `docs/PROJECT-STRUCTURE.md`. If it does NOT exist → auto-invoke `project-structure` skill to generate it from the CA template |
+| 2b | **Load CA Template**: Detect framework type and load the matching CA template from `.claude/skills/project-structure/references/` (react-router, nestjs, or expo). Use the template's **File Location Summary by Task** table as the file placement guide |
 | 3 | Analyze current state thoroughly |
-| 4 | Create detailed step-by-step plan |
+| 4 | Create detailed step-by-step plan. **File placement MUST follow the CA template's layer structure**: Domain → Application → Infrastructure → Presentation |
 | 5 | **Count files and features** → determine execution mode |
 | 6 | Exit `PlanMode` → wait for plan approval |
+
+### CA File Placement Rules (Phase 1)
+
+When planning file locations, refer to the **CA template loaded in Step 2b** and `docs/PROJECT-STRUCTURE.md` for actual layer paths. Place each file type in the matching CA layer:
+
+| File Type | CA Layer |
+|-----------|----------|
+| Entity, Schema, VO, Error | **Domain** (innermost) |
+| Service, Port, DTO, Mapper | **Application** |
+| Repository impl, API client, Config | **Infrastructure** |
+| Controller, Route, Component, Hook | **Presentation** (outermost) |
+
+> Use the template's **"File Location Summary by Task"** table for exact directory paths — do NOT assume fixed folder names.
+
+> **Dependency Rule**: Domain ← Application ← Infrastructure/Presentation. Inner layers MUST NOT import from outer layers.
 
 > After plan approval, create tasks via `TaskCreate` and execute immediately. No separate confirmation needed.
 
@@ -81,6 +101,18 @@ Mode Detection Algorithm:
 |------|--------|-----------|
 | 8 | Run `unit-test-writer` sub-agent → **verify tests FAIL** (Red Phase). **NEVER analyze patterns or write test code yourself — always delegate to the `unit-test-writer` subagent.** | `Agent(subagent_type="unit-test-writer")` |
 | 9 | Implement code to pass tests → run the project's test command (see CLAUDE.md Commands) → **verify ALL pass** (Green Phase) | — (main agent) |
+
+**CA Implementation Order (Inside-Out)**: When implementing in Step 9, follow this layer order:
+
+```
+1. Domain    — Entity, VO, Schema, Error (no dependencies)
+2. Application — Service, Port interface, DTO, Mapper (depends on Domain only)
+3. Infrastructure — Repository impl, API client, Config (implements Ports)
+4. Presentation — Route, Controller, Component, Hook (calls Application)
+```
+
+> Domain code MUST NOT import from Application/Infrastructure/Presentation.
+> Application code MUST NOT import from Infrastructure/Presentation.
 
 **Auto-verify (no human wait needed)**:
 - After Step 8: If tests pass immediately → review test logic, likely not testing correctly
@@ -344,9 +376,9 @@ IF context exceeds 80k tokens before Phase completion:
 
 | Step | Action | Sub-Agent |
 |------|--------|-----------|
-| 1 | Read `CLAUDE.md`, `docs/PROJECT-STRUCTURE.md`, assigned task file | — |
+| 1 | Read `CLAUDE.md`, `docs/PROJECT-STRUCTURE.md`, assigned task file. Load the CA template for the project's framework type from `.claude/skills/project-structure/references/` | — |
 | 2 | Run `unit-test-writer` sub-agent (Red Phase). **NEVER analyze patterns or write test code yourself — always delegate to the `unit-test-writer` subagent.** | `Agent(subagent_type="unit-test-writer")` |
-| 3 | Implement code to pass tests (Green Phase) → run the project's test command (see CLAUDE.md Commands) | — |
+| 3 | Implement code to pass tests (Green Phase) → run the project's test command (see CLAUDE.md Commands). **Follow CA Inside-Out order**: Domain → Application → Infrastructure → Presentation | — |
 | 4 | Run the project's coverage command (see CLAUDE.md Commands) | — |
 | 5 | Commit per [workflow-commits.md](../git/references/workflow-commits.md) | — |
 | 6 | Message lead: files changed, test results, remaining issues | — |
