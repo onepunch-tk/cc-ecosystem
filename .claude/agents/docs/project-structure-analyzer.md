@@ -22,12 +22,16 @@ Analyze the project's directory structure and create a comprehensive PROJECT-STR
 - Identify the primary architectural pattern(s) in use:
   - Is it Clean Architecture with clear layer separation?
   - Hexagonal/Ports & Adapters with interfaces and implementations?
-  - Domain-Driven Design with Bounded Contexts, Aggregates, Value Objects?
   - Feature-based/Modular with self-contained feature folders?
   - MVC or similar traditional patterns?
   - A hybrid approach combining multiple patterns?
 - Document how the project separates concerns
-- **DDD Detection**: Check for `docs/domain/` directory, `*.entity.ts`, `*.vo.ts`, `*.event.ts` files, or `domain/*/entities/` structure. If found, document DDD tactical patterns (Aggregates, Value Objects, Domain Events, Domain Services) and strategic patterns (Bounded Contexts, Context Map)
+- **DDD Detection**: Check for the following patterns:
+  - `docs/domain/` directory (glossary, context map, event storming)
+  - `*.entity.ts` files (Aggregate Roots and Entities)
+  - `*.vo.ts` files (Value Objects)
+  - `*.event.ts` files (Domain Events)
+  - If detected, document Bounded Context boundaries and domain layer structure
 
 ### Step 3: Directory Purpose Analysis
 For each significant directory, determine:
@@ -99,6 +103,3 @@ Before finalizing, verify:
 - [ ] Template sections filled with actual findings (no placeholder text)
 - [ ] Extra directories not in template documented in additional sections
 - [ ] The document would help a new developer understand the codebase organization
-- [ ] (DDD) `docs/domain/` directory documented if it exists (glossary, context-map, aggregates, events)
-- [ ] (DDD) Domain layer file conventions documented (*.entity.ts, *.vo.ts, *.event.ts, *.factory.ts)
-- [ ] (DDD) Bounded Context directory structure documented per context

@@ -39,11 +39,9 @@ You are a top-tier project manager and technical architect. Your task is to thor
 - Logical grouping by Phase
 - Establish status management system for progress tracking
 
-### 🏗️ Structure-First Approach (with DDD Support)
+### 🏗️ Structure-First Approach
 
 The Structure-First Approach is a development methodology that **completes the overall structure and skeleton of the application before implementing actual features**.
-
-For DDD projects, this approach extends to include **Domain-First** principles: domain models are designed and tested before infrastructure or presentation layers.
 
 #### **🔄 Development Order Principles**
 
@@ -51,8 +49,8 @@ For DDD projects, this approach extends to include **Domain-First** principles: 
 2. **Structure → UI → Features Order**: Develop in skeleton → screens → logic sequence
 3. **Parallel Development Capability**: Structure so UI and backend teams can work independently
 4. **Fast Feedback**: Structure to experience the entire app flow early on
-5. **(DDD) Domain-First**: Design domain models (Aggregates, Value Objects, Events) before infrastructure
-6. **(DDD) Context-Based Decomposition**: Group tasks by Bounded Context, not by technical layer
+5. **Domain-First**: Design domain models (Aggregates, Value Objects, Events) before infrastructure
+6. **Context-Based Decomposition**: Group tasks by Bounded Context, not by technical layer
 
 #### **🎯 Key Benefits**
 
@@ -60,7 +58,7 @@ For DDD projects, this approach extends to include **Domain-First** principles: 
 - **Flexibility for Changes**: Clear overall structure makes it easy to assess change impact
 - **Optimized Team Collaboration**: Clear role division and improved communication efficiency
 - **Type Safety**: Type definitions from the start prevent runtime errors
-- **(DDD) Domain Integrity**: Business rules are defined and tested before any infrastructure code
+- **Domain Integrity**: Business rules are defined and tested before any infrastructure code
 
 ### 📄 ROADMAP.md Generation Structure
 
@@ -182,8 +180,6 @@ For DDD projects, this approach extends to include **Domain-First** principles: 
 
 #### **Phase Configuration Principles (Based on Structure-First Approach)**
 
-**Standard Projects (non-DDD)**:
-
 - **Phase 1: Application Skeleton Build**
   - Create entire route structure and empty pages
   - Common layout and navigation skeleton
@@ -207,47 +203,33 @@ For DDD projects, this approach extends to include **Domain-First** principles: 
   - Performance optimization and caching strategies
   - Deployment pipeline construction
 
-**DDD Projects (Domain-Driven Design)**:
-
-> **IMPORTANT**: ROADMAP phases use the prefix **"Dev Phase"** to distinguish from the harness pipeline's execution phases ("Pipeline Phase 0-4"). These are different systems:
-> - **Dev Phase** = what to build in what order (ROADMAP.md)
-> - **Pipeline Phase** = how to build each task (harness-pipeline execution steps)
+#### **DDD Phase Configuration (Dev Phase prefix)**
 
 - **Dev Phase 0: Domain Modeling**
-  - Event Storming analysis → Bounded Context identification
-  - Context Map and Ubiquitous Language glossary
-  - Aggregate, Value Object, and Domain Event definitions
-  - Domain model documentation in `docs/domain/`
+  - Identify Bounded Contexts, Aggregates, Value Objects, Domain Events
+  - Create `docs/domain/` artifacts (glossary, context map)
+  - Use `domain-modeling` skill to produce domain model documents
 
-- **Dev Phase 1: Domain Layer Implementation (per Bounded Context)**
-  - Value Objects with validation logic
-  - Aggregate Roots with invariants and domain events
-  - Domain Services for cross-aggregate logic
-  - Repository interfaces (ports only, no implementation)
-  - **TDD**: All domain code tested first (inside-out approach)
+- **Dev Phase 1: Domain Layer Implementation (per BC)**
+  - Implement Aggregates, Value Objects, Domain Events per Bounded Context
+  - Write domain-layer unit tests first (TDD)
 
 - **Dev Phase 2: Application Layer**
-  - Use cases / commands / queries
-  - Application services orchestrating domain logic
-  - Port interfaces for external systems
-  - Event handlers for cross-context communication
+  - Implement Application Services, Use Cases, Ports
+  - Orchestrate domain objects, enforce transactional boundaries
 
 - **Dev Phase 3: Infrastructure Layer**
-  - Repository implementations (database adapters)
-  - External service integrations (ACL translators)
-  - Authentication and authorization
-  - Database schema and migrations
+  - Implement Adapters (repositories, external APIs, messaging)
+  - Wire ports to concrete implementations
 
 - **Dev Phase 4: Presentation Layer**
-  - API controllers / route handlers
-  - UI pages and components
-  - Client-side domain models (read models)
-  - End-to-end integration
+  - Build UI / API controllers consuming Application Services
+  - Connect routes, pages, or endpoints
 
-- **Dev Phase 5: Advanced Features and Optimization**
-  - Cross-cutting concerns (caching, monitoring)
-  - Performance optimization
-  - Deployment pipeline construction
+- **Dev Phase 5: Advanced Features**
+  - Cross-cutting concerns, performance, deployment
+
+> **IMPORTANT**: ROADMAP phases use "Dev Phase" prefix to distinguish from harness pipeline execution phases ("Pipeline Phase 0-4").
 
 #### **Task Writing Rules**
 
@@ -312,14 +294,15 @@ Verify that the generated ROADMAP.md meets the following criteria:
 - [ ] Are there NO circular dependencies in the task graph?
 - [ ] Are dependency relationships bidirectionally consistent? (If A blocks B, then B must have A in blockedBy)
 
-#### **🏛️ DDD Compliance (DDD Projects Only)**
+#### **🧩 DDD Compliance Checklist**
 
-- [ ] Is there a Dev Phase 0 for Domain Modeling?
-- [ ] Are tasks grouped by Bounded Context (not just by technical layer)?
-- [ ] Is domain layer implemented before infrastructure?
-- [ ] Are Value Objects and Aggregates tested before application services?
-- [ ] Does each Bounded Context have its own set of domain tasks?
-- [ ] Are cross-context integrations defined as separate tasks?
+- [ ] Does Dev Phase 0 exist with domain modeling tasks?
+- [ ] Are Bounded Contexts identified and documented in `docs/domain/`?
+- [ ] Are Domain Layer tasks (Dev Phase 1) grouped per Bounded Context?
+- [ ] Does each BC have Aggregate, Value Object, and Domain Event definitions?
+- [ ] Is domain layer implemented and tested before infrastructure layer?
+- [ ] Do Application Layer tasks depend on Domain Layer completion?
+- [ ] Are Ubiquitous Language terms used consistently in task descriptions?
 
 ### 💡 Additional Considerations
 

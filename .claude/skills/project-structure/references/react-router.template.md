@@ -40,51 +40,22 @@ Follows Clean Architecture 4-layer structure.
 **Role**: Business rules and entity definitions (no external dependencies)
 
 **Contains**:
-- Models - Client-side domain models (read models / aggregates)
-- Value Objects - Immutable value types shared between client and server
-- Schemas - Zod validation schemas (mirrors domain invariants)
-- Events - Client-side domain events (for state synchronization)
-- Types - Domain-related TypeScript types
-- Errors - Domain-specific error classes
+- **{context}/models/**: Client-side aggregates (read models) and Value Objects (`*.vo.ts`)
+- **{context}/events/**: Domain Events (`*.event.ts`) for client-side state sync
+- **{context}/schemas/**: Zod command validation schemas (write model)
+- **{context}/errors/**: Domain-specific error classes
+- **{context}/types.ts**: Domain type definitions
 
 **When to use**:
 - Adding new business concepts (e.g., orders, products, payments)
 - When API request/response validation schemas are needed
 - Defining custom business errors
-- Creating shared Value Objects (e.g., `Money`, `Email`, `DateRange`)
-- Defining client-side domain events for state management
+- Creating shared Value Objects for form validation
 
 **Structure**:
 ```
 {DOMAIN_STRUCTURE}
 ```
-
-**DDD Structure** (when using DDD architecture):
-```
-app/domain/
-├── [context]/                        # Per Bounded Context
-│   ├── models/
-│   │   ├── [aggregate].model.ts      # Client-side read model
-│   │   └── [value-object].vo.ts      # Value Objects
-│   ├── schemas/
-│   │   ├── [aggregate].schema.ts     # Zod validation (mirrors invariants)
-│   │   └── [command].schema.ts       # Command validation
-│   ├── events/
-│   │   └── [domain-event].event.ts   # Client-side domain events
-│   ├── errors/
-│   │   └── [domain-error].error.ts   # Domain-specific errors
-│   └── types.ts                       # Domain type definitions
-└── shared/
-    └── value-objects/
-        ├── money.vo.ts                # Shared Value Objects
-        └── email.vo.ts
-```
-
-**Frontend DDD Patterns**:
-- **Read Models**: Client-side projections of server aggregates (optimized for UI)
-- **Command Schemas**: Zod schemas that validate commands before sending to server
-- **Shared Value Objects**: Same validation logic as server-side (e.g., `Email.create()`)
-- **Domain Events**: Used for client-side state synchronization between components
 
 **Example entities/schemas**:
 {DOMAIN_EXAMPLES}

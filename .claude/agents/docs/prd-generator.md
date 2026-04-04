@@ -102,22 +102,22 @@ These items are ALWAYS excluded regardless of scale:
 - User decision branch points
 - **(Medium)**: Separate flows per role where they diverge
 
-### 3.5. Domain Model Overview (Medium ONLY — DDD Projects)
+### 3.5 Domain Model Overview
 
-> Include when the project has complex business logic warranting DDD.
-> Skip for simple CRUD web apps.
+- Identify Bounded Contexts from user journeys and feature groups
+- Define Ubiquitous Language terms used across the PRD
 
-**Bounded Contexts** (identify from feature groups):
+**Bounded Contexts Table:**
 
-| Bounded Context | Type | Core Responsibility |
-|-----------------|------|---------------------|
-| [Context Name] | Core/Supporting/Generic | [What this context owns] |
+| Bounded Context | Core Responsibility | Key Aggregates |
+|----------------|---------------------|----------------|
+| [BC Name] | [What this context owns] | [Primary Aggregates] |
 
-**Ubiquitous Language** (key domain terms):
+**Ubiquitous Language Table:**
 
-| Term | Definition | Context |
-|------|-----------|---------|
-| [Domain Term] | [Business-language definition] | [Bounded Context] |
+| Term | Definition | Bounded Context |
+|------|-----------|-----------------|
+| [Term] | [Precise definition] | [Owning BC] |
 
 ### 4. Feature Specifications (MVP Focus) - Consistency Baseline
 

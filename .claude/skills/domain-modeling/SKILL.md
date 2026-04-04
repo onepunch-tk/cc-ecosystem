@@ -1,14 +1,15 @@
 ---
 name: domain-modeling
 description: |
-  DDD domain modeling workflow orchestration.
-  Use when: (1) Starting a new DDD project, (2) Adding a new bounded context,
-  (3) Refining domain models. Orchestrates domain-modeler and context-mapper agents.
+  DDD domain modeling workflow. Mandatory Phase 0 of the harness pipeline.
+  Covers: Event Storming, Strategic Design (Context Map), Tactical Design (Aggregates, VOs, Events), Validation.
+  Use when: (1) Starting a new project, (2) Adding a new bounded context, (3) Refining domain models.
 ---
 
 # Domain Modeling Skill
 
-Orchestrates the DDD domain modeling workflow. Follow these phases **sequentially**.
+Executes the DDD domain modeling workflow. Follow these phases **sequentially**.
+This skill is **Phase 0** of the harness pipeline — it runs before planning.
 
 ---
 
@@ -16,7 +17,7 @@ Orchestrates the DDD domain modeling workflow. Follow these phases **sequentiall
 
 | Scenario | Action |
 |----------|--------|
-| New project with complex domain | Full workflow (Phase 1-4) |
+| New project | Full workflow (Phase 1-4) |
 | Adding a new bounded context | Phase 2-4 only |
 | Refining existing domain model | Phase 3-4 only |
 | Reviewing domain model quality | Phase 4 only |
@@ -85,60 +86,199 @@ Create `docs/domain/event-storming.md`:
 
 ---
 
-## Phase 2: Strategic Design
+## Phase 2: Strategic Design (Context Mapping)
 
-Spawn the `context-mapper` agent:
+> Previously delegated to a separate `context-mapper` agent. Now executed directly by this skill.
 
-```
-Agent(subagent_type="context-mapper")
-```
+### 2-1. Language Analysis
 
-**Input to agent**:
-- Event Storming results from Phase 1
-- PRD for reference
+Identify contexts by detecting where the same word means different things:
 
-**Expected output**:
-- `docs/domain/context-map.md` — Context Map with relationships
+| Term | Context A Meaning | Context B Meaning |
+|------|-------------------|-------------------|
+| "Product" | In Catalog: browsable item | In Inventory: stockable unit |
+
+**Rule**: Same term with different meanings = separate Bounded Contexts.
+
+### 2-2. Context Classification
+
+| Type | Description |
+|------|-------------|
+| **Core Domain** | Competitive advantage, highest investment |
+| **Supporting Domain** | Necessary but not differentiating |
+| **Generic Domain** | Commodity, consider off-the-shelf |
+
+### 2-3. Relationship Patterns
+
+| Pattern | When to Use |
+|---------|-------------|
+| **Shared Kernel** | Tightly coupled teams, shared core types |
+| **Customer-Supplier** | One context depends on another's data |
+| **Conformist** | No control over upstream, low divergence |
+| **Anti-Corruption Layer (ACL)** | Protecting domain from external/legacy models |
+| **Open Host Service (OHS)** | Public API for multiple consumers |
+| **Published Language** | Event-driven communication, API contracts |
+| **Separate Ways** | Unrelated domains, different lifecycle |
+| **Partnership** | Co-developing teams, mutual dependency |
+
+### 2-4. Output
+
+Generate:
+- `docs/domain/context-map.md` — Context Map with relationships and visual diagram
 - `docs/domain/glossary.md` — Ubiquitous Language per context
-- Integration specs in `docs/domain/integration/`
+- `docs/domain/integration/[a]-[b].md` — Integration spec per relationship
+
+**Context Map Visual Notation**:
+```
+──OHS/PL──▶   Open Host Service with Published Language
+──ACL──▶       Anti-Corruption Layer
+──SK──         Shared Kernel (bidirectional)
+──CS──▶        Customer-Supplier
+```
+
+### 2-5. Anti-Pattern Detection
+
+Flag these issues:
+
+| Anti-Pattern | Fix |
+|--------------|-----|
+| **God Context** | Split by subdomain |
+| **Shared Database** | Separate data ownership, use events |
+| **Distributed Monolith** | Use async events, ACL |
+| **Leaky Abstraction** | Add ACL translator |
 
 ---
 
-## Phase 3: Tactical Design
+## Phase 3: Tactical Design (Domain Modeling)
 
-> **CRITICAL: Execute SEQUENTIALLY** — one Bounded Context at a time.
-> Each context's domain-modeler may update `docs/domain/glossary.md` with context-specific terms.
-> Parallel execution causes write conflicts on shared files.
+> Previously delegated to a separate `domain-modeler` agent. Now executed directly by this skill.
+> **Execute SEQUENTIALLY** — one Bounded Context at a time (Core → Supporting → Generic).
 
-For **each** Bounded Context (one at a time, in dependency order):
+### 3-1. Design Rules
 
+| Rule | Description |
+|------|-------------|
+| **One Transaction = One Aggregate** | Never modify multiple aggregates in one transaction |
+| **Reference by ID** | Aggregates reference others by ID only |
+| **Small Aggregates** | Max 5 entities per aggregate; split if larger |
+| **Eventual Consistency** | Use Domain Events for cross-aggregate communication |
+| **Factory for Complex Creation** | Use Factory pattern when >3 creation parameters |
+
+### 3-2. Per-Context Output
+
+For each Bounded Context, generate:
+
+**`docs/domain/aggregates/[context].md`**:
+```markdown
+# [Bounded Context] Domain Model
+
+## [Aggregate Name]
+**Root**: [Entity Name]
+**Invariants**: [List]
+**Structure**:
+- Root: [RootEntity]
+  - [ChildEntity] (1:N)
+  - [ValueObject]
+**Domain Events**: [EventName]: Raised when [condition]
+**Commands**: [CommandName]: [Description]
 ```
-Agent(subagent_type="domain-modeler")
+
+**`docs/domain/events/[context]-events.md`**:
+```markdown
+# [Bounded Context] Domain Events
+
+| Event | Aggregate | Payload | Subscribers |
+|-------|-----------|---------|-------------|
+| [EventName] | [Source] | { field1, field2 } | [Target Context] |
 ```
 
-**Execution order**: Start with Core contexts, then Supporting, then Generic.
-If contexts have dependencies (from Context Map), model the upstream context first.
+### 3-3. Code Scaffolding
 
+Based on detected framework, generate skeleton code:
+
+**Backend (NestJS)**:
 ```
-Execution Flow:
-1. Identify context dependency order from context-map.md
-2. FOR each context (in dependency order):
-   a. Spawn domain-modeler agent
-   b. WAIT for completion
-   c. Verify output files exist
-   d. THEN proceed to next context
-3. Do NOT spawn multiple domain-modeler agents in parallel
+src/domain/[context]/
+├── entities/[aggregate-root].entity.ts
+├── value-objects/[name].vo.ts
+├── events/[name].event.ts
+├── services/[name].service.ts
+├── factories/[name].factory.ts
+└── repository.interface.ts          # Port only
 ```
 
-**Input to agent**:
-- Bounded Context definition from Phase 2
-- Ubiquitous Language glossary
-- PRD features related to this context
+**Frontend (React Router)**:
+```
+app/domain/[context]/
+├── models/[aggregate].model.ts
+├── events/[name].event.ts
+├── schemas/[name].schema.ts
+└── types.ts
+```
 
-**Expected output per context**:
-- `docs/domain/aggregates/[context].md` — Aggregate definitions
-- `docs/domain/events/[context]-events.md` — Domain Event catalog
-- Skeleton code in `src/domain/[context]/` or `app/domain/[context]/`
+### 3-4. Code Templates
+
+**Aggregate Root**:
+```typescript
+export class [AggregateName] {
+  private readonly domainEvents: [Event][] = [];
+  private constructor(public readonly id: string, /* fields */) {}
+
+  static create(props: Create[Name]Props): [AggregateName] {
+    const instance = new [AggregateName](crypto.randomUUID(), /* ... */);
+    instance.addDomainEvent(new [CreatedEvent]({ id: instance.id }));
+    return instance;
+  }
+
+  static reconstitute(props: [Name]Props): [AggregateName] {
+    return new [AggregateName](props.id, /* ... */);
+  }
+
+  pullDomainEvents(): [Event][] {
+    const events = [...this.domainEvents];
+    this.domainEvents.length = 0;
+    return events;
+  }
+
+  private addDomainEvent(event: [Event]): void {
+    this.domainEvents.push(event);
+  }
+}
+```
+
+**Value Object**:
+```typescript
+export class [VOName] {
+  private constructor(private readonly value: [Type]) {}
+  static create(value: [Type]): [VOName] {
+    if (/* invalid */) throw new [ValidationError]('...');
+    return new [VOName](value);
+  }
+  equals(other: [VOName]): boolean { return this.value === other.value; }
+  toValue(): [Type] { return this.value; }
+}
+```
+
+**Domain Event**:
+```typescript
+export class [EventName] {
+  public readonly occurredAt = new Date();
+  constructor(public readonly payload: { readonly [field]: [type] }) {}
+  get eventName(): string { return '[EventName]'; }
+}
+```
+
+**ACL Translator** (for cross-context integration):
+```typescript
+export const [External]Translator = {
+  toDomain(external: [ExternalDto]): [DomainModel] {
+    return [DomainModel].reconstitute({ /* map fields */ });
+  },
+  toExternal(domain: [DomainModel]): [ExternalDto] {
+    return { /* map fields */ };
+  },
+} as const;
+```
 
 ---
 
@@ -146,14 +286,14 @@ Execution Flow:
 
 ### 4-1. Model Consistency Check
 
-| Check | Criteria | Pass/Fail |
-|-------|----------|-----------|
-| **Aggregate Boundaries** | Each aggregate has <=5 entities | |
-| **Reference by ID** | No direct object references between aggregates | |
-| **Event Coverage** | Every state change produces a domain event | |
-| **Invariant Protection** | All invariants enforced in aggregate root | |
-| **Language Consistency** | All names match glossary terms | |
-| **Layer Purity** | Domain layer has zero external dependencies | |
+| Check | Criteria |
+|-------|----------|
+| **Aggregate Boundaries** | Each aggregate has <=5 entities |
+| **Reference by ID** | No direct object references between aggregates |
+| **Event Coverage** | Every state change produces a domain event |
+| **Invariant Protection** | All invariants enforced in aggregate root |
+| **Language Consistency** | All names match glossary terms |
+| **Layer Purity** | Domain layer has zero external dependencies |
 
 ### 4-2. PRD Coverage Check
 
@@ -167,34 +307,22 @@ Execution Flow:
 |-----------|-----------|-----------------|------------|----------------|
 | [A] | [B] | Yes/No | Yes/No/N/A | Yes/No |
 
-### 4-4. Cross-Context Domain Event Integration Test
+### 4-4. Cross-Context Event Flow Verification
 
-> Verify that domain events published by one context can be consumed by another.
-
-For each cross-context relationship in the Context Map:
-
-| Source Context | Event | Target Context | Handler Exists | ACL Translates Correctly | Test Status |
-|----------------|-------|----------------|----------------|--------------------------|-------------|
-| [A] | [EventName] | [B] | Yes/No | Yes/No/N/A | Pass/Fail |
-
-**Verification steps**:
-1. List all domain events from `docs/domain/events/[context]-events.md` per context
-2. For each event consumed by another context (per `docs/domain/integration/`):
-   a. Verify the target context has an event handler defined
-   b. Verify the ACL translator maps source event → target domain language
-   c. Verify no domain model leakage (target context uses its own types, not source types)
-3. Flag any orphaned events (published but never consumed) as warnings
+For each cross-context relationship:
+1. Verify target context has an event handler for each consumed event
+2. Verify ACL translator maps source event → target domain language
+3. Verify no domain model leakage (target uses its own types)
+4. Flag orphaned events (published but never consumed) as warnings
 
 ---
 
 ## Directory Structure Convention
 
-After domain modeling is complete:
-
 ```
 docs/domain/
 ├── event-storming.md              # Phase 1 output
-├── context-map.md                 # Phase 2 output (Context Map)
+├── context-map.md                 # Phase 2 output
 ├── glossary.md                    # Ubiquitous Language (all contexts)
 ├── aggregates/
 │   ├── [context-a].md             # Phase 3 output per context
@@ -210,24 +338,17 @@ docs/domain/
 
 ## Harness Pipeline Integration
 
-This skill integrates with `harness-pipeline` as **Phase 0** (before Phase 1: Plan):
+This skill is **Phase 0** of the harness pipeline:
 
 ```
-Phase 0: Domain Modeling (DDD projects only)
-  → Event Storming → Context Map → Domain Models → Validation
+Phase 0: Domain Modeling → Event Storming → Context Map → Domain Models → Validation
 Phase 1: Plan (informed by domain models)
-Phase 2: TDD (domain-first: test aggregates → test services → test API)
+Phase 2: TDD (inside-out: VO → Aggregate → Domain Service → App → Infra → Presentation)
 Phase 3: Review
 Phase 4: Validate & Finalize
 ```
 
-**Domain-First TDD Order**:
-1. Value Objects (pure logic, no dependencies)
-2. Aggregate Root (invariants, domain events)
-3. Domain Services (cross-aggregate logic)
-4. Application Services (use cases, ports)
-5. Infrastructure (repositories, adapters)
-6. Presentation (controllers, routes)
+> After Phase 0, **recommend `/clear`** — domain modeling context is no longer needed.
 
 ---
 
@@ -241,7 +362,6 @@ Domain modeling is complete when ALL pass:
 - [ ] Every Bounded Context has aggregate definitions
 - [ ] Domain Event catalog per context
 - [ ] Integration specs for all context relationships
-- [ ] Cross-context domain event flows verified (4-4)
-- [ ] No orphaned events (published but never consumed)
+- [ ] Cross-context event flows verified
 - [ ] PRD feature coverage >= 100%
 - [ ] Code scaffolding generated
