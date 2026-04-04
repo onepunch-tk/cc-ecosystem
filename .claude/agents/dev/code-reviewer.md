@@ -53,9 +53,32 @@ For each file, check all 7 quality categories:
 #### 4.3 Structure & Architecture (Medium-High)
 - [ ] Single Responsibility Principle
 - [ ] Functions <30 lines recommended
-- [ ] Clean Architecture layer boundaries respected
 - [ ] SOLID principles followed
 - [ ] No circular dependencies
+
+#### 4.3.1 Clean Architecture Dependency Check (High)
+
+Verify import direction follows CA layer rules:
+
+| Source Layer | Can Import From | MUST NOT Import From |
+|-------------|----------------|---------------------|
+| **Domain** | (nothing external) | Application, Infrastructure, Presentation |
+| **Application** | Domain | Infrastructure, Presentation |
+| **Infrastructure** | Domain, Application | Presentation |
+| **Presentation** | Domain, Application, Infrastructure | — |
+
+**How to check**:
+```
+For each changed file:
+  1. Identify its CA layer from file path (domain/, application/, infrastructure/, presentation/)
+  2. Scan all import statements
+  3. Flag any import that violates the table above as severity=High
+```
+
+**Common violations**:
+- Domain file importing from `infrastructure/` (e.g., ORM entity in domain)
+- Application service directly importing a concrete repository instead of a port interface
+- Domain file importing framework packages (`@nestjs/*`, `react`, `express`)
 
 #### 4.4 Patterns & Reusability (Medium-Critical)
 - [ ] No magic numbers/strings
@@ -195,6 +218,7 @@ Before finalizing:
 - [ ] Checked framework-specific violations (see CLAUDE.md)?
 - [ ] Verified function definition patterns?
 - [ ] Checked `any` type usage?
+- [ ] Verified CA layer dependency direction (no inward→outward imports)?
 - [ ] Scanned OWASP A01-A10?
 - [ ] Analyzed algorithm complexity?
 - [ ] Checked N+1 queries and caching?

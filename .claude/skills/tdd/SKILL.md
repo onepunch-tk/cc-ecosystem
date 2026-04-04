@@ -23,14 +23,18 @@ TDD rules and patterns for Node/TypeScript/React projects.
 
 ### Must Test
 
-| Pattern | Description |
-|---------|-------------|
-| `*.service.ts` | Service functions |
-| `*.helper.ts`, `*.util.ts` | Helper/utility functions |
-| `*.tsx` (components) | React components (**except** paths matching exclusions) |
-| `loader`, `action` | Route loaders/actions |
-| `*.schema.ts` | Zod schemas |
-| `use*.ts` | Custom hooks |
+| Pattern | CA Layer | Description |
+|---------|----------|-------------|
+| `*.entity.ts` | Domain | Entity classes |
+| `*.vo.ts` | Domain | Value Objects |
+| `*.schema.ts` | Domain | Zod validation schemas |
+| `*.service.ts` | Application | Service functions |
+| `*.command.ts`, `*.query.ts` | Application | CQRS handlers |
+| `*.mapper.ts` | Application | Entity ↔ DTO mappers |
+| `*.helper.ts`, `*.util.ts` | Shared | Helper/utility functions |
+| `*.tsx` (components) | Presentation | React components (**except** paths matching exclusions) |
+| `loader`, `action` | Presentation | Route loaders/actions |
+| `use*.ts` | Presentation | Custom hooks |
 
 ### Exclude from Testing (Evaluated First)
 
@@ -53,9 +57,11 @@ Source → Test path mapping:
 
 | Source Path | Test Path |
 |-------------|-----------|
-| `app/services/auth.service.ts` | `__tests__/services/auth.service.test.ts` |
-| `app/components/Button.tsx` | `__tests__/components/Button.test.tsx` |
+| `app/domain/user/user.entity.ts` | `__tests__/domain/user/user.entity.test.ts` |
+| `app/domain/user/email.vo.ts` | `__tests__/domain/user/email.vo.test.ts` |
 | `app/domain/user/user.schema.ts` | `__tests__/domain/user/user.schema.test.ts` |
+| `app/application/auth/auth.service.ts` | `__tests__/application/auth/auth.service.test.ts` |
+| `app/presentation/components/Button.tsx` | `__tests__/presentation/components/Button.test.tsx` |
 
 **Pattern**: Replace root folder with `__tests__/` and add `.test` before extension.
 
@@ -68,6 +74,21 @@ Source → Test path mapping:
 1. **Red** - Write a failing test
 2. **Green** - Write minimal code to pass
 3. **Refactor** - Improve code (keep tests passing)
+
+---
+
+## TDD Priority Order (Inside-Out by CA Layer)
+
+When multiple files need tests, write and implement in this order:
+
+| Priority | CA Layer | What to test | Mock rule |
+|----------|----------|-------------|-----------|
+| 1 | **Domain** | Entity, VO, Schema, Error | **No mocks** — pure logic only |
+| 2 | **Application** | Service, Command, Query, Mapper | Mock ports (interfaces), use real Domain |
+| 3 | **Infrastructure** | Repository impl, API client | Mock external I/O (DB, HTTP) |
+| 4 | **Presentation** | Component, Hook, Route handler | Mock Application services |
+
+> **Domain layer tests MUST NOT use mocks.** If a Domain test needs mocks, the design is wrong — domain logic should be pure.
 
 ---
 
@@ -144,4 +165,6 @@ Before completing tests:
 - [ ] Mocks initialized in `beforeEach`
 - [ ] No `any` type in test code
 - [ ] Shared helpers in `__tests__/fixtures/` or `__tests__/utils/`
+- [ ] Domain layer tests have zero mocks
+- [ ] Test order follows CA Inside-Out priority (Domain first)
 - [ ] All tests pass

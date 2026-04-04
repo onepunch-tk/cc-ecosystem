@@ -6,7 +6,8 @@
 - **Target Users**: [Primary user target]
 
 ## Core Principles
-> **TDD-First**: All implementations must be preceded by writing tests first.
+> **Clean Architecture**: All projects use 4-layer CA (Domain → Application → Infrastructure → Presentation). Inner layers MUST NOT depend on outer layers.
+> **TDD-First**: All implementations must be preceded by writing tests first. Follow Inside-Out order (Domain → Presentation).
 > **Side Effect Awareness**: All code modifications (except tests) must be written with careful consideration of potential side effects.
 
 ## Tech Stack
@@ -52,14 +53,20 @@ If you name a server-side utility `something.client.ts`, it will be bundled as `
 - **Generics**: Always use `extends` constraints → `<T extends Record<string, unknown>>`
 
 ## File Creation Rules
-| Pattern | Rule |
-|---------|------|
-| `*.client.ts(x)` | **CLIENT-SIDE ONLY** — excluded from SSR bundle |
-| `*.server.ts(x)` | **SERVER-SIDE ONLY** — not available in browser |
-| `*.d.ts` | Type declarations only |
-| `**/types.ts` | Type definitions only |
-| `**/*.port.ts` | Interface definitions only |
-| `**/index.ts` | Barrel files (re-exports) |
+| Pattern | CA Layer | Rule |
+|---------|----------|------|
+| `*.entity.ts` | Domain | Entity classes (no external deps) |
+| `*.vo.ts` | Domain | Value Objects (immutable, no external deps) |
+| `*.schema.ts` | Domain | Zod validation schemas |
+| `*.service.ts` | Application | Business logic services |
+| `**/*.port.ts` | Application | Interface definitions (Port) |
+| `*.mapper.ts` | Application | Entity ↔ DTO conversion |
+| `*.repository.ts` | Infrastructure | Repository implementations |
+| `*.client.ts(x)` | — | **CLIENT-SIDE ONLY** — excluded from SSR bundle |
+| `*.server.ts(x)` | — | **SERVER-SIDE ONLY** — not available in browser |
+| `*.d.ts` | — | Type declarations only |
+| `**/types.ts` | — | Type definitions only |
+| `**/index.ts` | — | Barrel files (re-exports) |
 
 ## Commands
 | Command | Description |
