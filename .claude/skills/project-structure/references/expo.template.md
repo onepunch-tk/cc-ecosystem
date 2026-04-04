@@ -22,7 +22,7 @@
 
 **Key directories**:
 - `src/app/` - **Expo Router routes** (REQUIRED, route-only. `_layout.tsx` for navigation, route groups, dynamic routes)
-- `src/domain/` - Business rules, entities, VOs, events, schemas (100% shareable with web)
+- `src/domain/` - Business rules, entities, schemas (100% shareable with web)
 - `src/application/` - Services, ports (95% shareable with web)
 - `src/infrastructure/` - Storage (AsyncStorage/SecureStore/MMKV), API clients, native integrations, external services
 - `src/presentation/` - **ONLY reusable UI**: components/ui, components/forms, hooks, providers — **NO screens, NO navigation**

@@ -40,7 +40,7 @@ Load `references/report-template.md` as the report structure.
 ### 3. Collect Issues
 Collect issues from the calling agent with required fields:
 - **severity**: critical | high | medium | low
-- **domain**: quality | security | performance | ddd-architecture
+- **domain**: quality | security | performance
 - **confidence**: high (90%+) | medium (70-89%) | low (<70%)
 - **location**: file:line
 - **category**: issue classification

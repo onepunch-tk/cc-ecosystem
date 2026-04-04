@@ -51,10 +51,8 @@ Execute the Red-Green TDD cycle independently and return a concise summary to th
 ```
 1. Read CLAUDE.md for project conventions
 2. Read docs/PROJECT-STRUCTURE.md for architecture
-3. Read docs/domain/glossary.md for Ubiquitous Language terms
-4. Read assigned task file from /tasks/
-5. Load TDD skill: .claude/skills/tdd/SKILL.md
-6. Determine implementation order: Domain-First TDD (VO → Events → Aggregate → Services → App → Infra → Presentation)
+3. Read assigned task file from /tasks/
+4. Load TDD skill: .claude/skills/tdd/SKILL.md
 ```
 
 ### Step 2: Red Phase (Delegate to unit-test-writer)
@@ -70,9 +68,7 @@ Execute the Red-Green TDD cycle independently and return a concise summary to th
 ### Step 3: Green Phase (Implement)
 
 ```
-1. Write minimal code to pass tests following DDD implementation order:
-   - Value Objects (*.vo.ts) → Domain Events (*.event.ts) → Aggregates (*.entity.ts)
-   - Domain Services → Application Services → Infrastructure Adapters → Presentation
+1. Write minimal code to pass tests
 2. Run: {pkg_cmd} test
 3. Verify ALL tests pass
 4. Run: {pkg_cmd} test:coverage

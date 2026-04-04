@@ -48,41 +48,29 @@ Choose the structure that best fits your project:
 **⚠️ CRITICAL**: NO `@nestjs/*` imports allowed. Pure TypeScript only.
 
 **Contains**:
-- **{bounded-context}/entities/**: Aggregate Roots (`*.entity.ts`) and child entities
-- **{bounded-context}/value-objects/**: Immutable Value Objects (`*.vo.ts`) — Email, Money, etc.
-- **{bounded-context}/events/**: Domain Events (`*.event.ts`) — state change notifications
-- **{bounded-context}/services/**: Domain Services — cross-aggregate logic
-- **{bounded-context}/factories/**: Aggregate Factories (`*.factory.ts`) — complex creation
-- **{bounded-context}/repository.interface.ts**: Repository port (interface only)
+- **{bounded-context}/entities/**: Core business objects
+- **{bounded-context}/value-objects/**: Value objects (Email, Money, etc.)
+- **{bounded-context}/repository.interface.ts**: Repository interface (domain-defined)
 - **{bounded-context}/errors/**: Domain-specific error classes
 
 **Structure**:
 ```
 domain/
-├── order/
-│   ├── entities/
-│   │   └── order.entity.ts           # Aggregate Root
-│   ├── value-objects/
-│   │   └── money.vo.ts               # Immutable VO
-│   ├── events/
-│   │   ├── order-placed.event.ts     # Domain Event
-│   │   └── index.ts
-│   ├── services/
-│   │   └── pricing.service.ts        # Domain Service
-│   ├── factories/
-│   │   └── order.factory.ts
-│   ├── repository.interface.ts
-│   └── errors/
-│       └── order-not-found.error.ts
 ├── user/
 │   ├── entities/
+│   │   └── user.entity.ts
 │   ├── value-objects/
-│   ├── events/
+│   │   └── email.ts
+│   ├── repository.interface.ts
+│   └── errors/
+│       └── user-not-found.error.ts
+├── order/
+│   ├── entities/
+│   ├── value-objects/
 │   ├── repository.interface.ts
 │   └── errors/
 └── shared/
     ├── base-entity.ts
-    ├── domain-event.ts
     └── value-objects/
 ```
 

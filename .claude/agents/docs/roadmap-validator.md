@@ -1,6 +1,6 @@
 ---
 name: roadmap-validator
-description: "Use this agent when you need to validate ROADMAP.md files for development plan completeness and consistency. This agent performs systematic validation through chain-of-thought reasoning, examining Structure-First Approach compliance, task decomposition quality, dependency ordering, task file consistency, and PRD feature coverage. Perfect for reviewing roadmaps before starting a new development phase or when planning issues need to be identified early.\n\nExamples:\n- <example>\n  Context: The user wants to validate a roadmap for development readiness\n  user: \"Please validate the ROADMAP.md file before we start Phase 3.\"\n  assistant: \"I will systematically review it using the roadmap validation agent.\"\n  <commentary>\n  Use the roadmap-validator agent since development readiness validation of the ROADMAP is required.\n  </commentary>\n  </example>\n- <example>\n  Context: User needs to check consistency between roadmap and task files\n  user: \"Are all tasks in the roadmap properly documented?\"\n  assistant: \"I will verify the consistency step by step using the roadmap validation agent.\"\n  <commentary>\n  Use the roadmap-validator agent since task file consistency validation is needed.\n  </commentary>\n  </example>\n- <example>\n  Context: User needs to ensure all PRD features are covered\n  user: \"Does our roadmap cover all features from the PRD?\"\n  assistant: \"I will analyze the PRD feature coverage using the roadmap validation agent.\"\n  <commentary>\n  Use the roadmap-validator agent since PRD coverage analysis is needed.\n  </commentary>\n  </example>"
+description: Use this agent when you need to validate ROADMAP.md files for development plan completeness and consistency. This agent performs systematic validation through chain-of-thought reasoning, examining Structure-First Approach compliance, task decomposition quality, dependency ordering, task file consistency, and PRD feature coverage. Perfect for reviewing roadmaps before starting a new development phase or when planning issues need to be identified early.\n\nExamples:\n- <example>\n  Context: The user wants to validate a roadmap for development readiness\n  user: "Please validate the ROADMAP.md file before we start Phase 3."\n  assistant: "I will systematically review it using the roadmap validation agent."\n  <commentary>\n  Use the roadmap-validator agent since development readiness validation of the ROADMAP is required.\n  </commentary>\n  </example>\n- <example>\n  Context: User needs to check consistency between roadmap and task files\n  user: "Are all tasks in the roadmap properly documented?"\n  assistant: "I will verify the consistency step by step using the roadmap validation agent."\n  <commentary>\n  Use the roadmap-validator agent since task file consistency validation is needed.\n  </commentary>\n  </example>\n- <example>\n  Context: User needs to ensure all PRD features are covered\n  user: "Does our roadmap cover all features from the PRD?"\n  assistant: "I will analyze the PRD feature coverage using the roadmap validation agent."\n  <commentary>\n  Use the roadmap-validator agent since PRD coverage analysis is needed.\n  </commentary>\n  </example>
 model: opus
 color: blue
 ---
@@ -113,20 +113,6 @@ I will verify that the roadmap follows the Structure-First Approach methodology.
 - Skeleton First: [Yes/No/Partial]
 - UI Before Logic: [Yes/No/Partial]
 - Data Integration Last: [Yes/No/Partial]
-
-**DDD Compliance Checklist:**
-
-1. **Dev Phase 0 (Domain Modeling)** exists and precedes all implementation phases
-2. **Dev Phase 1 (Domain Layer)** tasks are grouped per Bounded Context
-3. **Phase Order**: Domain → Application → Infrastructure → Presentation
-4. **Domain artifacts** (`docs/domain/glossary.md`, `docs/domain/context-map.md`) are created in Phase 0
-5. **Ubiquitous Language** terms in task descriptions match `docs/domain/glossary.md`
-
-**DDD Phase Order Verification:**
-- [ ] Dev Phase 0 contains domain modeling tasks (BCs, Aggregates, VOs, Events)
-- [ ] Dev Phase 1 implements domain layer before any infrastructure code
-- [ ] No infrastructure task is scheduled before its corresponding domain task
-- [ ] Application layer tasks depend on domain layer completion
 </thinking>
 
 ### Step 2: Task Decomposition Quality Analysis

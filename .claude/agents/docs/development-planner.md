@@ -1,6 +1,6 @@
 ---
 name: development-planner
-description: "Use this agent when you need to create, update, or maintain a ROADMAP.md file. This includes initial roadmap creation, adding new development phases, updating task statuses, organizing development priorities, and ensuring consistency with project structure. The agent should be used for comprehensive roadmap documentation that follows the structured format shown in the example.\n\nExamples:\n- <example>\n  Context: User needs to create a roadmap for their new project\n  user: \"Create a ROADMAP.md file for my new project. It's an AI-based code review tool.\"\n  assistant: \"I'll use the development-planner agent to create a systematic ROADMAP.md file.\"\n  <commentary>\n  Since the user needs a ROADMAP.md file created, use the development-planner agent.\n  </commentary>\n</example>\n- <example>\n  Context: User wants to update existing roadmap with completed tasks\n  user: \"Task 003 is completed, please update ROADMAP.md\"\n  assistant: \"I'll use the development-planner agent to update Task 003 status to completed in ROADMAP.md.\"\n  <commentary>\n  The user needs to update task status in ROADMAP.md, use the development-planner agent.\n  </commentary>\n</example>\n- <example>\n  Context: User needs to add new development phase to roadmap\n  user: \"I need to add a new Phase 4: Performance Optimization to the roadmap\"\n  assistant: \"I'll use the development-planner agent to systematically add the new development phase to ROADMAP.md.\"\n  <commentary>\n  Adding new phases to ROADMAP.md requires the development-planner agent.\n  </commentary>\n</example>"
+description: Use this agent when you need to create, update, or maintain a ROADMAP.md file. This includes initial roadmap creation, adding new development phases, updating task statuses, organizing development priorities, and ensuring consistency with project structure. The agent should be used for comprehensive roadmap documentation that follows the structured format shown in the example.\n\nExamples:\n- <example>\n  Context: User needs to create a roadmap for their new project\n  user: "Create a ROADMAP.md file for my new project. It's an AI-based code review tool."\n  assistant: "I'll use the development-planner agent to create a systematic ROADMAP.md file."\n  <commentary>\n  Since the user needs a ROADMAP.md file created, use the development-planner agent.\n  </commentary>\n</example>\n- <example>\n  Context: User wants to update existing roadmap with completed tasks\n  user: "Task 003 is completed, please update ROADMAP.md"\n  assistant: "I'll use the development-planner agent to update Task 003 status to completed in ROADMAP.md."\n  <commentary>\n  The user needs to update task status in ROADMAP.md, use the development-planner agent.\n  </commentary>\n</example>\n- <example>\n  Context: User needs to add new development phase to roadmap\n  user: "I need to add a new Phase 4: Performance Optimization to the roadmap"\n  assistant: "I'll use the development-planner agent to systematically add the new development phase to ROADMAP.md."\n  <commentary>\n  Adding new phases to ROADMAP.md requires the development-planner agent.\n  </commentary>\n</example>
 model: opus
 color: red
 ---
@@ -49,8 +49,6 @@ The Structure-First Approach is a development methodology that **completes the o
 2. **Structure → UI → Features Order**: Develop in skeleton → screens → logic sequence
 3. **Parallel Development Capability**: Structure so UI and backend teams can work independently
 4. **Fast Feedback**: Structure to experience the entire app flow early on
-5. **Domain-First**: Design domain models (Aggregates, Value Objects, Events) before infrastructure
-6. **Context-Based Decomposition**: Group tasks by Bounded Context, not by technical layer
 
 #### **🎯 Key Benefits**
 
@@ -58,7 +56,6 @@ The Structure-First Approach is a development methodology that **completes the o
 - **Flexibility for Changes**: Clear overall structure makes it easy to assess change impact
 - **Optimized Team Collaboration**: Clear role division and improved communication efficiency
 - **Type Safety**: Type definitions from the start prevent runtime errors
-- **Domain Integrity**: Business rules are defined and tested before any infrastructure code
 
 ### 📄 ROADMAP.md Generation Structure
 
@@ -203,34 +200,6 @@ The Structure-First Approach is a development methodology that **completes the o
   - Performance optimization and caching strategies
   - Deployment pipeline construction
 
-#### **DDD Phase Configuration (Dev Phase prefix)**
-
-- **Dev Phase 0: Domain Modeling**
-  - Identify Bounded Contexts, Aggregates, Value Objects, Domain Events
-  - Create `docs/domain/` artifacts (glossary, context map)
-  - Use `domain-modeling` skill to produce domain model documents
-
-- **Dev Phase 1: Domain Layer Implementation (per BC)**
-  - Implement Aggregates, Value Objects, Domain Events per Bounded Context
-  - Write domain-layer unit tests first (TDD)
-
-- **Dev Phase 2: Application Layer**
-  - Implement Application Services, Use Cases, Ports
-  - Orchestrate domain objects, enforce transactional boundaries
-
-- **Dev Phase 3: Infrastructure Layer**
-  - Implement Adapters (repositories, external APIs, messaging)
-  - Wire ports to concrete implementations
-
-- **Dev Phase 4: Presentation Layer**
-  - Build UI / API controllers consuming Application Services
-  - Connect routes, pages, or endpoints
-
-- **Dev Phase 5: Advanced Features**
-  - Cross-cutting concerns, performance, deployment
-
-> **IMPORTANT**: ROADMAP phases use "Dev Phase" prefix to distinguish from harness pipeline execution phases ("Pipeline Phase 0-4").
-
 #### **Task Writing Rules**
 
 1. **Naming**: `Task XXX: [Verb] + [Target] + [Purpose]` (e.g., `Task 001: Build User Authentication System`)
@@ -293,16 +262,6 @@ Verify that the generated ROADMAP.md meets the following criteria:
 - [ ] Does every task have explicit `blockedBy` and `blocks` fields?
 - [ ] Are there NO circular dependencies in the task graph?
 - [ ] Are dependency relationships bidirectionally consistent? (If A blocks B, then B must have A in blockedBy)
-
-#### **🧩 DDD Compliance Checklist**
-
-- [ ] Does Dev Phase 0 exist with domain modeling tasks?
-- [ ] Are Bounded Contexts identified and documented in `docs/domain/`?
-- [ ] Are Domain Layer tasks (Dev Phase 1) grouped per Bounded Context?
-- [ ] Does each BC have Aggregate, Value Object, and Domain Event definitions?
-- [ ] Is domain layer implemented and tested before infrastructure layer?
-- [ ] Do Application Layer tasks depend on Domain Layer completion?
-- [ ] Are Ubiquitous Language terms used consistently in task descriptions?
 
 ### 💡 Additional Considerations
 

@@ -40,17 +40,15 @@ Follows Clean Architecture 4-layer structure.
 **Role**: Business rules and entity definitions (no external dependencies)
 
 **Contains**:
-- **{context}/models/**: Client-side aggregates (read models) and Value Objects (`*.vo.ts`)
-- **{context}/events/**: Domain Events (`*.event.ts`) for client-side state sync
-- **{context}/schemas/**: Zod command validation schemas (write model)
-- **{context}/errors/**: Domain-specific error classes
-- **{context}/types.ts**: Domain type definitions
+- Entity - Core business objects
+- Types - Domain-related TypeScript types
+- Schemas - Zod validation schemas
+- Errors - Domain-specific error classes
 
 **When to use**:
 - Adding new business concepts (e.g., orders, products, payments)
 - When API request/response validation schemas are needed
 - Defining custom business errors
-- Creating shared Value Objects for form validation
 
 **Structure**:
 ```

@@ -2,8 +2,7 @@
 name: harness-pipeline
 description: |
   Unified development pipeline for all implementation tasks.
-  DDD architecture is the default — Phase 0 (Domain Modeling) always runs first.
-  Auto-detects execution mode (Sequential, Delegated, Team) based on Bounded Context count.
+  Auto-detects execution mode (Sequential, Delegated, Team) based on task scope.
   Covers single-file fixes through cross-cutting multi-agent parallel work.
   Do NOT use for research, documentation-only, or planning-only tasks.
 ---
@@ -20,45 +19,23 @@ After Phase 1 planning, auto-detect execution mode based on task scope:
 
 | Criteria | Mode | Description |
 |----------|------|-------------|
-| 1 Bounded Context, <=5 files | **Sequential** | Main agent handles all phases directly |
-| 1-2 Bounded Contexts, <=12 files | **Delegated** | Supervisor pattern with worker agents |
-| 3+ Bounded Contexts or 10+ files | **Team** | Lead + teammate agents (1 per BC) |
+| 1-3 files, single feature | **Sequential** | Main agent handles all phases directly |
+| 4-10 files, 2-3 features | **Delegated** | Supervisor pattern with worker agents |
+| 10+ files, complex features | **Team** | Lead + teammate agents via TeamCreate |
 
 ```
 Mode Detection Algorithm:
-1. Count Bounded Contexts involved in this task (from Phase 0 output)
-2. Count files to be modified from plan
-3. IF bounded_contexts == 1 AND files <= 5:
-     → Sequential Mode (multi-cycle TDD per layer)
-   ELSE IF bounded_contexts <= 2 AND files <= 12:
-     → Delegated Mode (task-executor per Bounded Context)
-   ELSE IF bounded_contexts >= 3:
-     → Team Mode (1 teammate per Bounded Context + lead)
+1. Count files to be modified from plan
+2. Count distinct features/components
+3. IF files <= 3 AND features == 1:
+     → Sequential Mode
+   ELSE IF files <= 10:
+     → Delegated Mode (Supervisor)
    ELSE:
-     → Delegated Mode (default)
+     → Team Mode (Lead + Teammates)
 ```
 
 **User Override**: User can explicitly request mode: "use sequential mode", "use delegated mode", or "use team mode"
-
----
-
-## Phase 0: Domain Modeling
-
-> This phase is **mandatory**. Load `/domain-modeling` skill and follow its workflow.
-
-| Step | Action | Tool |
-|------|--------|------|
-| 0-1 | Check if `docs/domain/glossary.md` and `docs/domain/context-map.md` exist | — |
-| 0-2 | IF missing: Load `domain-modeling` skill and run full workflow | Skill |
-| 0-3 | IF exists: Read domain models, verify alignment with current task | — |
-| 0-4 | Identify target Bounded Context(s) for this task | — |
-
-**Phase 0 Output**:
-- Target Bounded Context(s) for this task
-- Relevant Aggregates and Domain Events
-- Integration points with other contexts (if any)
-
-> After Phase 0, **recommend `/clear`** — domain modeling context is no longer needed.
 
 ---
 
@@ -68,10 +45,9 @@ Mode Detection Algorithm:
 |------|--------|
 | 1 | Enter `PlanMode` |
 | 2 | Read `CLAUDE.md`, `docs/PROJECT-STRUCTURE.md`, `docs/ROADMAP.md` |
-| 2a | Read `docs/domain/glossary.md`, relevant `docs/domain/aggregates/[context].md` |
 | 3 | Analyze current state thoroughly |
-| 4 | Create detailed step-by-step plan following Domain-First TDD order: Value Objects → Aggregates → Domain Services → Application → Infrastructure → Presentation |
-| 5 | **Count Bounded Contexts and files** → determine execution mode |
+| 4 | Create detailed step-by-step plan |
+| 5 | **Count files and features** → determine execution mode |
 | 6 | Exit `PlanMode` → wait for plan approval |
 
 > After plan approval, create tasks via `TaskCreate` and execute immediately. No separate confirmation needed.
@@ -82,14 +58,11 @@ Mode Detection Algorithm:
 |------|--------|
 | 5a | Break work into tasks with **clear file ownership** (no overlapping files) |
 | 5b | Verify NO file overlap between tasks before spawning teammates |
-| 5c | **Shared Kernel pre-creation**: Lead creates shared domain files BEFORE spawning teammates — `shared/value-objects/`, `shared/base-entity.ts`, `shared/domain-event.ts`, common types. These are NOT owned by any teammate. |
-| 5d | Prepare teammate task prompts with file ownership lists |
+| 5c | Prepare teammate task prompts with file ownership lists |
 
 > **WARNING: File Ownership is CRITICAL**
 > Overlapping file assignments = merge conflicts = wasted work.
 > Lead MUST verify NO file overlap before spawning teammates.
-
-> **Shared Kernel files (Step 5c)** must be committed to the feature branch BEFORE teammates start. Teammates import from shared files but never modify them. If a teammate needs a new shared VO, they message the lead.
 
 ---
 
@@ -102,7 +75,7 @@ Mode Detection Algorithm:
 | 6 | Fetch latest and switch to `development` branch: `git fetch origin development && git checkout development && git pull origin development` (create if not exists) |
 | 7 | Create feature branch from `development` |
 
-### Sequential Mode (1 BC, <=5 files)
+### Sequential Mode (1-3 files)
 
 | Step | Action | Sub-Agent |
 |------|--------|-----------|
@@ -113,39 +86,7 @@ Mode Detection Algorithm:
 - After Step 8: If tests pass immediately → review test logic, likely not testing correctly
 - After Step 9: If any test fails → fix implementation before proceeding
 
-#### Multi-Cycle TDD (Sequential Mode)
-
-Repeat Steps 8-9 **per domain layer** in inside-out order:
-
-```
-Cycle 1: Value Objects
-  → Red: unit-test-writer writes VO tests
-  → Green: implement VOs, verify pass
-
-Cycle 2: Aggregate Root
-  → Red: unit-test-writer writes Aggregate tests (using VOs from Cycle 1)
-  → Green: implement Aggregate, verify pass
-
-Cycle 3: Domain Services (if needed)
-  → Red: unit-test-writer writes Domain Service tests
-  → Green: implement Domain Services, verify pass
-
-Cycle 4: Application Services
-  → Red: unit-test-writer writes use case tests (mock ports)
-  → Green: implement Application Services, verify pass
-
-Cycle 5: Infrastructure
-  → Red: unit-test-writer writes adapter tests
-  → Green: implement adapters/repositories, verify pass
-
-Cycle 6: Presentation
-  → Red: unit-test-writer writes controller/route tests
-  → Green: implement presentation layer, verify pass
-```
-
-> Each cycle builds on the previous. Do NOT skip cycles — later layers depend on earlier ones being tested and stable.
-
-### Delegated Mode (1-2 BCs, <=12 files)
+### Delegated Mode (4-10 files)
 
 | Step | Action | Sub-Agent |
 |------|--------|-----------|
@@ -163,7 +104,7 @@ Supervisor Context During Delegation:
 - Wait for worker summary
 ```
 
-### Team Mode (3+ BCs or 10+ files)
+### Team Mode (10+ files)
 
 | Step | Action | Sub-Agent |
 |------|--------|-----------|
@@ -187,7 +128,7 @@ Create an agent team with N teammates:
 Use Opus for all teammates. Require plan approval.
 ```
 
-> Context tip: Consider `/clear` here. Plan context is no longer needed.
+> 💡 **Context tip**: Consider `/clear` here. Plan context is no longer needed.
 
 **Commit**: Per [workflow-commits.md](../git/references/workflow-commits.md) — Red/Green phase
 
@@ -199,7 +140,7 @@ Use Opus for all teammates. Require plan approval.
 
 | Step | Action | Sub-Agent |
 |------|--------|-----------|
-| 10 | Run `code-reviewer` sub-agent (unified: quality + security + performance + DDD compliance) | `Agent(subagent_type="code-reviewer")` |
+| 10 | Run `code-reviewer` sub-agent (unified: quality + security + performance) | `Agent(subagent_type="code-reviewer")` |
 | 11 | Read report in `/docs/reports/code-review/` → fix ALL issues where status ≠ "complete" | — (main agent) |
 
 ### Delegated Mode
@@ -236,7 +177,7 @@ WHILE quality-gate returns FAIL:
 
 **Commit**: Per [workflow-commits.md](../git/references/workflow-commits.md) — Review phase
 
-> Context tip: Consider `/clear` here. Review details are no longer needed.
+> 💡 **Context tip**: Consider `/clear` here. Review details are no longer needed.
 
 ---
 
@@ -300,7 +241,6 @@ IF any step fails (teammate):
 
 ## Context Management
 
-- `/clear` after Phase 0 (domain modeling complete): Event Storming context no longer needed
 - `/clear` after Phase 2 (TDD complete): plan + test exploration no longer needed
 - `/clear` after Phase 3 (review complete): review reports no longer needed
 - Target: stay under 60k tokens per phase
@@ -323,7 +263,7 @@ IF context exceeds 80k tokens before Phase completion:
 
 ```markdown
 ## Checkpoint Summary
-- **Phase**: [0-4] - [Phase Name]
+- **Phase**: [1-4] - [Phase Name]
 - **Last Completed Step**: [Step Number]
 - **Files Modified**: [List]
 - **Next Action**: [Description]
@@ -377,10 +317,11 @@ IF context exceeds 80k tokens before Phase completion:
 
 | Scenario | Recommended Mode |
 |----------|------------------|
-| Single BC, quick fix (1-2 files) | Sequential |
-| Single BC, new feature (3-5 files) | Sequential or Delegated |
-| 2 BCs, cross-context feature | Delegated |
-| 3+ BCs, large feature | Team |
+| Quick bug fix (1-2 files) | Sequential |
+| New component (3-5 files) | Delegated |
+| Feature with multiple components | Delegated |
+| Cross-cutting refactor (10+ files) | Team |
+| Exploration / research | Sequential (no workers) |
 
 ---
 
@@ -388,7 +329,7 @@ IF context exceeds 80k tokens before Phase completion:
 
 - **ONLY modify files** assigned to you
 - **NEVER touch** files owned by another teammate
-- **Shared files** (barrel `index.ts`, `routes.ts`, `shared/`): message lead before modifying
+- **Shared files** (barrel `index.ts`, `routes.ts`): message lead before modifying
 - **New files**: create freely within your task scope
 - **Do NOT create branches** — work on the feature branch created by lead
 
@@ -404,7 +345,6 @@ IF context exceeds 80k tokens before Phase completion:
 | Step | Action | Sub-Agent |
 |------|--------|-----------|
 | 1 | Read `CLAUDE.md`, `docs/PROJECT-STRUCTURE.md`, assigned task file | — |
-| 1a | Read `docs/domain/glossary.md` and relevant `docs/domain/aggregates/[context].md` for assigned Bounded Context | — |
 | 2 | Run `unit-test-writer` sub-agent (Red Phase). **NEVER analyze patterns or write test code yourself — always delegate to the `unit-test-writer` subagent.** | `Agent(subagent_type="unit-test-writer")` |
 | 3 | Implement code to pass tests (Green Phase) → run the project's test command (see CLAUDE.md Commands) | — |
 | 4 | Run the project's coverage command (see CLAUDE.md Commands) | — |
@@ -415,7 +355,7 @@ IF context exceeds 80k tokens before Phase completion:
 
 - **ONLY modify files** assigned to you
 - **NEVER touch** files owned by another teammate
-- **Shared files** (barrel `index.ts`, `routes.ts`, `shared/`): message lead before modifying
+- **Shared files** (barrel `index.ts`, `routes.ts`): message lead before modifying
 - **New files**: create freely within your task scope
 - **Do NOT create branches** — work on the feature branch created by lead
 

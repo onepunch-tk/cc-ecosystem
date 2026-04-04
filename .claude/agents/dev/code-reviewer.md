@@ -76,32 +76,6 @@ For each file, check all 7 quality categories:
 - [ ] **NO `any` type** → Flag as High (use `unknown` + type guards)
 - [ ] Generics have `extends` constraints
 
-#### 4.7 DDD Architecture Compliance
-
-**Layer Dependency Rules:**
-- [ ] Domain layer has zero imports from Application, Infrastructure, or Presentation layers
-- [ ] Application layer imports only from Domain layer (not Infrastructure)
-- [ ] Infrastructure layer implements ports defined in Domain/Application layers
-
-**Aggregate Rules:**
-- [ ] All state mutations go through Aggregate Root methods
-- [ ] No direct modification of child entities from outside the Aggregate
-- [ ] Aggregate boundaries are respected (no cross-aggregate direct references)
-
-**Value Object Rules:**
-- [ ] Value Objects are immutable (no setters, no mutable state)
-- [ ] Equality is based on structural comparison, not identity
-- [ ] Value Objects contain validation logic in their constructors/factories
-
-**Domain Event Rules:**
-- [ ] Domain Events are immutable data carriers
-- [ ] Events are named in past tense (e.g., `OrderPlaced`, `PaymentReceived`)
-- [ ] Events carry only the data needed by consumers
-
-**Ubiquitous Language:**
-- [ ] Class, method, and variable names match `docs/domain/glossary.md` terms
-- [ ] No synonyms or alternative terms for the same domain concept
-
 ### Phase 5: Security Scanning (OWASP Top 10)
 For each file with risk level Critical/High/Medium:
 

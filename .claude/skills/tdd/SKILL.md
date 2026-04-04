@@ -31,11 +31,6 @@ TDD rules and patterns for Node/TypeScript/React projects.
 | `loader`, `action` | Route loaders/actions |
 | `*.schema.ts` | Zod schemas |
 | `use*.ts` | Custom hooks |
-| `*.entity.ts` | Aggregate Roots and Entities |
-| `*.vo.ts` | Value Objects |
-| `*.event.ts` | Domain Events |
-| `**/domain/**/services/*.ts` | Domain Services |
-| `*.factory.ts` | Aggregate Factories |
 
 ### Exclude from Testing (Evaluated First)
 
@@ -60,9 +55,6 @@ Source → Test path mapping:
 |-------------|-----------|
 | `app/services/auth.service.ts` | `__tests__/services/auth.service.test.ts` |
 | `app/components/Button.tsx` | `__tests__/components/Button.test.tsx` |
-| `src/domain/order/entities/order.entity.ts` | `__tests__/domain/order/entities/order.entity.test.ts` |
-| `src/domain/shared/value-objects/money.vo.ts` | `__tests__/domain/shared/value-objects/money.vo.test.ts` |
-| `src/domain/order/events/order-placed.event.ts` | `__tests__/domain/order/events/order-placed.event.test.ts` |
 | `app/domain/user/user.schema.ts` | `__tests__/domain/user/user.schema.test.ts` |
 
 **Pattern**: Replace root folder with `__tests__/` and add `.test` before extension.
@@ -127,9 +119,6 @@ Based on detected framework, read the corresponding reference file (paths relati
 | Zod Schema | [references/zod-schema.example.md](./references/zod-schema.example.md) |
 | NestJS | [references/nestjs.example.md](./references/nestjs.example.md) |
 | Expo/React Native | [references/expo-react-native.example.md](./references/expo-react-native.example.md) |
-| Aggregate Root | [references/ddd-aggregate.example.md](./references/ddd-aggregate.example.md) |
-| Value Object | [references/ddd-value-object.example.md](./references/ddd-value-object.example.md) |
-| Domain Event & Domain Service | [references/ddd-domain-event.example.md](./references/ddd-domain-event.example.md) |
 
 > **Note**: Reference examples use English test descriptions for universal accessibility. When writing actual tests, follow the Output Language Rules below.
 
@@ -145,26 +134,6 @@ Based on detected framework, read the corresponding reference file (paths relati
 
 ---
 
-## TDD Priority Order (Inside-Out)
-
-```
-1. Value Objects     → Pure logic, no dependencies, test first
-2. Domain Events     → Simple data carriers, test payload & naming
-3. Aggregate Root    → Invariants, state transitions, event raising
-4. Domain Services   → Cross-aggregate logic, pure domain
-5. Application Layer → Use cases, port mocking
-6. Infrastructure    → Repository implementations, external adapters
-7. Presentation      → Controllers, routes, UI
-```
-
-**Key Testing Rules**:
-- **No infrastructure in domain tests** — If you need to mock DB/HTTP, it's in the wrong layer
-- **Test invariants explicitly** — Every aggregate invariant gets its own test
-- **Test create vs reconstitute** — Factory creation raises events, reconstitution does not
-- **Test immutability** — Value Object operations return new instances
-
----
-
 ## Quality Checklist
 
 Before completing tests:
@@ -176,5 +145,3 @@ Before completing tests:
 - [ ] No `any` type in test code
 - [ ] Shared helpers in `__tests__/fixtures/` or `__tests__/utils/`
 - [ ] All tests pass
-- [ ] Domain layer tests have zero mocks (no infrastructure leaking)
-- [ ] All aggregate invariants have explicit test cases

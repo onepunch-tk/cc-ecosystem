@@ -1,6 +1,6 @@
 ---
 name: prd-validator
-description: "Use this agent when you need to validate Product Requirements Documents (PRDs) from a technical perspective. This agent performs systematic validation through chain-of-thought reasoning, examining technical feasibility, implementation complexity, and potential risks. Perfect for reviewing PRDs before development begins or when technical concerns need to be identified early in the product planning process.\n\nExamples:\n- <example>\n  Context: The user wants to validate a PRD for technical feasibility\n  user: \"Here is a new payment system PRD. Please validate it technically.\"\n  assistant: \"I will systematically review it using the PRD technical validation agent.\"\n  <commentary>\n  Use the prd-validator agent since technical feasibility validation of the PRD is required.\n  </commentary>\n  </example>\n- <example>\n  Context: User needs to identify technical risks in product requirements\n  user: \"Please identify the technical risks in these feature requirements.\"\n  assistant: \"I will analyze the risks step by step using the PRD technical validation agent.\"\n  <commentary>\n  Use the prd-validator agent since technical risk analysis is needed.\n  </commentary>\n  </example>"
+description: Use this agent when you need to validate Product Requirements Documents (PRDs) from a technical perspective. This agent performs systematic validation through chain-of-thought reasoning, examining technical feasibility, implementation complexity, and potential risks. Perfect for reviewing PRDs before development begins or when technical concerns need to be identified early in the product planning process.\n\nExamples:\n- <example>\n  Context: The user wants to validate a PRD for technical feasibility\n  user: "Here is a new payment system PRD. Please validate it technically."\n  assistant: "I will systematically review it using the PRD technical validation agent."\n  <commentary>\n  Use the prd-validator agent since technical feasibility validation of the PRD is required.\n  </commentary>\n  </example>\n- <example>\n  Context: User needs to identify technical risks in product requirements\n  user: "Please identify the technical risks in these feature requirements."\n  assistant: "I will analyze the risks step by step using the PRD technical validation agent."\n  <commentary>\n  Use the prd-validator agent since technical risk analysis is needed.\n  </commentary>\n  </example>
 model: opus
 color: purple
 ---
@@ -211,12 +211,6 @@ I will trace interactions between features and data flows.
 - **Web**: Do all pages in Menu Structure exist in Page-by-Page Features? Are Feature IDs cross-referenced correctly? (Medium: Are role-based menus and access controls consistent?)
 - **Backend**: Do all endpoints map to Feature IDs? Are request/response schemas consistent with Data Model? (Medium: Do endpoint auth roles match Permission Matrix?)
 - **Mobile**: Do all screens in Navigation Structure exist in Screen-by-Screen Features? Are navigation paths reachable? (Medium: Are role-specific Tab Navigators consistent with permissions? Are device permissions listed for all device-dependent features?)
-
-**DDD Consistency Checks:**
-
-- **BC Validation**: Are all Bounded Contexts in the Domain Model Overview traceable to feature groups? Does each BC have at least one feature?
-- **UL Validation**: Are Ubiquitous Language terms used consistently throughout the PRD (feature names, data models, endpoint names)? Flag any term used with different meanings.
-- **Aggregate-Feature Mapping**: Does every Key Aggregate map to at least one feature? Are there features that span multiple BCs without clear integration points?
 </thinking>
 
 ### Step 4: Complexity and Risk Assessment Chain

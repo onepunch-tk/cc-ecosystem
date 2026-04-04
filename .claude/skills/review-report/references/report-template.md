@@ -23,7 +23,6 @@
 | Code Quality | 0 | 0 | 0 | 0 |
 | Security | 0 | 0 | 0 | 0 |
 | Performance | 0 | 0 | 0 | 0 |
-| DDD Architecture | 0 | 0 | 0 | 0 |
 | **Total** | **0** | **0** | **0** | **0** |
 
 **Overall Grade**: [A-F]

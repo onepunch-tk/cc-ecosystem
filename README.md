@@ -2,8 +2,6 @@
 
 어떤 프로젝트에서든 `.claude/` 디렉토리와 설정 파일들을 복사하여 즉시 사용할 수 있는 **Claude Code 에코시스템 설정 저장소**입니다. 에이전트, 스킬, 훅, MCP 서버 설정, 그리고 CLAUDE.md 템플릿을 포함합니다.
 
-**DDD(Domain-Driven Design) 아키텍처**와 **TDD-First** 개발 방식을 기본으로 합니다. 도메인 모델링부터 구현, 리뷰까지 전 과정을 에이전트가 자동으로 수행합니다.
-
 ---
 
 ## 프로젝트 구조
@@ -31,13 +29,12 @@ cc-ecosystem/
     │       ├── code-reviewer.md
     │       ├── quality-gate.md
     │       └── starter-cleaner.md
-    ├── skills/                        # 스킬 (6개)
+    ├── skills/                        # 스킬 (5개)
     │   ├── git/
     │   ├── tdd/
     │   ├── project-structure/
     │   ├── review-report/
-    │   ├── harness-pipeline/
-    │   └── domain-modeling/           # DDD 도메인 모델링 워크플로우
+    │   └── harness-pipeline/
     └── hooks/                         # 훅 스크립트 (5개)
         ├── .env.hooks
         ├── biome-format.sh
@@ -56,10 +53,9 @@ cc-ecosystem/
 프로젝트의 코어 원칙, 코드 컨벤션, 워크플로우를 정의하는 Claude Code용 설정 파일입니다. 새 프로젝트에 복사 후 `Project Overview` 섹션만 수정하면 바로 사용할 수 있습니다.
 
 주요 내용:
-- **코어 원칙**: TDD-First, DDD Architecture, Side Effect Awareness
+- **코어 원칙**: TDD-First, Side Effect Awareness
 - **코드 컨벤션**: 파일 네이밍 규칙, React 19 최적화, 타입 안전성
-- **DDD 파일 규칙**: `*.entity.ts`, `*.vo.ts`, `*.event.ts`, `*.factory.ts`
-- **필수 문서 연동**: PRD, ROADMAP, PROJECT-STRUCTURE, Domain Models (`docs/domain/`)
+- **필수 문서 연동**: PRD, ROADMAP, PROJECT-STRUCTURE
 - **커맨드**: `bun run test`, `bun run typecheck` 등
 
 ### Agents - 에이전트
@@ -68,35 +64,34 @@ cc-ecosystem/
 
 | 에이전트 | 설명 |
 |----------|------|
-| `prd-generator` | 웹 프로젝트 PRD 생성 (Domain Model Overview 섹션 포함) |
-| `prd-generator-backend` | 백엔드/API 프로젝트 PRD 생성 (BC, Aggregate, Domain Event 정의) |
-| `prd-generator-mobile` | React Native(Expo) 모바일 앱 PRD 생성 (오프라인 전략, 동기화 패턴) |
-| `prd-validator` | PRD 기술적 검증 (BC 일관성, UL 검증, Aggregate-Feature 매핑) |
-| `development-planner` | ROADMAP.md 생성/유지보수 (Dev Phase 0-5, Context 기반 태스크 분해) |
-| `roadmap-validator` | ROADMAP.md 완성도 및 일관성 검증 (Phase 순서, Domain-First 검증) |
-| `project-structure-analyzer` | 프로젝트 구조 분석 및 PROJECT-STRUCTURE.md 작성 (도메인 레이어 감지) |
+| `prd-generator` | 소규모/중규모 웹 프로젝트의 PRD(제품 요구사항 문서) 생성 |
+| `prd-generator-backend` | REST API, GraphQL, 마이크로서비스 등 백엔드/API 프로젝트의 PRD 생성 |
+| `prd-generator-mobile` | React Native(Expo) 모바일 앱 프로젝트의 PRD 생성 |
+| `prd-validator` | 작성된 PRD를 기술적 관점에서 검증하고 실현 가능성 분석 |
+| `development-planner` | ROADMAP.md 파일을 생성, 업데이트, 유지보수하는 프로젝트 매니저 |
+| `roadmap-validator` | ROADMAP.md와 작업 파일들의 완성도 및 일관성 검증 |
+| `project-structure-analyzer` | 프로젝트 구조를 분석하여 PROJECT-STRUCTURE.md 작성/업데이트 |
 
 #### 개발 에이전트 (6개)
 
 | 에이전트 | 설명 |
 |----------|------|
-| `task-executor` | TDD 사이클 자동 실행 (Domain-First TDD: VO→Aggregate→Service→App→Infra→Presentation) |
-| `unit-test-writer` | TDD 단위 테스트 작성 (Aggregate/VO/Event 테스트 패턴 및 레퍼런스) |
-| `e2e-tester` | 전체 사용자 흐름 E2E 테스팅 |
-| `code-reviewer` | 코드 품질, 보안, 성능, DDD 아키텍처 준수 종합 검토 |
-| `quality-gate` | TDD 완료 후 코드 리뷰 + E2E 자동 실행 |
-| `starter-cleaner` | 스타터 킷 데모 코드 제거 및 프로덕션 준비 |
+| `task-executor` | TDD 사이클(Red-Green 단계)을 자동으로 실행하는 워커 에이전트 |
+| `unit-test-writer` | TDD 원칙에 따라 단위 테스트를 작성하는 테스트 엔지니어 |
+| `e2e-tester` | 웹 애플리케이션의 전체 사용자 흐름을 검증하는 E2E 테스팅 |
+| `code-reviewer` | 코드 품질, 보안(OWASP Top 10), 성능을 종합 검토 |
+| `quality-gate` | TDD 사이클 완료 후 코드 리뷰와 E2E 테스트를 자동 실행하고 결과 요약 |
+| `starter-cleaner` | 스타터 킷에서 데모 코드와 보일러플레이트를 제거하여 프로덕션 준비 |
 
-### Skills - 스킬 (6개)
+### Skills - 스킬 (5개)
 
 | 스킬 | 명령어 | 설명 |
 |------|--------|------|
-| `git` | `/git` | 커밋, 푸시, 동기화, 병합 작업 UI |
-| `tdd` | `/tdd` | TDD 규칙/패턴 (Aggregate/VO/Event 테스트 레퍼런스, Inside-Out TDD 순서) |
-| `project-structure` | `/project-structure` | 클린 아키텍처 템플릿으로 PROJECT-STRUCTURE.md 생성 (도메인 레이어 구조) |
-| `review-report` | `/review-report` | 코드 리뷰 보고서 생성 (DDD Architecture Compliance 포함) |
-| `harness-pipeline` | `/harness-pipeline` | 통합 개발 파이프라인 — Phase 0 도메인 모델링, BC 기반 모드 감지, 멀티사이클 TDD |
-| `domain-modeling` | `/domain-modeling` | DDD 도메인 모델링 — Event Storming→전략 설계→전술 설계→검증 |
+| `git` | `/git` | 커밋, 푸시, 동기화, 병합 작업을 UI로 선택 및 실행 |
+| `tdd` | `/tdd` | TDD 규칙과 패턴 정의, Red-Green-Refactor 사이클 가이드 |
+| `project-structure` | `/project-structure` | 클린 아키텍처 템플릿으로 PROJECT-STRUCTURE.md 자동 생성 |
+| `review-report` | `/review-report` | 코드 리뷰 결과를 표준화된 보고서 형식으로 생성 |
+| `harness-pipeline` | `/harness-pipeline` | 통합 개발 파이프라인 — 태스크 규모에 따라 Sequential/Delegated/Team 모드 자동 감지 |
 
 ### Hooks - 훅 (5개)
 
@@ -131,7 +126,7 @@ cc-ecosystem/
 
 ## 워크플로우 개요
 
-CC-Ecosystem은 DDD 아키텍처 기반으로 아이디어에서 머지까지의 전체 개발 사이클을 에이전트가 지원합니다.
+CC-Ecosystem은 아이디어에서 머지까지의 전체 개발 사이클을 에이전트가 지원합니다.
 
 ```
 아이디어
@@ -140,9 +135,7 @@ CC-Ecosystem은 DDD 아키텍처 기반으로 아이디어에서 머지까지의
 ┌─────────────┐     ┌──────────────────┐     ┌──────────────────┐
 │  PRD 생성    │────▶│  PRD 검증         │────▶│  로드맵 생성      │
 │ prd-generator│     │  prd-validator   │     │ development-     │
-│ (Domain Model│     │ (BC 일관성,      │     │ planner          │
-│  Overview)   │     │  UL, Aggregate   │     │ (Dev Phase 0-5)  │
-│              │     │  매핑 검증)       │     │                  │
+│              │     │                  │     │ planner          │
 └─────────────┘     └──────────────────┘     └──────────────────┘
                                                       │
                                                       ▼
@@ -153,21 +146,30 @@ CC-Ecosystem은 DDD 아키텍처 기반으로 아이디어에서 머지까지의
                                                       │
                                                       ▼
 ┌─────────────────────────────────────────────────────────────────┐
+│                    개발 (TDD 사이클)                              │
+│                                                                 │
 │  /harness-pipeline                                              │
 │                                                                 │
-│  Phase 0: 도메인 모델링 (/domain-modeling)                       │
-│    Event Storming → Context Map → Domain Models → 검증           │
-│                              │                                  │
-│  Phase 1: Plan (BC 기반 모드 감지)                                │
-│    Sequential (1 BC) / Delegated (2 BCs) / Team (3+ BCs)        │
-│                              │                                  │
-│  Phase 2: TDD (Inside-Out 멀티사이클)                             │
-│    VO → Aggregate → Domain Service → App → Infra → Presentation │
-│                              │                                  │
-│  Phase 3: Review (code-reviewer + DDD 아키텍처 준수)              │
-│                              │                                  │
-│  Phase 4: Validate & Finalize (e2e-tester → merge)              │
+│  ┌────────┐    ┌────────┐    ┌────────┐    ┌────────────────┐  │
+│  │Red:    │───▶│Green:  │───▶│Refactor│───▶│ Code Review    │  │
+│  │테스트   │    │구현     │    │리팩터링 │    │ code-reviewer  │  │
+│  │작성     │    │        │    │        │    │                │  │
+│  └────────┘    └────────┘    └────────┘    └────────────────┘  │
+│       ▲                                            │           │
+│       └────────────────────────────────────────────┘           │
 └─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+                    ┌──────────────────┐
+                    │  Quality Gate    │
+                    │  품질 검증        │
+                    └──────────────────┘
+                              │
+                              ▼
+                    ┌──────────────────┐
+                    │  /git merge      │
+                    │  머지             │
+                    └──────────────────┘
 ```
 
 ---
@@ -223,11 +225,8 @@ vi /your/project/.claude/hooks/.env.hooks
 # Claude Code 실행 후 워크플로우 시작
 claude
 
-# 개발 파이프라인 시작 (Phase 0 도메인 모델링부터 자동 실행)
+# 개발 파이프라인 시작 (모드 자동 감지)
 > /harness-pipeline
-
-# 도메인 모델링만 단독으로 실행하고 싶을 때
-> /domain-modeling
 ```
 
 ---
