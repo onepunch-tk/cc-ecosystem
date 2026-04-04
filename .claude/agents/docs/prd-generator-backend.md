@@ -88,6 +88,35 @@ These items are ALWAYS excluded regardless of scale:
 - **Key Constraints**: Technical or business constraints (1 line)
 - **Scale Indicator**: Expected request volume, data size (1 line)
 
+### 1.5. Domain Model Overview (Medium ONLY — DDD Projects)
+
+> Include when the project has complex business logic warranting DDD.
+> Skip for simple CRUD APIs.
+
+**Bounded Contexts** (identify from feature groups):
+
+| Bounded Context | Type | Core Responsibility |
+|-----------------|------|---------------------|
+| [Context Name] | Core/Supporting/Generic | [What this context owns] |
+
+**Ubiquitous Language** (key domain terms):
+
+| Term | Definition | Context |
+|------|-----------|---------|
+| [Domain Term] | [Business-language definition] | [Bounded Context] |
+
+**Key Aggregates** (per context):
+
+| Aggregate | Context | Key Invariants |
+|-----------|---------|----------------|
+| [Name] | [Context] | [Business rules that must always hold] |
+
+**Domain Events** (key state transitions):
+
+| Event | Source Aggregate | Subscribers |
+|-------|-----------------|-------------|
+| [EventName] | [Aggregate] | [Who listens] |
+
 ### 2. Auth & Permissions (Medium ONLY)
 
 > Skip this section entirely for Small scale projects.
@@ -567,17 +596,19 @@ For each key endpoint, specify:
 
 1. Analyze user request
 2. **Detect project scale** (Small or Medium) based on Scale Detection criteria
-3. **Design API consumer flow** - Request/response patterns
-4. **(Medium) Define auth strategy and permission matrix**
-5. **Extract MVP essential features only and assign IDs** - Small: F001 format / Medium: F-DOMAIN-001 format
-6. **Map endpoints per feature** - Connect as F001 → POST /resource format
-7. Design endpoint groups - Complete API surface (linked to Feature IDs)
-8. Request/response specifications - Schema definitions for key endpoints
-9. Design required data models
-10. **Resolve versions** from package.json for tech stack
-11. **(Medium) Define event architecture and integrations**
-12. **Execute consistency validation checklist**
-13. Output in template format
+3. **(Medium/DDD) Identify Bounded Contexts, Ubiquitous Language, and key Aggregates**
+4. **Design API consumer flow** - Request/response patterns
+5. **(Medium) Define auth strategy and permission matrix**
+6. **Extract MVP essential features only and assign IDs** - Small: F001 format / Medium: F-DOMAIN-001 format
+7. **Map endpoints per feature** - Connect as F001 → POST /resource format
+8. Design endpoint groups - Complete API surface (linked to Feature IDs)
+9. Request/response specifications - Schema definitions for key endpoints
+10. Design required data models
+11. **Resolve versions** from package.json for tech stack
+12. **(Medium) Define event architecture and integrations**
+13. **(Medium/DDD) Validate domain model consistency — features map to aggregates, events cover state transitions**
+14. **Execute consistency validation checklist**
+15. Output in template format
 
 ## Consistency Validation Checklist (Required Before PRD Completion)
 

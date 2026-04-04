@@ -101,6 +101,23 @@ These items are ALWAYS excluded regardless of scale:
 - User decision branch points
 - **(Medium)**: Separate flows per role where they diverge
 
+### 3.5. Domain Model Overview (Medium ONLY — DDD Projects)
+
+> Include when the project has complex business logic warranting DDD.
+> Skip for simple CRUD web apps.
+
+**Bounded Contexts** (identify from feature groups):
+
+| Bounded Context | Type | Core Responsibility |
+|-----------------|------|---------------------|
+| [Context Name] | Core/Supporting/Generic | [What this context owns] |
+
+**Ubiquitous Language** (key domain terms):
+
+| Term | Definition | Context |
+|------|-----------|---------|
+| [Domain Term] | [Business-language definition] | [Bounded Context] |
+
 ### 4. Feature Specifications (MVP Focus) - Consistency Baseline
 
 - Include only essential features for MVP

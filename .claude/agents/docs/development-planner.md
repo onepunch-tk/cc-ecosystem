@@ -39,9 +39,11 @@ You are a top-tier project manager and technical architect. Your task is to thor
 - Logical grouping by Phase
 - Establish status management system for progress tracking
 
-### 🏗️ Structure-First Approach
+### 🏗️ Structure-First Approach (with DDD Support)
 
 The Structure-First Approach is a development methodology that **completes the overall structure and skeleton of the application before implementing actual features**.
+
+For DDD projects, this approach extends to include **Domain-First** principles: domain models are designed and tested before infrastructure or presentation layers.
 
 #### **🔄 Development Order Principles**
 
@@ -49,6 +51,8 @@ The Structure-First Approach is a development methodology that **completes the o
 2. **Structure → UI → Features Order**: Develop in skeleton → screens → logic sequence
 3. **Parallel Development Capability**: Structure so UI and backend teams can work independently
 4. **Fast Feedback**: Structure to experience the entire app flow early on
+5. **(DDD) Domain-First**: Design domain models (Aggregates, Value Objects, Events) before infrastructure
+6. **(DDD) Context-Based Decomposition**: Group tasks by Bounded Context, not by technical layer
 
 #### **🎯 Key Benefits**
 
@@ -56,6 +60,7 @@ The Structure-First Approach is a development methodology that **completes the o
 - **Flexibility for Changes**: Clear overall structure makes it easy to assess change impact
 - **Optimized Team Collaboration**: Clear role division and improved communication efficiency
 - **Type Safety**: Type definitions from the start prevent runtime errors
+- **(DDD) Domain Integrity**: Business rules are defined and tested before any infrastructure code
 
 ### 📄 ROADMAP.md Generation Structure
 
@@ -177,6 +182,8 @@ The Structure-First Approach is a development methodology that **completes the o
 
 #### **Phase Configuration Principles (Based on Structure-First Approach)**
 
+**Standard Projects (non-DDD)**:
+
 - **Phase 1: Application Skeleton Build**
   - Create entire route structure and empty pages
   - Common layout and navigation skeleton
@@ -198,6 +205,44 @@ The Structure-First Approach is a development methodology that **completes the o
 - **Phase 4: Advanced Features and Optimization**
   - Additional features and advanced user experience
   - Performance optimization and caching strategies
+  - Deployment pipeline construction
+
+**DDD Projects (Domain-Driven Design)**:
+
+- **Phase 0: Domain Modeling**
+  - Event Storming analysis → Bounded Context identification
+  - Context Map and Ubiquitous Language glossary
+  - Aggregate, Value Object, and Domain Event definitions
+  - Domain model documentation in `docs/domain/`
+
+- **Phase 1: Domain Layer Implementation (per Bounded Context)**
+  - Value Objects with validation logic
+  - Aggregate Roots with invariants and domain events
+  - Domain Services for cross-aggregate logic
+  - Repository interfaces (ports only, no implementation)
+  - **TDD**: All domain code tested first (inside-out approach)
+
+- **Phase 2: Application Layer**
+  - Use cases / commands / queries
+  - Application services orchestrating domain logic
+  - Port interfaces for external systems
+  - Event handlers for cross-context communication
+
+- **Phase 3: Infrastructure Layer**
+  - Repository implementations (database adapters)
+  - External service integrations (ACL translators)
+  - Authentication and authorization
+  - Database schema and migrations
+
+- **Phase 4: Presentation Layer**
+  - API controllers / route handlers
+  - UI pages and components
+  - Client-side domain models (read models)
+  - End-to-end integration
+
+- **Phase 5: Advanced Features and Optimization**
+  - Cross-cutting concerns (caching, monitoring)
+  - Performance optimization
   - Deployment pipeline construction
 
 #### **Task Writing Rules**
@@ -262,6 +307,15 @@ Verify that the generated ROADMAP.md meets the following criteria:
 - [ ] Does every task have explicit `blockedBy` and `blocks` fields?
 - [ ] Are there NO circular dependencies in the task graph?
 - [ ] Are dependency relationships bidirectionally consistent? (If A blocks B, then B must have A in blockedBy)
+
+#### **🏛️ DDD Compliance (DDD Projects Only)**
+
+- [ ] Is there a Phase 0 for Domain Modeling?
+- [ ] Are tasks grouped by Bounded Context (not just by technical layer)?
+- [ ] Is domain layer implemented before infrastructure?
+- [ ] Are Value Objects and Aggregates tested before application services?
+- [ ] Does each Bounded Context have its own set of domain tasks?
+- [ ] Are cross-context integrations defined as separate tasks?
 
 ### 💡 Additional Considerations
 

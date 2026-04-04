@@ -48,8 +48,11 @@ Choose the structure that best fits your project:
 **⚠️ CRITICAL**: NO `@nestjs/*` imports allowed. Pure TypeScript only.
 
 **Contains**:
-- **{bounded-context}/entities/**: Core business objects
-- **{bounded-context}/value-objects/**: Value objects (Email, Money, etc.)
+- **{bounded-context}/entities/**: Aggregate Roots and child entities
+- **{bounded-context}/value-objects/**: Value objects (Email, Money, Address, etc.)
+- **{bounded-context}/events/**: Domain Events (state change notifications)
+- **{bounded-context}/services/**: Domain Services (cross-aggregate logic)
+- **{bounded-context}/factories/**: Aggregate Factories (complex creation)
 - **{bounded-context}/repository.interface.ts**: Repository interface (domain-defined)
 - **{bounded-context}/errors/**: Domain-specific error classes
 
@@ -58,56 +61,182 @@ Choose the structure that best fits your project:
 domain/
 ├── user/
 │   ├── entities/
-│   │   └── user.entity.ts
+│   │   └── user.entity.ts            # Aggregate Root
 │   ├── value-objects/
-│   │   └── email.ts
+│   │   └── email.vo.ts               # Immutable Value Object
+│   ├── events/
+│   │   ├── user-registered.event.ts   # Domain Event
+│   │   └── index.ts
 │   ├── repository.interface.ts
 │   └── errors/
 │       └── user-not-found.error.ts
 ├── order/
 │   ├── entities/
+│   │   ├── order.entity.ts           # Aggregate Root
+│   │   └── order-item.entity.ts      # Child Entity (owned by Order)
 │   ├── value-objects/
+│   │   ├── money.vo.ts
+│   │   └── quantity.vo.ts
+│   ├── events/
+│   │   ├── order-placed.event.ts
+│   │   ├── order-cancelled.event.ts
+│   │   └── index.ts
+│   ├── services/
+│   │   └── order-pricing.service.ts  # Domain Service (pure logic)
+│   ├── factories/
+│   │   └── order.factory.ts          # Complex Aggregate creation
 │   ├── repository.interface.ts
 │   └── errors/
+│       ├── empty-order.error.ts
+│       └── order-already-cancelled.error.ts
 └── shared/
-    ├── base-entity.ts
+    ├── base-entity.ts                 # Base Aggregate Root with event support
+    ├── domain-event.ts                # Base Domain Event interface
     └── value-objects/
+        └── money.vo.ts                # Shared Value Objects
 ```
 
 **When to use**:
 - Adding new business concepts (e.g., orders, products, payments)
 - Defining domain rules and invariants
 - Creating value objects
+- Adding domain events for state change tracking
+- Creating domain services for cross-aggregate logic
 
-**Example**:
+**Example — Aggregate Root with Domain Events**:
 ```typescript
-// domain/user/entities/user.entity.ts
-export class User {
-  constructor(
-    public readonly id: string,
-    public readonly email: Email, // value object
-    public readonly createdAt: Date,
-  ) {}
+// domain/shared/domain-event.ts
+export interface DomainEvent {
+  readonly eventName: string;
+  readonly occurredAt: Date;
+  readonly payload: Record<string, unknown>;
+}
 
-  // Domain logic
-  canDelete(): boolean {
-    return this.createdAt < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+// domain/shared/base-entity.ts
+export abstract class BaseAggregateRoot {
+  private readonly domainEvents: DomainEvent[] = [];
+
+  protected addDomainEvent(event: DomainEvent): void {
+    this.domainEvents.push(event);
+  }
+
+  pullDomainEvents(): DomainEvent[] {
+    const events = [...this.domainEvents];
+    this.domainEvents.length = 0;
+    return events;
   }
 }
 
-// domain/user/value-objects/email.ts
-export class Email {
-  private constructor(private readonly value: string) {}
+// domain/order/entities/order.entity.ts
+import { BaseAggregateRoot } from '~/domain/shared/base-entity';
+import { OrderPlaced } from '../events/order-placed.event';
+import { OrderCancelled } from '../events/order-cancelled.event';
+import { Money } from '~/domain/shared/value-objects/money.vo';
+import { EmptyOrderError } from '../errors/empty-order.error';
+import { OrderAlreadyCancelledError } from '../errors/order-already-cancelled.error';
+import type { OrderItem } from './order-item.entity';
 
-  static create(value: string): Email {
-    if (!value.includes('@')) {
-      throw new Error('Invalid email format');
-    }
-    return new Email(value);
+type OrderStatus = 'placed' | 'confirmed' | 'shipped' | 'cancelled';
+
+export class Order extends BaseAggregateRoot {
+  private constructor(
+    public readonly id: string,
+    public readonly customerId: string,
+    private readonly _items: OrderItem[],
+    private _status: OrderStatus,
+    public readonly createdAt: Date,
+  ) {
+    super();
   }
 
-  toString(): string {
-    return this.value;
+  // Factory method — raises events, validates invariants
+  static create(props: { customerId: string; items: OrderItem[] }): Order {
+    if (props.items.length === 0) {
+      throw new EmptyOrderError();
+    }
+    const order = new Order(
+      crypto.randomUUID(),
+      props.customerId,
+      props.items,
+      'placed',
+      new Date(),
+    );
+    order.addDomainEvent(new OrderPlaced({
+      orderId: order.id,
+      customerId: order.customerId,
+      totalAmount: order.totalAmount.amount,
+      itemCount: order.items.length,
+    }));
+    return order;
+  }
+
+  // Reconstitute from persistence — NO events raised
+  static reconstitute(props: {
+    id: string; customerId: string; items: OrderItem[];
+    status: OrderStatus; createdAt: Date;
+  }): Order {
+    return new Order(props.id, props.customerId, props.items, props.status, props.createdAt);
+  }
+
+  // Domain behavior — enforces invariant
+  cancel(reason: string): void {
+    if (this._status === 'cancelled') {
+      throw new OrderAlreadyCancelledError(this.id);
+    }
+    this._status = 'cancelled';
+    this.addDomainEvent(new OrderCancelled({ orderId: this.id, reason }));
+  }
+
+  get status(): OrderStatus { return this._status; }
+  get items(): readonly OrderItem[] { return this._items; }
+  get totalAmount(): Money {
+    return this._items.reduce(
+      (sum, item) => sum.add(item.lineTotal),
+      Money.create(0, 'KRW'),
+    );
+  }
+}
+
+// domain/order/events/order-placed.event.ts
+export class OrderPlaced {
+  public readonly occurredAt = new Date();
+  public readonly eventName = 'OrderPlaced';
+  constructor(public readonly payload: {
+    readonly orderId: string;
+    readonly customerId: string;
+    readonly totalAmount: number;
+    readonly itemCount: number;
+  }) {}
+}
+
+// domain/shared/value-objects/money.vo.ts
+export class Money {
+  private constructor(
+    public readonly amount: number,
+    public readonly currency: string,
+  ) {}
+
+  static create(amount: number, currency: string): Money {
+    if (amount < 0) throw new Error('Amount cannot be negative');
+    return new Money(amount, currency);
+  }
+
+  add(other: Money): Money {
+    if (this.currency !== other.currency) throw new Error('Cannot add different currencies');
+    return new Money(this.amount + other.amount, this.currency);
+  }
+
+  multiply(quantity: number): Money {
+    return new Money(this.amount * quantity, this.currency);
+  }
+
+  equals(other: Money): boolean {
+    return this.amount === other.amount && this.currency === other.currency;
+  }
+
+  toString(): string { return `${this.amount} ${this.currency}`; }
+  toValue(): { amount: number; currency: string } {
+    return { amount: this.amount, currency: this.currency };
   }
 }
 
@@ -117,20 +246,15 @@ export interface UserRepository {
   save(user: User): Promise<void>;
   delete(id: string): Promise<void>;
 }
-
-// domain/user/errors/user-not-found.error.ts
-export class UserNotFoundError extends Error {
-  constructor(userId: string) {
-    super(`User with ID ${userId} not found`);
-    this.name = 'UserNotFoundError';
-  }
-}
 ```
 
 **Rules**:
 - NO external dependencies (including NestJS)
 - NO database concerns (only interfaces)
 - NO framework decorators
+- Aggregates reference other aggregates by ID only
+- All state changes through Aggregate Root methods
+- Domain Events raised on every state transition
 
 ---
 

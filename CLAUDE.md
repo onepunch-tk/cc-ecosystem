@@ -7,6 +7,7 @@
 
 ## Core Principles
 > **TDD-First**: All implementations must be preceded by writing tests first.
+> **DDD-Ready**: For complex domains, use Domain-Driven Design with domain modeling before implementation.
 > **Side Effect Awareness**: All code modifications (except tests) must be written with careful consideration of potential side effects.
 
 ## Tech Stack
@@ -20,8 +21,10 @@
 - Project Structure [docs/PROJECT-STRUCTURE.md](docs/PROJECT-STRUCTURE.md): **MANDATORY** - Reference before ANY task
 - PRD Document [docs/PRD.md](docs/PRD.md): **MANDATORY** - Defines "what" to build (features, requirements)
 - Development RoadMap [docs/ROADMAP.md](docs/ROADMAP.md): **MANDATORY** - Defines "in what order" to build (implementation phases)
+- Domain Models [docs/domain/](docs/domain/): **DDD projects** - Bounded Contexts, Aggregates, Events, Glossary
 
 ## Workflow
+> For DDD projects: load `domain-modeling` skill first to create/verify domain models.
 > Before starting any implementation task, load the `harness-pipeline` skill.
 
 ## Code Conventions [MANDATORY]
@@ -60,6 +63,10 @@ If you name a server-side utility `something.client.ts`, it will be bundled as `
 | `**/types.ts` | Type definitions only |
 | `**/*.port.ts` | Interface definitions only |
 | `**/index.ts` | Barrel files (re-exports) |
+| `*.entity.ts` | DDD Aggregate Roots and Entities |
+| `*.vo.ts` | DDD Value Objects (immutable) |
+| `*.event.ts` | DDD Domain Events |
+| `*.factory.ts` | DDD Aggregate Factories |
 
 ## Commands
 | Command | Description |
@@ -77,4 +84,6 @@ After workflow completion, update **as needed**:
 |----------|-------------|
 | `docs/PROJECT-STRUCTURE.md` | New directories, files, or architectural changes |
 | `docs/PRD.md` | Feature scope changes or new requirements |
+| `docs/domain/glossary.md` | New domain terms or definition changes (DDD) |
+| `docs/domain/context-map.md` | New Bounded Contexts or relationship changes (DDD) |
 | `CLAUDE.md` | Workflow improvements or new conventions |

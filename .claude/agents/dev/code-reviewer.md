@@ -57,6 +57,36 @@ For each file, check all 7 quality categories:
 - [ ] SOLID principles followed
 - [ ] No circular dependencies
 
+#### 4.3-DDD DDD Architecture Compliance (High-Critical)
+> Only evaluate if project uses DDD (`docs/domain/` directory exists)
+
+**Layer Dependency Rules**:
+- [ ] Domain layer has ZERO external dependencies (no framework, no DB, no HTTP imports)
+- [ ] Application layer only uses `@Injectable()` decorator (no `@Controller`, `@Get`, etc.)
+- [ ] Infrastructure implements domain interfaces (Repository pattern)
+- [ ] Presentation depends on Application layer only (never directly on Domain)
+
+**Aggregate Rules**:
+- [ ] Aggregates reference other aggregates by ID only (no direct object references)
+- [ ] State mutations only through Aggregate Root methods (no external mutation)
+- [ ] Every state change raises a Domain Event
+- [ ] Invariants enforced inside Aggregate Root (not in application/infrastructure)
+- [ ] Factory methods used for complex Aggregate creation
+
+**Value Object Rules**:
+- [ ] Value Objects are immutable (no setters, no mutable state)
+- [ ] Equality based on all attributes (`equals()` method present)
+- [ ] Validation at creation time (invalid state is impossible)
+
+**Domain Event Rules**:
+- [ ] Events use past tense naming (e.g., `OrderPlaced`, not `PlaceOrder`)
+- [ ] Event payloads are readonly
+- [ ] Cross-aggregate communication uses Domain Events (not direct calls)
+
+**Ubiquitous Language**:
+- [ ] Domain layer names match `docs/domain/glossary.md` terms
+- [ ] No technical jargon in domain layer (no "record", "row", "request", "response")
+
 #### 4.4 Patterns & Reusability (Medium-Critical)
 - [ ] No magic numbers/strings
 - [ ] No deeply nested conditionals (>3 levels)
@@ -201,6 +231,10 @@ Before finalizing:
 - [ ] Assessed bundle size impact?
 - [ ] Assigned confidence levels to all findings?
 - [ ] Used review-report skill for output?
+- [ ] (DDD) Checked domain layer purity (zero external dependencies)?
+- [ ] (DDD) Verified aggregate boundaries and invariant enforcement?
+- [ ] (DDD) Confirmed cross-aggregate communication uses events only?
+- [ ] (DDD) Validated Ubiquitous Language consistency with glossary?
 
 ## Update Agent Memory
 

@@ -91,6 +91,25 @@ Read TDD skill's **Code Examples** section for framework-specific patterns.
 
 The skill routes to appropriate reference file based on detected framework.
 
+#### DDD-Specific: Test Order Priority
+
+When testing DDD domain code, follow the **inside-out** order:
+
+| Priority | Target | Reference |
+|----------|--------|-----------|
+| 1 | Value Objects (`*.vo.ts`) | `ddd-value-object.example.md` |
+| 2 | Domain Events (`*.event.ts`) | `ddd-domain-event.example.md` |
+| 3 | Aggregate Root (`*.entity.ts`) | `ddd-aggregate.example.md` |
+| 4 | Domain Services (`domain/**/services/*.ts`) | `ddd-domain-event.example.md` |
+| 5 | Factories (`*.factory.ts`) | `ddd-aggregate.example.md` |
+
+**DDD Test Rules**:
+- **No mocking in domain tests** — If you need mocks, the code is in the wrong layer
+- **Test invariants explicitly** — Each aggregate invariant = separate test case
+- **Test `create` vs `reconstitute`** — `create` raises events, `reconstitute` does not
+- **Test immutability** — Value Object operations must return new instances
+- **Test event payload** — Verify all required fields in domain events
+
 ### Step 6: Run, Verify & Coverage
 
 #### 6-1. Run Tests

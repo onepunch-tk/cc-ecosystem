@@ -39,14 +39,37 @@ Mode Detection Algorithm:
 
 ---
 
+## Phase 0: Domain Modeling (DDD Projects Only)
+
+> **Skip this phase** if the project does not use DDD architecture.
+> **Detect DDD**: Check if `docs/domain/` directory exists, or if PRD mentions bounded contexts, aggregates, or domain events.
+
+| Step | Action | Sub-Agent |
+|------|--------|-----------|
+| 0-1 | Check if `docs/domain/glossary.md` and `docs/domain/context-map.md` exist | — |
+| 0-2 | IF missing: Load `domain-modeling` skill and run full workflow | Skill |
+| 0-3 | IF exists: Read domain models, verify alignment with current task | — |
+| 0-4 | Identify which Bounded Context(s) the current task belongs to | — |
+
+**Phase 0 Output**:
+- Target Bounded Context(s) for this task
+- Relevant Aggregates and Domain Events
+- Integration points with other contexts (if any)
+
+> After Phase 0, proceed to Phase 1 with domain context as input.
+
+---
+
 ## Phase 1: Plan (All Modes)
 
 | Step | Action |
 |------|--------|
 | 1 | Enter `PlanMode` |
 | 2 | Read `CLAUDE.md`, `docs/PROJECT-STRUCTURE.md`, `docs/ROADMAP.md` |
+| 2a | (DDD) Read `docs/domain/glossary.md`, relevant `docs/domain/aggregates/[context].md` |
 | 3 | Analyze current state thoroughly |
 | 4 | Create detailed step-by-step plan |
+| 4a | (DDD) Plan follows Domain-First TDD order: Value Objects → Aggregates → Domain Services → Application → Infrastructure → Presentation |
 | 5 | **Count files and features** → determine execution mode |
 | 6 | Exit `PlanMode` → wait for plan approval |
 
