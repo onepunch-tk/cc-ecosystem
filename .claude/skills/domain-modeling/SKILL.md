@@ -106,10 +106,28 @@ Agent(subagent_type="context-mapper")
 
 ## Phase 3: Tactical Design
 
-Spawn the `domain-modeler` agent for **each** Bounded Context:
+> **CRITICAL: Execute SEQUENTIALLY** — one Bounded Context at a time.
+> Each context's domain-modeler may update `docs/domain/glossary.md` with context-specific terms.
+> Parallel execution causes write conflicts on shared files.
+
+For **each** Bounded Context (one at a time, in dependency order):
 
 ```
 Agent(subagent_type="domain-modeler")
+```
+
+**Execution order**: Start with Core contexts, then Supporting, then Generic.
+If contexts have dependencies (from Context Map), model the upstream context first.
+
+```
+Execution Flow:
+1. Identify context dependency order from context-map.md
+2. FOR each context (in dependency order):
+   a. Spawn domain-modeler agent
+   b. WAIT for completion
+   c. Verify output files exist
+   d. THEN proceed to next context
+3. Do NOT spawn multiple domain-modeler agents in parallel
 ```
 
 **Input to agent**:
@@ -148,6 +166,24 @@ Agent(subagent_type="domain-modeler")
 | Context A | Context B | Pattern Defined | ACL Exists | Events Defined |
 |-----------|-----------|-----------------|------------|----------------|
 | [A] | [B] | Yes/No | Yes/No/N/A | Yes/No |
+
+### 4-4. Cross-Context Domain Event Integration Test
+
+> Verify that domain events published by one context can be consumed by another.
+
+For each cross-context relationship in the Context Map:
+
+| Source Context | Event | Target Context | Handler Exists | ACL Translates Correctly | Test Status |
+|----------------|-------|----------------|----------------|--------------------------|-------------|
+| [A] | [EventName] | [B] | Yes/No | Yes/No/N/A | Pass/Fail |
+
+**Verification steps**:
+1. List all domain events from `docs/domain/events/[context]-events.md` per context
+2. For each event consumed by another context (per `docs/domain/integration/`):
+   a. Verify the target context has an event handler defined
+   b. Verify the ACL translator maps source event → target domain language
+   c. Verify no domain model leakage (target context uses its own types, not source types)
+3. Flag any orphaned events (published but never consumed) as warnings
 
 ---
 
@@ -205,5 +241,7 @@ Domain modeling is complete when ALL pass:
 - [ ] Every Bounded Context has aggregate definitions
 - [ ] Domain Event catalog per context
 - [ ] Integration specs for all context relationships
+- [ ] Cross-context domain event flows verified (4-4)
+- [ ] No orphaned events (published but never consumed)
 - [ ] PRD feature coverage >= 100%
 - [ ] Code scaffolding generated

@@ -24,7 +24,7 @@ After Phase 1 planning, auto-detect execution mode based on task scope:
 | 10+ files, complex features | **Team** | Lead + teammate agents via TeamCreate |
 
 ```
-Mode Detection Algorithm:
+Mode Detection Algorithm (Standard):
 1. Count files to be modified from plan
 2. Count distinct features/components
 3. IF files <= 3 AND features == 1:
@@ -33,6 +33,18 @@ Mode Detection Algorithm:
      → Delegated Mode (Supervisor)
    ELSE:
      → Team Mode (Lead + Teammates)
+
+Mode Detection Algorithm (DDD — when DDD_MODE = true):
+1. Count Bounded Contexts involved in this task
+2. Count files per domain layer (VO, Aggregate, Service, App, Infra, Presentation)
+3. IF bounded_contexts == 1 AND total_files <= 5:
+     → Sequential Mode (multi-cycle TDD per layer)
+   ELSE IF bounded_contexts <= 2 AND total_files <= 12:
+     → Delegated Mode (task-executor per Bounded Context)
+   ELSE IF bounded_contexts >= 3:
+     → Team Mode (1 teammate per Bounded Context + 1 shared-kernel lead)
+   ELSE:
+     → Delegated Mode (default for multi-context)
 ```
 
 **User Override**: User can explicitly request mode: "use sequential mode", "use delegated mode", or "use team mode"
@@ -42,7 +54,23 @@ Mode Detection Algorithm:
 ## Phase 0: Domain Modeling (DDD Projects Only)
 
 > **Skip this phase** if the project does not use DDD architecture.
-> **Detect DDD**: Check if `docs/domain/` directory exists, or if PRD mentions bounded contexts, aggregates, or domain events.
+
+### DDD Detection Algorithm
+
+```
+DDD Detection (run BEFORE Phase 1):
+1. Check CLAUDE.md for "DDD" or "Domain-Driven Design" in Core Principles or Architecture
+2. Check if docs/domain/ directory exists (previously modeled)
+3. Check docs/PRD.md for DDD indicators:
+   - Section "Domain Model Overview" exists
+   - Keywords: "bounded context", "aggregate", "domain event", "ubiquitous language"
+4. Check user's explicit request: "use DDD", "DDD architecture", etc.
+
+IF any of (1-4) is TRUE → DDD_MODE = true → execute Phase 0
+ELSE → DDD_MODE = false → skip to Phase 1
+```
+
+### Phase 0 Steps
 
 | Step | Action | Sub-Agent |
 |------|--------|-----------|
@@ -52,11 +80,12 @@ Mode Detection Algorithm:
 | 0-4 | Identify which Bounded Context(s) the current task belongs to | — |
 
 **Phase 0 Output**:
+- `DDD_MODE = true` (carry this flag through all subsequent phases)
 - Target Bounded Context(s) for this task
 - Relevant Aggregates and Domain Events
 - Integration points with other contexts (if any)
 
-> After Phase 0, proceed to Phase 1 with domain context as input.
+> After Phase 0, **recommend `/clear`** — domain modeling context is no longer needed. Carry only the Phase 0 Output into Phase 1.
 
 ---
 
@@ -81,11 +110,14 @@ Mode Detection Algorithm:
 |------|--------|
 | 5a | Break work into tasks with **clear file ownership** (no overlapping files) |
 | 5b | Verify NO file overlap between tasks before spawning teammates |
-| 5c | Prepare teammate task prompts with file ownership lists |
+| 5c | (DDD) **Shared Kernel pre-creation**: Lead creates shared domain files BEFORE spawning teammates — `shared/value-objects/`, `shared/base-entity.ts`, `shared/domain-event.ts`, common types. These are NOT owned by any teammate. |
+| 5d | Prepare teammate task prompts with file ownership lists |
 
 > **WARNING: File Ownership is CRITICAL**
 > Overlapping file assignments = merge conflicts = wasted work.
 > Lead MUST verify NO file overlap before spawning teammates.
+
+> **DDD NOTE**: Shared Kernel files (Step 5c) must be committed to the feature branch BEFORE teammates start. Teammates import from shared files but never modify them. If a teammate needs a new shared VO, they message the lead.
 
 ---
 
@@ -108,6 +140,38 @@ Mode Detection Algorithm:
 **Auto-verify (no human wait needed)**:
 - After Step 8: If tests pass immediately → review test logic, likely not testing correctly
 - After Step 9: If any test fails → fix implementation before proceeding
+
+#### DDD Multi-Cycle TDD (Sequential Mode)
+
+When `DDD_MODE = true`, repeat Steps 8-9 **per domain layer** in inside-out order:
+
+```
+Cycle 1: Value Objects
+  → Red: unit-test-writer writes VO tests
+  → Green: implement VOs, verify pass
+
+Cycle 2: Aggregate Root
+  → Red: unit-test-writer writes Aggregate tests (using VOs from Cycle 1)
+  → Green: implement Aggregate, verify pass
+
+Cycle 3: Domain Services (if needed)
+  → Red: unit-test-writer writes Domain Service tests
+  → Green: implement Domain Services, verify pass
+
+Cycle 4: Application Services
+  → Red: unit-test-writer writes use case tests (mock ports)
+  → Green: implement Application Services, verify pass
+
+Cycle 5: Infrastructure
+  → Red: unit-test-writer writes adapter tests
+  → Green: implement adapters/repositories, verify pass
+
+Cycle 6: Presentation
+  → Red: unit-test-writer writes controller/route tests
+  → Green: implement presentation layer, verify pass
+```
+
+> Each cycle builds on the previous. Do NOT skip cycles — later layers depend on earlier ones being tested and stable.
 
 ### Delegated Mode (4-10 files)
 
@@ -368,6 +432,7 @@ IF context exceeds 80k tokens before Phase completion:
 | Step | Action | Sub-Agent |
 |------|--------|-----------|
 | 1 | Read `CLAUDE.md`, `docs/PROJECT-STRUCTURE.md`, assigned task file | — |
+| 1a | (DDD) Read `docs/domain/glossary.md` and relevant `docs/domain/aggregates/[context].md` for assigned Bounded Context | — |
 | 2 | Run `unit-test-writer` sub-agent (Red Phase). **NEVER analyze patterns or write test code yourself — always delegate to the `unit-test-writer` subagent.** | `Agent(subagent_type="unit-test-writer")` |
 | 3 | Implement code to pass tests (Green Phase) → run the project's test command (see CLAUDE.md Commands) | — |
 | 4 | Run the project's coverage command (see CLAUDE.md Commands) | — |

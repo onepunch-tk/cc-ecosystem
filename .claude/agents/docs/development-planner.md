@@ -209,38 +209,42 @@ For DDD projects, this approach extends to include **Domain-First** principles: 
 
 **DDD Projects (Domain-Driven Design)**:
 
-- **Phase 0: Domain Modeling**
+> **IMPORTANT**: ROADMAP phases use the prefix **"Dev Phase"** to distinguish from the harness pipeline's execution phases ("Pipeline Phase 0-4"). These are different systems:
+> - **Dev Phase** = what to build in what order (ROADMAP.md)
+> - **Pipeline Phase** = how to build each task (harness-pipeline execution steps)
+
+- **Dev Phase 0: Domain Modeling**
   - Event Storming analysis → Bounded Context identification
   - Context Map and Ubiquitous Language glossary
   - Aggregate, Value Object, and Domain Event definitions
   - Domain model documentation in `docs/domain/`
 
-- **Phase 1: Domain Layer Implementation (per Bounded Context)**
+- **Dev Phase 1: Domain Layer Implementation (per Bounded Context)**
   - Value Objects with validation logic
   - Aggregate Roots with invariants and domain events
   - Domain Services for cross-aggregate logic
   - Repository interfaces (ports only, no implementation)
   - **TDD**: All domain code tested first (inside-out approach)
 
-- **Phase 2: Application Layer**
+- **Dev Phase 2: Application Layer**
   - Use cases / commands / queries
   - Application services orchestrating domain logic
   - Port interfaces for external systems
   - Event handlers for cross-context communication
 
-- **Phase 3: Infrastructure Layer**
+- **Dev Phase 3: Infrastructure Layer**
   - Repository implementations (database adapters)
   - External service integrations (ACL translators)
   - Authentication and authorization
   - Database schema and migrations
 
-- **Phase 4: Presentation Layer**
+- **Dev Phase 4: Presentation Layer**
   - API controllers / route handlers
   - UI pages and components
   - Client-side domain models (read models)
   - End-to-end integration
 
-- **Phase 5: Advanced Features and Optimization**
+- **Dev Phase 5: Advanced Features and Optimization**
   - Cross-cutting concerns (caching, monitoring)
   - Performance optimization
   - Deployment pipeline construction
@@ -310,7 +314,7 @@ Verify that the generated ROADMAP.md meets the following criteria:
 
 #### **🏛️ DDD Compliance (DDD Projects Only)**
 
-- [ ] Is there a Phase 0 for Domain Modeling?
+- [ ] Is there a Dev Phase 0 for Domain Modeling?
 - [ ] Are tasks grouped by Bounded Context (not just by technical layer)?
 - [ ] Is domain layer implemented before infrastructure?
 - [ ] Are Value Objects and Aggregates tested before application services?
