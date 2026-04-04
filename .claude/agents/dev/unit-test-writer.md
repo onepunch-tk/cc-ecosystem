@@ -91,25 +91,6 @@ Read TDD skill's **Code Examples** section for framework-specific patterns.
 
 The skill routes to appropriate reference file based on detected framework.
 
-#### DDD-Specific: Test Order Priority
-
-When testing DDD domain code, follow the **inside-out** order:
-
-| Priority | Target | Reference |
-|----------|--------|-----------|
-| 1 | Value Objects (`*.vo.ts`) | `ddd-value-object.example.md` |
-| 2 | Domain Events (`*.event.ts`) | `ddd-domain-event.example.md` |
-| 3 | Aggregate Root (`*.entity.ts`) | `ddd-aggregate.example.md` |
-| 4 | Domain Services (`domain/**/services/*.ts`) | `ddd-domain-event.example.md` |
-| 5 | Factories (`*.factory.ts`) | `ddd-aggregate.example.md` |
-
-**DDD Test Rules**:
-- **No mocking in domain tests** — If you need mocks, the code is in the wrong layer
-- **Test invariants explicitly** — Each aggregate invariant = separate test case
-- **Test `create` vs `reconstitute`** — `create` raises events, `reconstitute` does not
-- **Test immutability** — Value Object operations must return new instances
-- **Test event payload** — Verify all required fields in domain events
-
 ### Step 6: Run, Verify & Coverage
 
 #### 6-1. Run Tests
@@ -147,6 +128,26 @@ When testing DDD domain code, follow the **inside-out** order:
 4. Re-verify
 
 ---
+
+## DDD Test Order Priority
+
+| Priority | Layer | File Patterns | Rationale |
+|----------|-------|---------------|-----------|
+| 1 | Value Objects | `*.vo.ts` | Pure logic, no dependencies, test first |
+| 2 | Domain Events | `*.event.ts` | Immutable data carriers, simple to validate |
+| 3 | Aggregates | `*.entity.ts` | Core business rules, depend on VOs and Events |
+| 4 | Domain Services | `*.domain-service.ts` | Cross-aggregate logic |
+| 5 | Application Services | `*.service.ts`, `*.use-case.ts` | Orchestration, mock domain layer |
+| 6 | Infrastructure | `*.adapter.ts`, `*.repository.ts` | Integration with external systems |
+| 7 | Presentation | `*.loader.ts`, `*.action.ts`, `*.tsx` | UI and API surface |
+
+## DDD Test Rules
+
+- **Domain layer tests must not mock domain objects** - Use real Value Objects and Aggregates
+- **Test Aggregate invariants explicitly** - Each business rule the Aggregate enforces needs a dedicated test
+- **Value Object tests must cover**: creation, equality, validation rejection of invalid state
+- **Domain Event tests must verify**: correct payload, immutability, event naming
+- **Application layer tests mock ports** - Use test doubles for repository and infrastructure ports only
 
 ## Quality Checklist
 

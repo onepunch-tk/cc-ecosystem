@@ -85,45 +85,7 @@ First, I must collect and verify all required files exist and are readable.
 <thinking>
 I will verify that the roadmap follows the Structure-First Approach methodology.
 
-**Detect DDD Mode:**
-First, check if this is a DDD project by looking for:
-- `docs/domain/` directory references in tasks
-- Phase 0 for Domain Modeling
-- Tasks mentioning Aggregates, Value Objects, Bounded Contexts
-- Domain-First TDD ordering
-
-**If DDD Project — Verify DDD Phase Order:**
-
-0. **Phase 0: Domain Modeling**
-   - Does it include Event Storming, Context Map, Glossary?
-   - Are domain models documented before implementation begins?
-   - Evidence: [Specific tasks and their descriptions]
-
-1. **Phase 1: Domain Layer Implementation**
-   - Are Value Objects implemented first (pure logic, no dependencies)?
-   - Are Aggregate Roots with invariants and events next?
-   - Are Domain Services (cross-aggregate logic) included?
-   - Evidence: [Specific tasks and their descriptions]
-
-2. **Phase 2: Application Layer**
-   - Are use cases / commands / queries defined?
-   - Are port interfaces for external systems created?
-   - Evidence: [Specific tasks and their descriptions]
-
-3. **Phase 3: Infrastructure Layer**
-   - Are repository implementations (database adapters) here?
-   - Are ACL translators for external systems included?
-   - Evidence: [Specific tasks and their descriptions]
-
-4. **Phase 4: Presentation Layer**
-   - Are API controllers / routes / UI here?
-   - Evidence: [Specific tasks and their descriptions]
-
-5. **Phase 5: Advanced Features and Optimization**
-   - Cross-cutting concerns, deployment, monitoring
-   - Evidence: [Specific tasks and their descriptions]
-
-**If Standard Project — Verify Structure-First Principle:**
+**Structure-First Principle Verification:**
 
 1. **Phase 1: Application Skeleton Build**
    - Does it create entire route structure first?
@@ -148,9 +110,23 @@ First, check if this is a DDD project by looking for:
 
 **Compliance Score:**
 - Phase Order Correct: [Yes/No/Partial]
-- Skeleton First (Standard) / Domain First (DDD): [Yes/No/Partial]
-- UI Before Logic (Standard) / Infra After Domain (DDD): [Yes/No/Partial]
+- Skeleton First: [Yes/No/Partial]
+- UI Before Logic: [Yes/No/Partial]
 - Data Integration Last: [Yes/No/Partial]
+
+**DDD Compliance Checklist:**
+
+1. **Dev Phase 0 (Domain Modeling)** exists and precedes all implementation phases
+2. **Dev Phase 1 (Domain Layer)** tasks are grouped per Bounded Context
+3. **Phase Order**: Domain → Application → Infrastructure → Presentation
+4. **Domain artifacts** (`docs/domain/glossary.md`, `docs/domain/context-map.md`) are created in Phase 0
+5. **Ubiquitous Language** terms in task descriptions match `docs/domain/glossary.md`
+
+**DDD Phase Order Verification:**
+- [ ] Dev Phase 0 contains domain modeling tasks (BCs, Aggregates, VOs, Events)
+- [ ] Dev Phase 1 implements domain layer before any infrastructure code
+- [ ] No infrastructure task is scheduled before its corresponding domain task
+- [ ] Application layer tasks depend on domain layer completion
 </thinking>
 
 ### Step 2: Task Decomposition Quality Analysis
@@ -706,17 +682,6 @@ Record the reasoning process in detail within <thinking> tags for each area.
 - [ ] Is Phase 2 using dummy data for UI development?
 - [ ] Is Phase 3 integrating real data sources?
 - [ ] Is Phase 4 for polish and optimization?
-
-### 🏛️ DDD Compliance Checklist (When `docs/domain/` exists)
-
-- [ ] Is there a Phase 0 for Domain Modeling (Event Storming, Context Map, Glossary)?
-- [ ] Are tasks grouped by Bounded Context (not just by technical layer)?
-- [ ] Is domain layer (Value Objects, Aggregates) implemented before infrastructure?
-- [ ] Does the TDD order follow inside-out: VO → Aggregate → Domain Service → App → Infra → Presentation?
-- [ ] Are cross-context integration tasks defined separately?
-- [ ] Does `docs/domain/glossary.md` exist and is referenced?
-- [ ] Does `docs/domain/context-map.md` exist and is referenced?
-- [ ] Are Domain Events explicitly listed in task files for cross-context features?
 
 ### 📋 Task Quality Checklist
 

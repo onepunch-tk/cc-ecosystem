@@ -105,22 +105,6 @@
 
 ---
 
-## DDD Architecture Compliance (DDD Projects Only)
-
-> Only include this section if the project uses DDD (`docs/domain/` exists)
-
-| Check | Status | Notes |
-|-------|--------|-------|
-| Domain layer purity (zero external deps) | - | - |
-| Aggregates reference by ID only | - | - |
-| State changes raise Domain Events | - | - |
-| Value Objects are immutable | - | - |
-| Invariants enforced in Aggregate Root | - | - |
-| Ubiquitous Language consistency | - | - |
-| Cross-context communication via events | - | - |
-
----
-
 ## Performance Metrics
 
 ### Response Time

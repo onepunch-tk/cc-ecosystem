@@ -88,34 +88,34 @@ These items are ALWAYS excluded regardless of scale:
 - **Key Constraints**: Technical or business constraints (1 line)
 - **Scale Indicator**: Expected request volume, data size (1 line)
 
-### 1.5. Domain Model Overview (Medium ONLY — DDD Projects)
+### 1.5 Domain Model Overview
 
-> Include when the project has complex business logic warranting DDD.
-> Skip for simple CRUD APIs.
+- Identify Bounded Contexts from API resource groups and feature domains
+- Define Ubiquitous Language, Key Aggregates, and Domain Events
 
-**Bounded Contexts** (identify from feature groups):
+**Bounded Contexts Table:**
 
-| Bounded Context | Type | Core Responsibility |
-|-----------------|------|---------------------|
-| [Context Name] | Core/Supporting/Generic | [What this context owns] |
+| Bounded Context | Core Responsibility | Key Aggregates |
+|----------------|---------------------|----------------|
+| [BC Name] | [What this context owns] | [Primary Aggregates] |
 
-**Ubiquitous Language** (key domain terms):
+**Ubiquitous Language Table:**
 
-| Term | Definition | Context |
-|------|-----------|---------|
-| [Domain Term] | [Business-language definition] | [Bounded Context] |
+| Term | Definition | Bounded Context |
+|------|-----------|-----------------|
+| [Term] | [Precise definition] | [Owning BC] |
 
-**Key Aggregates** (per context):
+**Key Aggregates Table:**
 
-| Aggregate | Context | Key Invariants |
-|-----------|---------|----------------|
-| [Name] | [Context] | [Business rules that must always hold] |
+| Aggregate | Bounded Context | Invariants |
+|-----------|----------------|------------|
+| [Name] | [BC] | [Business rules this aggregate enforces] |
 
-**Domain Events** (key state transitions):
+**Domain Events Table:**
 
-| Event | Source Aggregate | Subscribers |
-|-------|-----------------|-------------|
-| [EventName] | [Aggregate] | [Who listens] |
+| Event | Trigger | Producing BC | Consuming BC |
+|-------|---------|-------------|-------------|
+| [Event Name] | [When it fires] | [Source BC] | [Target BC] |
 
 ### 2. Auth & Permissions (Medium ONLY)
 
@@ -596,7 +596,7 @@ For each key endpoint, specify:
 
 1. Analyze user request
 2. **Detect project scale** (Small or Medium) based on Scale Detection criteria
-3. **(Medium/DDD) Identify Bounded Contexts, Ubiquitous Language, and key Aggregates**
+3. **Identify Bounded Contexts, Ubiquitous Language, and Key Aggregates** from the project domain
 4. **Design API consumer flow** - Request/response patterns
 5. **(Medium) Define auth strategy and permission matrix**
 6. **Extract MVP essential features only and assign IDs** - Small: F001 format / Medium: F-DOMAIN-001 format
@@ -606,7 +606,7 @@ For each key endpoint, specify:
 10. Design required data models
 11. **Resolve versions** from package.json for tech stack
 12. **(Medium) Define event architecture and integrations**
-13. **(Medium/DDD) Validate domain model consistency — features map to aggregates, events cover state transitions**
+13. **Validate domain model consistency** - Verify BCs, Aggregates, and Events align with features
 14. **Execute consistency validation checklist**
 15. Output in template format
 

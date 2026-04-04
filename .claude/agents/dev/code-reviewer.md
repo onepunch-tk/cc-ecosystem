@@ -57,36 +57,6 @@ For each file, check all 7 quality categories:
 - [ ] SOLID principles followed
 - [ ] No circular dependencies
 
-#### 4.3-DDD DDD Architecture Compliance (High-Critical)
-> Only evaluate if project uses DDD (`docs/domain/` directory exists)
-
-**Layer Dependency Rules**:
-- [ ] Domain layer has ZERO external dependencies (no framework, no DB, no HTTP imports)
-- [ ] Application layer only uses `@Injectable()` decorator (no `@Controller`, `@Get`, etc.)
-- [ ] Infrastructure implements domain interfaces (Repository pattern)
-- [ ] Presentation depends on Application layer only (never directly on Domain)
-
-**Aggregate Rules**:
-- [ ] Aggregates reference other aggregates by ID only (no direct object references)
-- [ ] State mutations only through Aggregate Root methods (no external mutation)
-- [ ] Every state change raises a Domain Event
-- [ ] Invariants enforced inside Aggregate Root (not in application/infrastructure)
-- [ ] Factory methods used for complex Aggregate creation
-
-**Value Object Rules**:
-- [ ] Value Objects are immutable (no setters, no mutable state)
-- [ ] Equality based on all attributes (`equals()` method present)
-- [ ] Validation at creation time (invalid state is impossible)
-
-**Domain Event Rules**:
-- [ ] Events use past tense naming (e.g., `OrderPlaced`, not `PlaceOrder`)
-- [ ] Event payloads are readonly
-- [ ] Cross-aggregate communication uses Domain Events (not direct calls)
-
-**Ubiquitous Language**:
-- [ ] Domain layer names match `docs/domain/glossary.md` terms
-- [ ] No technical jargon in domain layer (no "record", "row", "request", "response")
-
 #### 4.4 Patterns & Reusability (Medium-Critical)
 - [ ] No magic numbers/strings
 - [ ] No deeply nested conditionals (>3 levels)
@@ -105,6 +75,32 @@ For each file, check all 7 quality categories:
 - [ ] React components: `export default function Component() {}`
 - [ ] **NO `any` type** → Flag as High (use `unknown` + type guards)
 - [ ] Generics have `extends` constraints
+
+#### 4.7 DDD Architecture Compliance
+
+**Layer Dependency Rules:**
+- [ ] Domain layer has zero imports from Application, Infrastructure, or Presentation layers
+- [ ] Application layer imports only from Domain layer (not Infrastructure)
+- [ ] Infrastructure layer implements ports defined in Domain/Application layers
+
+**Aggregate Rules:**
+- [ ] All state mutations go through Aggregate Root methods
+- [ ] No direct modification of child entities from outside the Aggregate
+- [ ] Aggregate boundaries are respected (no cross-aggregate direct references)
+
+**Value Object Rules:**
+- [ ] Value Objects are immutable (no setters, no mutable state)
+- [ ] Equality is based on structural comparison, not identity
+- [ ] Value Objects contain validation logic in their constructors/factories
+
+**Domain Event Rules:**
+- [ ] Domain Events are immutable data carriers
+- [ ] Events are named in past tense (e.g., `OrderPlaced`, `PaymentReceived`)
+- [ ] Events carry only the data needed by consumers
+
+**Ubiquitous Language:**
+- [ ] Class, method, and variable names match `docs/domain/glossary.md` terms
+- [ ] No synonyms or alternative terms for the same domain concept
 
 ### Phase 5: Security Scanning (OWASP Top 10)
 For each file with risk level Critical/High/Medium:
@@ -231,10 +227,6 @@ Before finalizing:
 - [ ] Assessed bundle size impact?
 - [ ] Assigned confidence levels to all findings?
 - [ ] Used review-report skill for output?
-- [ ] (DDD) Checked domain layer purity (zero external dependencies)?
-- [ ] (DDD) Verified aggregate boundaries and invariant enforcement?
-- [ ] (DDD) Confirmed cross-aggregate communication uses events only?
-- [ ] (DDD) Validated Ubiquitous Language consistency with glossary?
 
 ## Update Agent Memory
 

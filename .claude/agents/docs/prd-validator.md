@@ -212,14 +212,11 @@ I will trace interactions between features and data flows.
 - **Backend**: Do all endpoints map to Feature IDs? Are request/response schemas consistent with Data Model? (Medium: Do endpoint auth roles match Permission Matrix?)
 - **Mobile**: Do all screens in Navigation Structure exist in Screen-by-Screen Features? Are navigation paths reachable? (Medium: Are role-specific Tab Navigators consistent with permissions? Are device permissions listed for all device-dependent features?)
 
-**DDD Consistency Checks (When Domain Model Overview section exists):**
+**DDD Consistency Checks:**
 
-- **Bounded Context Validation**: Are all feature domains mapped to Bounded Contexts? Does each Context have at least one Aggregate?
-- **Ubiquitous Language Validation**: Are domain terms used consistently throughout the PRD? Do Feature descriptions use glossary terms (not technical jargon)?
-- **Aggregate-Feature Mapping**: Does every feature touch at most one Aggregate (or explicitly cross-aggregate via Domain Events)?
-- **Domain Event Completeness**: Are all state transitions that affect other contexts captured as Domain Events?
-- **Invariant Feasibility**: Are declared Aggregate invariants technically enforceable? (e.g., uniqueness constraints, state machine transitions)
-- **Cross-Context Integration**: Are integration patterns (ACL, events) implied by the PRD's feature dependencies?
+- **BC Validation**: Are all Bounded Contexts in the Domain Model Overview traceable to feature groups? Does each BC have at least one feature?
+- **UL Validation**: Are Ubiquitous Language terms used consistently throughout the PRD (feature names, data models, endpoint names)? Flag any term used with different meanings.
+- **Aggregate-Feature Mapping**: Does every Key Aggregate map to at least one feature? Are there features that span multiple BCs without clear integration points?
 </thinking>
 
 ### Step 4: Complexity and Risk Assessment Chain
@@ -536,15 +533,6 @@ Record the reasoning process in detail within <thinking> tags for each area.
 □ **Backend**: Are Endpoint ↔ Feature ID ↔ Data Model cross-references valid? (Medium: Endpoint auth roles match Permission Matrix?)
 □ **Mobile**: Are Screen ↔ Navigation ↔ Feature ID cross-references valid? (Medium: Role-based navigators + device permissions + offline strategy consistent?)
 □ **Did you verify the platform-specific tech stack versions are current and compatible?**
-
-### 🏛️ DDD Validation Checklist (When Domain Model Overview exists)
-□ **Are all Bounded Contexts mapped to Feature ID groups (domains)?**
-□ **Are Ubiquitous Language terms used consistently across all PRD sections?**
-□ **Does every Aggregate have at least one invariant defined?**
-□ **Are Domain Events capturing all cross-context state transitions?**
-□ **Are Aggregate boundaries small enough (≤5 entities per aggregate)?**
-□ **Do features that span multiple contexts explicitly identify integration needs?**
-□ **Is the Context classification (Core/Supporting/Generic) reasonable for the project?**
 
 ### 🏷️ Tagging Accuracy Checklist
 □ **Did you use [FACT] tags only for officially documented items?**
