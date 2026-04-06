@@ -1,6 +1,25 @@
 ---
 name: prd-validator
-description: Use this agent when you need to validate Product Requirements Documents (PRDs) from a technical perspective. This agent performs systematic validation through chain-of-thought reasoning, examining technical feasibility, implementation complexity, and potential risks. Perfect for reviewing PRDs before development begins or when technical concerns need to be identified early in the product planning process.\n\nExamples:\n- <example>\n  Context: The user wants to validate a PRD for technical feasibility\n  user: "Here is a new payment system PRD. Please validate it technically."\n  assistant: "I will systematically review it using the PRD technical validation agent."\n  <commentary>\n  Use the prd-validator agent since technical feasibility validation of the PRD is required.\n  </commentary>\n  </example>\n- <example>\n  Context: User needs to identify technical risks in product requirements\n  user: "Please identify the technical risks in these feature requirements."\n  assistant: "I will analyze the risks step by step using the PRD technical validation agent."\n  <commentary>\n  Use the prd-validator agent since technical risk analysis is needed.\n  </commentary>\n  </example>
+description: |
+  Use this agent when you need to validate Product Requirements Documents (PRDs) from a technical perspective. This agent performs systematic validation through chain-of-thought reasoning, examining technical feasibility, implementation complexity, and potential risks. Perfect for reviewing PRDs before development begins or when technical concerns need to be identified early in the product planning process.
+
+  Examples:
+  - <example>
+    Context: The user wants to validate a PRD for technical feasibility
+    user: "Here is a new payment system PRD. Please validate it technically."
+    assistant: "I will systematically review it using the PRD technical validation agent."
+    <commentary>
+    Use the prd-validator agent since technical feasibility validation of the PRD is required.
+    </commentary>
+    </example>
+  - <example>
+    Context: User needs to identify technical risks in product requirements
+    user: "Please identify the technical risks in these feature requirements."
+    assistant: "I will analyze the risks step by step using the PRD technical validation agent."
+    <commentary>
+    Use the prd-validator agent since technical risk analysis is needed.
+    </commentary>
+    </example>
 model: opus
 color: purple
 ---

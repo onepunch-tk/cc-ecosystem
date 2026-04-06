@@ -1,6 +1,34 @@
 ---
 name: project-structure-analyzer
-description: "Use this agent when you need to analyze and document the project's directory structure and architecture. This includes: (1) Creating or updating PROJECT-STRUCTURE.md files, (2) Understanding how directories are organized and their responsibilities, (3) Documenting the architectural patterns and separation of concerns in the codebase, (4) Onboarding new developers by providing clear project layout documentation.\\n\\n<example>\\nContext: The user wants to document the project structure after significant refactoring.\\nuser: \"프로젝트 구조 문서를 업데이트해줘\"\\nassistant: \"I'm going to use the Task tool to launch the project-structure-analyzer agent to analyze the current project structure and update the documentation.\"\\n<commentary>\\nSince the user is requesting project structure documentation, use the project-structure-analyzer agent to analyze directories and create/update PROJECT-STRUCTURE.md.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: A new project has been set up and needs initial structure documentation.\\nuser: \"새 프로젝트의 구조를 문서화해줘\"\\nassistant: \"I'm going to use the Task tool to launch the project-structure-analyzer agent to analyze the project architecture and generate the PROJECT-STRUCTURE.md file.\"\\n<commentary>\\nSince the user needs project structure documentation for a new project, use the project-structure-analyzer agent to create the initial documentation.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: User is reviewing the codebase organization.\\nuser: \"이 프로젝트가 어떤 아키텍처 패턴을 사용하는지 분석해줘\"\\nassistant: \"I'm going to use the Task tool to launch the project-structure-analyzer agent to analyze the architectural patterns and directory organization of this project.\"\\n<commentary>\\nSince the user is asking about architectural patterns, use the project-structure-analyzer agent which specializes in analyzing project structure and architecture.\\n</commentary>\\n</example>"
+description: |
+  Use this agent when you need to analyze and document the project's directory structure and architecture. This includes: (1) Creating or updating PROJECT-STRUCTURE.md files, (2) Understanding how directories are organized and their responsibilities, (3) Documenting the architectural patterns and separation of concerns in the codebase, (4) Onboarding new developers by providing clear project layout documentation.
+
+  <example>
+  Context: The user wants to document the project structure after significant refactoring.
+  user: "프로젝트 구조 문서를 업데이트해줘"
+  assistant: "I'm going to use the Task tool to launch the project-structure-analyzer agent to analyze the current project structure and update the documentation."
+  <commentary>
+  Since the user is requesting project structure documentation, use the project-structure-analyzer agent to analyze directories and create/update PROJECT-STRUCTURE.md.
+  </commentary>
+  </example>
+
+  <example>
+  Context: A new project has been set up and needs initial structure documentation.
+  user: "새 프로젝트의 구조를 문서화해줘"
+  assistant: "I'm going to use the Task tool to launch the project-structure-analyzer agent to analyze the project architecture and generate the PROJECT-STRUCTURE.md file."
+  <commentary>
+  Since the user needs project structure documentation for a new project, use the project-structure-analyzer agent to create the initial documentation.
+  </commentary>
+  </example>
+
+  <example>
+  Context: User is reviewing the codebase organization.
+  user: "이 프로젝트가 어떤 아키텍처 패턴을 사용하는지 분석해줘"
+  assistant: "I'm going to use the Task tool to launch the project-structure-analyzer agent to analyze the architectural patterns and directory organization of this project."
+  <commentary>
+  Since the user is asking about architectural patterns, use the project-structure-analyzer agent which specializes in analyzing project structure and architecture.
+  </commentary>
+  </example>
 model: opus
 color: white
 ---

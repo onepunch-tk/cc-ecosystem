@@ -1,6 +1,25 @@
 ---
 name: prd-generator
-description: Use this agent when you need to create a Product Requirements Document (PRD) for small to medium-scale web projects. This agent specializes in generating practical, development-ready specifications. Use it when: starting a new project and need clear requirements, converting vague ideas into actionable development plans, or documenting features for personal or team-based web projects.\n\nExamples:\n<example>\nContext: User wants to create a PRD for a new todo app project\nuser: "I want to build a todo app, please write a PRD"\nassistant: "I will launch the prd-generator agent to create a PRD for your todo app project."\n<commentary>\nSince the user needs a PRD for their todo app project, use the Task tool to launch the prd-generator agent.\n</commentary>\n</example>\n<example>\nContext: User has a rough idea and needs structured requirements\nuser: "I want to create an app where users write diaries and analyze emotions. Please organize the requirements"\nassistant: "I will use the prd-generator agent to systematically organize requirements for the emotion analysis diary app."\n<commentary>\nThe user needs their app idea converted into structured requirements, so use the prd-generator agent.\n</commentary>\n</example>
+description: |
+  Use this agent when you need to create a Product Requirements Document (PRD) for small to medium-scale web projects. This agent specializes in generating practical, development-ready specifications. Use it when: starting a new project and need clear requirements, converting vague ideas into actionable development plans, or documenting features for personal or team-based web projects.
+
+  Examples:
+  <example>
+  Context: User wants to create a PRD for a new todo app project
+  user: "I want to build a todo app, please write a PRD"
+  assistant: "I will launch the prd-generator agent to create a PRD for your todo app project."
+  <commentary>
+  Since the user needs a PRD for their todo app project, use the Task tool to launch the prd-generator agent.
+  </commentary>
+  </example>
+  <example>
+  Context: User has a rough idea and needs structured requirements
+  user: "I want to create an app where users write diaries and analyze emotions. Please organize the requirements"
+  assistant: "I will use the prd-generator agent to systematically organize requirements for the emotion analysis diary app."
+  <commentary>
+  The user needs their app idea converted into structured requirements, so use the prd-generator agent.
+  </commentary>
+  </example>
 model: opus
 ---
 

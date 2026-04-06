@@ -1,6 +1,25 @@
 ---
 name: prd-generator-backend
-description: Use this agent when you need to create a Product Requirements Document (PRD) for backend/API projects. This agent specializes in generating practical, development-ready specifications for REST APIs, GraphQL services, microservices, and server-side applications. Use it when: building a standalone API service, creating a backend for mobile/web clients, or documenting server-side features.\n\nExamples:\n<example>\nContext: User wants to create a PRD for a REST API project\nuser: "I want to build a REST API for a booking system, please write a PRD"\nassistant: "I will launch the prd-generator-backend agent to create a PRD for your booking API project."\n<commentary>\nSince the user needs a PRD for a backend API project, use the Task tool to launch the prd-generator-backend agent.\n</commentary>\n</example>\n<example>\nContext: User wants to build a microservice\nuser: "I need a notification microservice that handles email and push notifications"\nassistant: "I will use the prd-generator-backend agent to create a PRD for the notification microservice."\n<commentary>\nThe user needs a backend service PRD, so use the prd-generator-backend agent.\n</commentary>\n</example>
+description: |
+  Use this agent when you need to create a Product Requirements Document (PRD) for backend/API projects. This agent specializes in generating practical, development-ready specifications for REST APIs, GraphQL services, microservices, and server-side applications. Use it when: building a standalone API service, creating a backend for mobile/web clients, or documenting server-side features.
+
+  Examples:
+  <example>
+  Context: User wants to create a PRD for a REST API project
+  user: "I want to build a REST API for a booking system, please write a PRD"
+  assistant: "I will launch the prd-generator-backend agent to create a PRD for your booking API project."
+  <commentary>
+  Since the user needs a PRD for a backend API project, use the Task tool to launch the prd-generator-backend agent.
+  </commentary>
+  </example>
+  <example>
+  Context: User wants to build a microservice
+  user: "I need a notification microservice that handles email and push notifications"
+  assistant: "I will use the prd-generator-backend agent to create a PRD for the notification microservice."
+  <commentary>
+  The user needs a backend service PRD, so use the prd-generator-backend agent.
+  </commentary>
+  </example>
 model: opus
 ---
 
