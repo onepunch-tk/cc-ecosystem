@@ -14,10 +14,8 @@ cc-ecosystem/
 └── .claude/
     ├── settings.json                  # 훅, 환경변수, 플러그인 설정
     ├── agents/
-    │   ├── docs/                      # 문서 에이전트 (7개)
+    │   ├── docs/                      # 문서 에이전트 (5개)
     │   │   ├── prd-generator.md
-    │   │   ├── prd-generator-backend.md
-    │   │   ├── prd-generator-mobile.md
     │   │   ├── prd-validator.md
     │   │   ├── development-planner.md
     │   │   ├── roadmap-validator.md
@@ -29,7 +27,8 @@ cc-ecosystem/
     │       ├── code-reviewer.md
     │       ├── quality-gate.md
     │       └── starter-cleaner.md
-    ├── skills/                        # 스킬 (5개)
+    ├── skills/                        # 스킬 (6개)
+    │   ├── prd/
     │   ├── git/
     │   ├── tdd/
     │   ├── project-structure/
@@ -60,13 +59,11 @@ cc-ecosystem/
 
 ### Agents - 에이전트
 
-#### 문서 에이전트 (7개)
+#### 문서 에이전트 (5개)
 
 | 에이전트 | 설명 |
 |----------|------|
-| `prd-generator` | 소규모/중규모 웹 프로젝트의 PRD(제품 요구사항 문서) 생성 |
-| `prd-generator-backend` | REST API, GraphQL, 마이크로서비스 등 백엔드/API 프로젝트의 PRD 생성 |
-| `prd-generator-mobile` | React Native(Expo) 모바일 앱 프로젝트의 PRD 생성 |
+| `prd-generator` | Web/Backend/Mobile/Multi-platform PRD 통합 생성 (prd 스킬 활용) |
 | `prd-validator` | 작성된 PRD를 기술적 관점에서 검증하고 실현 가능성 분석 |
 | `development-planner` | ROADMAP.md 파일을 생성, 업데이트, 유지보수하는 프로젝트 매니저 |
 | `roadmap-validator` | ROADMAP.md와 작업 파일들의 완성도 및 일관성 검증 |
@@ -83,10 +80,11 @@ cc-ecosystem/
 | `quality-gate` | TDD 사이클 완료 후 코드 리뷰와 E2E 테스트를 자동 실행하고 결과 요약 |
 | `starter-cleaner` | 스타터 킷에서 데모 코드와 보일러플레이트를 제거하여 프로덕션 준비 |
 
-### Skills - 스킬 (5개)
+### Skills - 스킬 (6개)
 
 | 스킬 | 명령어 | 설명 |
 |------|--------|------|
+| `prd` | — | PRD 생성 규칙, 플랫폼별 템플릿, 일관성 검증 (Web/Backend/Mobile/Multi-platform) |
 | `git` | `/git` | 커밋, 푸시, 동기화, 병합 작업을 UI로 선택 및 실행 |
 | `tdd` | `/tdd` | TDD 규칙과 패턴 정의, Red-Green-Refactor 사이클 가이드 |
 | `project-structure` | `/project-structure` | 클린 아키텍처 템플릿으로 PROJECT-STRUCTURE.md 자동 생성 |

@@ -1,5 +1,8 @@
 tmux-*.log
 
+# Claude Code user-local settings (not for template distribution)
+.claude/settings.local.json
+
 # Created by https://www.toptal.com/developers/gitignore/api/macos,windows,visualstudiocode,webstorm+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,windows,visualstudiocode,webstorm+all
 

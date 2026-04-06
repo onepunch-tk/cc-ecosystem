@@ -23,7 +23,6 @@ DANGEROUS_PATTERNS=(
     "mkfs\."
     "curl.*\|.*sh"
     "wget.*\|.*sh"
-    "--force"
     "reset --hard"
     "push --force"
     "push -f"

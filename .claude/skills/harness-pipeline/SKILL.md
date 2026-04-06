@@ -92,7 +92,7 @@ When planning file locations, refer to the **CA template loaded in Step 2b** and
 
 | Step | Action |
 |------|--------|
-| 6 | Fetch latest and switch to `development` branch: `git fetch origin development && git checkout development && git pull origin development` (create if not exists) |
+| 6 | Fetch latest and switch to `development` branch: `git fetch origin && git checkout development 2>/dev/null \|\| git checkout -b development && git pull origin development 2>/dev/null \|\| true` |
 | 7 | Create feature branch from `development` |
 
 ### Sequential Mode (1-3 files)

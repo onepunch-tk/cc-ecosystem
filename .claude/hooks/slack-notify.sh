@@ -130,6 +130,12 @@ case "$HOOK_EVENT" in
         esac
         ;;
 
+    "PermissionRequest")
+        TEXT="${MESSAGE:-도구 실행 권한 승인이 필요합니다}"
+        PAYLOAD=$(build_payload "#FFA500" ":key: 권한 요청 (PermissionRequest)" "$TEXT")
+        send_slack "$PAYLOAD"
+        ;;
+
     "Stop")
         # stop_hook_active 체크 (무한 루프 방지)
         STOP_HOOK_ACTIVE=$(echo "$INPUT" | jq -r '.stop_hook_active // false')

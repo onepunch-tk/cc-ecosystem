@@ -40,8 +40,9 @@ If you name a server-side utility `something.client.ts`, it will be bundled as `
 - ✅ `notion.service.ts` — Different suffix
 - ❌ `notion.client.ts` — Treated as client-only, causes SSR errors
 
-### React 19 Optimization [STRICT]
-- **Trust React Compiler**: `useCallback` and `useMemo` **strictly prohibited** unless empirically justified.
+### React 19 Optimization
+- **Trust React Compiler**: `useCallback` and `useMemo` are unnecessary in most cases — React Compiler handles memoization automatically.
+- Use `useCallback`/`useMemo` **only** when a measured performance bottleneck justifies it (e.g., profiler evidence of expensive re-renders).
 - Prioritize code readability over premature optimization.
 
 ### Function Definitions
@@ -78,10 +79,11 @@ If you name a server-side utility `something.client.ts`, it will be bundled as `
 | `bun run typecheck` | TypeScript type checking |
 
 ## Post-Completion Documentation
-After workflow completion, update **as needed**:
+After workflow completion, update **as needed** using the designated agent:
 
-| Document | Update When |
-|----------|-------------|
-| `docs/PROJECT-STRUCTURE.md` | New directories, files, or architectural changes |
-| `docs/PRD.md` | Feature scope changes or new requirements |
-| `CLAUDE.md` | Workflow improvements or new conventions |
+| Document | Update When | Agent |
+|----------|-------------|-------|
+| `docs/PROJECT-STRUCTURE.md` | New directories or architectural changes | `project-structure-analyzer` |
+| `docs/PRD.md` | Feature scope changes or new requirements | `prd-generator` (Web/Backend/Mobile/Multi-platform 통합) |
+| `docs/ROADMAP.md` | Task completion, phase addition, status/priority changes | `development-planner` |
+| `CLAUDE.md` | Tech stack changes, new code conventions, new commands | Manual (direct edit) |
