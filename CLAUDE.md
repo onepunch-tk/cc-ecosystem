@@ -19,7 +19,6 @@
 
 ## Critical Documents
 - Project Structure [docs/PROJECT-STRUCTURE.md](docs/PROJECT-STRUCTURE.md): **MANDATORY** - Reference before ANY task
-- PRD Document [docs/PRD.md](docs/PRD.md): **MANDATORY** - Defines "what" to build (features, requirements)
 - Development RoadMap [docs/ROADMAP.md](docs/ROADMAP.md): **MANDATORY** - Defines "in what order" to build (implementation phases)
 
 ## Workflow
