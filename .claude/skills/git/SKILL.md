@@ -42,7 +42,19 @@ Parse the `args` parameter when the skill is invoked to separate the action and 
 
 ### 1. If no action → Display task selection UI
 
-**Call AskUserQuestion tool to provide task selection UI.**
+**Channel Detection**: When the request originates from an external channel message (`<channel source="plugin:discord:discord" ...>`):
+- `AskUserQuestion` is unavailable (terminal only)
+- Send task selection options as text via Discord reply, then wait for user's response
+- Example reply:
+  ```
+  Git 작업을 선택해줘:
+  1. commit — 변경사항 분석 후 커밋
+  2. push — 현재 브랜치 푸시
+  3. sync — add → commit → push 전체 워크플로우
+  4. merge — Trunk-based 머지 (현재 브랜치 → main)
+  ```
+
+**Terminal**: Call AskUserQuestion tool to provide task selection UI.
 
 #### If no message:
 
