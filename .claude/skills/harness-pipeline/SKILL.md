@@ -44,20 +44,55 @@ Mode Detection Algorithm:
 
 ## Phase 1: Plan (All Modes)
 
+> **Default**: `EnterPlanMode` (local planning — always available)
+> **Upgrade**: ultraplan (cloud-based planning — requires user to manually trigger via `/ultraplan` command)
+
 | Step | Action |
 |------|--------|
-| 1 | Enter `PlanMode` |
-| 2 | Read `CLAUDE.md`. Read `docs/ROADMAP.md` if it exists (skip if not — e.g., bug fix without roadmap) |
-| 2a | **CA Structure Check**: Read `docs/PROJECT-STRUCTURE.md`. If it does NOT exist → auto-invoke `project-structure` skill to generate it from the CA template |
-| 2b | **Load CA Template**: Detect framework type and load the matching CA template from `.claude/skills/project-structure/references/` (react-router, nestjs, or expo). Use the template's **File Location Summary by Task** table as the file placement guide |
-| 3 | Analyze current state thoroughly |
-| 4 | Create detailed step-by-step plan. **File placement MUST follow the CA template's layer structure**: Domain → Application → Infrastructure → Presentation |
-| 5 | **Count files and features** → determine execution mode |
-| 6 | Exit `PlanMode` → wait for plan approval |
+| 1 | Read `CLAUDE.md`. Read `docs/ROADMAP.md` if it exists (skip if not — e.g., bug fix without roadmap) |
+| 1a | **CA Structure Check**: Read `docs/PROJECT-STRUCTURE.md`. If it does NOT exist → auto-invoke `project-structure` skill to generate it from the CA template |
+| 1b | **Load CA Template**: Detect framework type and load the matching CA template from `.claude/skills/project-structure/references/` (react-router, nestjs, or expo). Use the template's **File Location Summary by Task** table as the file placement guide |
+| 2 | **Enter plan mode**: Call `EnterPlanMode` to start local planning. Output a summary of gathered context and task description for the user. Inform the user they can upgrade to ultraplan via `/ultraplan` if desired. |
+| 3 | Analyze current state and create detailed step-by-step plan in the plan file. **File placement MUST follow the CA template's layer structure**: Domain → Application → Infrastructure → Presentation |
+| 4 | **Count files and features** → determine execution mode (Sequential / Delegated / Team) |
+| 5 | Plan review → approve via `ExitPlanMode` (user may upgrade to ultraplan at this point) |
+
+### Ultraplan (Optional Upgrade)
+
+Ultraplan is a cloud-based planning feature. **Agents cannot trigger ultraplan programmatically** — the keyword trigger only works when typed by the user, not when output by an agent.
+
+The user can upgrade to ultraplan via:
+
+| Method | How It Works |
+|--------|-------------|
+| **User command** | User runs `/ultraplan <task>` directly in CLI |
+| **From local plan** | User chooses "refine with Ultraplan" at local plan approval dialog |
+
+> If the user does not trigger ultraplan, proceed with local plan mode (`EnterPlanMode`) — this is the default path.
+
+### Status Indicators (ultraplan active)
+
+| Status | Meaning |
+|--------|---------|
+| `◇ ultraplan` | Drafting the plan |
+| `◇ ultraplan needs your input` | Clarifying question — open session link |
+| `◆ ultraplan ready` | Plan ready for browser review |
+
+### Approval Options
+
+**Default (local plan mode):**
+- Call `ExitPlanMode` → user reviews and approves the plan file
+- User may upgrade to ultraplan via `/ultraplan` or "refine with Ultraplan"
+
+**If user activated ultraplan:**
+- **Approve & execute on the web** → implementation continues in the cloud session, opens PR when done
+- **Approve & teleport to terminal** → plan is sent back to CLI for local execution with full environment access
+
+> After approval (either path), the pipeline continues directly to Phase 2 (TDD). No separate confirmation needed.
 
 ### CA File Placement Rules (Phase 1)
 
-When planning file locations, refer to the **CA template loaded in Step 2b** and `docs/PROJECT-STRUCTURE.md` for actual layer paths. Place each file type in the matching CA layer:
+When planning file locations, refer to the **CA template loaded in Step 1b** and `docs/PROJECT-STRUCTURE.md` for actual layer paths. Place each file type in the matching CA layer:
 
 | File Type | CA Layer |
 |-----------|----------|
@@ -76,9 +111,9 @@ When planning file locations, refer to the **CA template loaded in Step 2b** and
 
 | Step | Action |
 |------|--------|
-| 5a | Break work into tasks with **clear file ownership** (no overlapping files) |
-| 5b | Verify NO file overlap between tasks before spawning teammates |
-| 5c | Prepare teammate task prompts with file ownership lists |
+| 4a | Break work into tasks with **clear file ownership** (no overlapping files) |
+| 4b | Verify NO file overlap between tasks before spawning teammates |
+| 4c | Prepare teammate task prompts with file ownership lists |
 
 > **WARNING: File Ownership is CRITICAL**
 > Overlapping file assignments = merge conflicts = wasted work.
