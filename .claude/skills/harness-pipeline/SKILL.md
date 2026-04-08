@@ -105,7 +105,50 @@ When planning file locations, refer to the **CA template loaded in Step 1b** and
 
 > **Dependency Rule**: Domain ← Application ← Infrastructure/Presentation. Inner layers MUST NOT import from outer layers.
 
-> After plan approval, create tasks via `TaskCreate` and execute immediately. No separate confirmation needed.
+> After plan approval, create ALL tasks for the entire pipeline upfront via `TaskCreate`, then execute sequentially. No separate confirmation needed.
+
+### Task Creation (Immediately After Plan Approval)
+
+> **CRITICAL**: Create tasks for ALL phases at once so the user can track overall progress. Tasks must describe **what to actually do**, not just pipeline flow labels. Break down into the smallest actionable units — each task should be a concrete, executable action that the agent performs.
+
+**Bad** (pipeline flow labels — too abstract):
+```
+- TDD Red: hero-section test
+- TDD Green: hero-section implementation
+```
+
+**Good** (concrete actions — what actually gets done):
+```
+- Install React Router Framework via bun create react-router
+- Remove demo welcome page and home route
+- Create CA directories (domain, application, infrastructure, presentation)
+- Install vitest, @testing-library/react, jsdom and configure vitest.config.ts
+- Update routes.ts to point to presentation/routes/_index.tsx
+- Write test: HeroSection renders company name and tagline
+- Write test: HeroSection renders "Get Started" and "Learn More" CTA buttons
+- Write test: ServiceSection renders 3 service cards (AI Consulting, ML Pipeline, Computer Vision)
+- Write test: TeamSection renders 4 team members with names and roles
+- Write test: ContactSection renders contact form with name/email/message fields
+- Write test: _index route composes all sections in correct order
+- Implement HeroSection — company name, tagline, gradient background, 2 CTA buttons
+- Implement ServiceSection — 3-column grid, icon + title + description per card
+- Implement TeamSection — 4-column grid, avatar initial + name + role + bio
+- Implement ContactSection — email, address, form with name/email/message/submit
+- Implement _index route — Nav + Hero + Services + Team + Contact + Footer
+- Update app.css with Tailwind global styles
+- Run code-reviewer and fix reported issues
+- Run E2E test to verify page renders correctly
+- Merge feature/company-intro-page → development
+```
+
+### Git Setup (Immediately After Plan Approval)
+
+> **CRITICAL**: Branch creation MUST happen immediately after plan approval, BEFORE any code changes — including scaffolding, dependency installation, or file creation. Every code-modifying action belongs on a feature branch, never on `main` directly.
+
+| Step | Action |
+|------|--------|
+| 5a | Fetch latest and switch to `development` branch: `git fetch origin && git checkout development 2>/dev/null \|\| git checkout -b development && git pull origin development 2>/dev/null \|\| true` |
+| 5b | Create feature branch from `development`. Branch name MUST follow the naming convention in [commit-prefix-rules.md](../git/references/commit-prefix-rules.md): `feature/*`, `fix/*`, `docs/*`, `refactor/*`, `test/*`, `chore/*`. Derive the name dynamically from the task content (e.g., `feature/company-intro-page`, `fix/login-session-bug`) |
 
 ### Team Mode Addition (Phase 1)
 
@@ -123,12 +166,7 @@ When planning file locations, refer to the **CA template loaded in Step 1b** and
 
 ## Phase 2: TDD (after user approval)
 
-### Git Setup (All Modes)
-
-| Step | Action |
-|------|--------|
-| 6 | Fetch latest and switch to `development` branch: `git fetch origin && git checkout development 2>/dev/null \|\| git checkout -b development && git pull origin development 2>/dev/null \|\| true` |
-| 7 | Create feature branch from `development` |
+> **Note**: Git branch setup (Steps 5a-5b) was already completed in Phase 1. All work below happens on the feature branch.
 
 ### Sequential Mode (1-3 files)
 
