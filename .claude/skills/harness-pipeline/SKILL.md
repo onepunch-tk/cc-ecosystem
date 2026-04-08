@@ -141,6 +141,8 @@ When planning file locations, refer to the **CA template loaded in Step 1b** and
 - Merge feature/company-intro-page → development
 ```
 
+> **NOTE**: The example above is for reference only. Actual tasks MUST be derived from the approved plan and the current project state — not copied from this example. If the project already has scaffolding, skip those tasks. If the tech stack differs, adjust accordingly.
+
 ### Git Setup (Immediately After Plan Approval)
 
 > **CRITICAL**: Branch creation MUST happen immediately after plan approval, BEFORE any code changes — including scaffolding, dependency installation, or file creation. Every code-modifying action belongs on a feature branch, never on `main` directly.
