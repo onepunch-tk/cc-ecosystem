@@ -3,7 +3,7 @@ name: harness-pipeline
 description: |
   Unified development pipeline for all implementation tasks.
   Clean Architecture is the default — file placement follows CA layer templates.
-  Auto-detects execution mode (Sequential, Delegated, Team) based on task scope.
+  Auto-detects execution mode (Sequential or Team) based on task scope.
   Covers single-file fixes through cross-cutting multi-agent parallel work.
   Do NOT use for research, documentation-only, or planning-only tasks.
 ---
@@ -22,23 +22,80 @@ After Phase 1 planning, auto-detect execution mode based on task scope:
 
 | Criteria | Mode | Description |
 |----------|------|-------------|
-| 1-3 files, single feature | **Sequential** | Main agent handles all phases directly |
-| 4-10 files, 2-3 features | **Delegated** | Supervisor pattern with worker agents |
-| 10+ files, complex features | **Team** | Lead + teammate agents via TeamCreate |
+| 1-5 files, 1-2 features | **Sequential** | Main agent handles all phases directly |
+| 6+ files, 3+ features | **Team** | Lead + teammate agents via TeamCreate |
 
 ```
 Mode Detection Algorithm:
 1. Count files to be modified from plan
 2. Count distinct features/components
-3. IF files <= 3 AND features == 1:
+3. IF files <= 5 AND features <= 2:
      → Sequential Mode
-   ELSE IF files <= 10:
-     → Delegated Mode (Supervisor)
    ELSE:
      → Team Mode (Lead + Teammates)
 ```
 
-**User Override**: User can explicitly request mode: "use sequential mode", "use delegated mode", or "use team mode"
+**User Override**: User can explicitly request mode: "use sequential mode" or "use team mode"
+
+---
+
+## Pipeline State Management
+
+The harness enforces Access Control via two state files.
+
+### `.claude/pipeline-state.json`
+
+Updated at each Phase transition. The ABAC hook reads this to block source code modifications during plan phase.
+
+**Format:**
+```json
+{
+  "current_phase": "plan",
+  "mode": "sequential",
+  "branch": "feature/xxx",
+  "updated_at": "2026-04-08T10:00:00Z"
+}
+```
+
+**Phase order:** `none` → `plan` → `tdd` → `review` → `validate` → `complete`
+
+**Update command (run at each Phase transition):**
+```bash
+cat > .claude/pipeline-state.json << EOF
+{
+  "current_phase": "PHASE",
+  "mode": "MODE",
+  "branch": "$(git branch --show-current)",
+  "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+EOF
+```
+
+### `.claude/ownership.json` (Team Mode only)
+
+Written by lead after TeamCreate. The ReBAC hook checks per-teammate file ownership.
+
+**Format (teammate_name as key — verified):**
+```json
+{
+  "mode": "team",
+  "branch": "feature/xxx",
+  "created_at": "2026-04-08T10:00:00Z",
+  "teammates": {
+    "hero-builder":   { "files": ["src/presentation/components/HeroSection.tsx"] },
+    "service-builder": { "files": ["src/presentation/components/ServiceSection.tsx"] }
+  },
+  "shared": ["src/presentation/routes.ts", "src/presentation/routes/index.ts"]
+}
+```
+
+> ⚠ **ReBAC scope (verified)**: Team teammate PreToolUse stdin does NOT contain `agent_id`/`agent_type`/`teammate_name`.
+> PreToolUse ReBAC blocking only works for **agents spawned via subagent_type**.
+> Team teammate ownership violations are **detected post-hoc by the TeammateIdle hook**.
+
+**When to write:** Immediately after TeamCreate. Use the same `name` parameter specified when spawning teammates.
+
+**Cleanup:** Run `rm -f .claude/ownership.json` after Phase 4 completion.
 
 ---
 
@@ -53,8 +110,10 @@ Mode Detection Algorithm:
 | 1a | **CA Structure Check**: Read `docs/PROJECT-STRUCTURE.md`. If it does NOT exist → auto-invoke `project-structure` skill to generate it from the CA template |
 | 1b | **Load CA Template**: Detect framework type and load the matching CA template from `.claude/skills/project-structure/references/` (react-router, nestjs, or expo). Use the template's **File Location Summary by Task** table as the file placement guide |
 | 2 | **Enter plan mode**: Call `EnterPlanMode` to start local planning. Output a summary of gathered context and task description for the user. Inform the user they can upgrade to ultraplan via `/ultraplan` if desired. |
+| 2a | **Pipeline State → `plan`**: Set `pipeline-state.json` `current_phase` to `"plan"` (ABAC hook blocks source code modifications during plan phase). Mode is finalized after Step 4, so set `"pending"` for now. (see [Pipeline State Management](#pipeline-state-management)) |
 | 3 | Analyze current state and create detailed step-by-step plan in the plan file. **File placement MUST follow the CA template's layer structure**: Domain → Application → Infrastructure → Presentation |
-| 4 | **Count files and features** → determine execution mode (Sequential / Delegated / Team) |
+| 4 | **Count files and features** → determine execution mode (Sequential / Team) |
+| 4z | **Pipeline State mode finalized**: Update `pipeline-state.json` with the mode determined in Step 4 (`"sequential"` \| `"team"`) |
 | 5 | Plan review → approve via `ExitPlanMode` (user may upgrade to ultraplan at this point) |
 
 ### Ultraplan (Optional Upgrade)
@@ -127,14 +186,9 @@ When planning file locations, refer to the **CA template loaded in Step 1b** and
 - Write test: HeroSection renders company name and tagline
 - Write test: HeroSection renders "Get Started" and "Learn More" CTA buttons
 - Write test: ServiceSection renders 3 service cards (AI Consulting, ML Pipeline, Computer Vision)
-- Write test: TeamSection renders 4 team members with names and roles
-- Write test: ContactSection renders contact form with name/email/message fields
-- Write test: _index route composes all sections in correct order
 - Implement HeroSection — company name, tagline, gradient background, 2 CTA buttons
 - Implement ServiceSection — 3-column grid, icon + title + description per card
-- Implement TeamSection — 4-column grid, avatar initial + name + role + bio
-- Implement ContactSection — email, address, form with name/email/message/submit
-- Implement _index route — Nav + Hero + Services + Team + Contact + Footer
+- Implement _index route — Nav + Hero + Services + Footer
 - Update app.css with Tailwind global styles
 - Run code-reviewer and fix reported issues
 - Run E2E test to verify page renders correctly
@@ -149,7 +203,7 @@ When planning file locations, refer to the **CA template loaded in Step 1b** and
 
 | Step | Action |
 |------|--------|
-| 5a | Fetch latest and switch to `development` branch: `git fetch origin && git checkout development 2>/dev/null \|\| git checkout -b development && git pull origin development 2>/dev/null \|\| true` |
+| 5a | Fetch latest and switch to `development` branch: `git fetch origin && git checkout development 2>/dev/null \|\| git checkout -b development main && git pull origin development 2>/dev/null \|\| true` |
 | 5b | Create feature branch from `development`. Branch name MUST follow the naming convention in [commit-prefix-rules.md](../git/references/commit-prefix-rules.md): `feature/*`, `fix/*`, `docs/*`, `refactor/*`, `test/*`, `chore/*`. Derive the name dynamically from the task content (e.g., `feature/company-intro-page`, `fix/login-session-bug`) |
 
 ### Team Mode Addition (Phase 1)
@@ -168,9 +222,21 @@ When planning file locations, refer to the **CA template loaded in Step 1b** and
 
 ## Phase 2: TDD (after user approval)
 
+> **Pipeline State → `tdd`**: Update `pipeline-state.json` before Phase 2 starts (ABAC source code blocking lifted):
+> ```bash
+> cat > .claude/pipeline-state.json << EOF
+> {
+>   "current_phase": "tdd",
+>   "mode": "$(jq -r .mode .claude/pipeline-state.json)",
+>   "branch": "$(git branch --show-current)",
+>   "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+> }
+> EOF
+> ```
+
 > **Note**: Git branch setup (Steps 5a-5b) was already completed in Phase 1. All work below happens on the feature branch.
 
-### Sequential Mode (1-3 files)
+### Sequential Mode (1-5 files)
 
 | Step | Action | Sub-Agent |
 |------|--------|-----------|
@@ -193,29 +259,13 @@ When planning file locations, refer to the **CA template loaded in Step 1b** and
 - After Step 8: If tests pass immediately → review test logic, likely not testing correctly
 - After Step 9: If any test fails → fix implementation before proceeding
 
-### Delegated Mode (4-10 files)
-
-| Step | Action | Sub-Agent |
-|------|--------|-----------|
-| 8 | Spawn `task-executor` worker agent with task context | `Agent(subagent_type="task-executor")` |
-| 9 | **Supervisor waits** — do NOT implement yourself | — |
-| 10 | Receive summary from `task-executor` | — |
-| 11 | Verify summary: Status=Success, Coverage>=90% | — |
-
-> `task-executor` internally spawns `unit-test-writer` for Red phase, then implements Green phase.
-
-```
-Supervisor Context During Delegation:
-- Store only: task ID, file list, expected outcomes
-- Do NOT read test code or implementation details
-- Wait for worker summary
-```
-
-### Team Mode (10+ files)
+### Team Mode (6+ files)
 
 | Step | Action | Sub-Agent |
 |------|--------|-----------|
 | 8 | Spawn teammates with detailed prompts (see Spawn Template below) | `TeamCreate` |
+| 8a | **Ownership registration**: Run `cat ~/.claude/teams/{team-name}/config.json` → verify `members[].agentId` and `members[].name` mapping | — |
+| 8b | **Write `.claude/ownership.json`**: Record each teammate's name → `{files}` mapping (see [Pipeline State Management](#pipeline-state-management)) | — |
 | 9 | Use **Delegate Mode** (Shift+Tab) — do NOT implement yourself | — |
 | 10 | Monitor teammate progress, unblock as needed | — |
 
@@ -243,33 +293,24 @@ Use Opus for all teammates. Require plan approval.
 
 ## Phase 3: Review
 
+> **Pipeline State → `review`**: Update before Phase 3 starts:
+> ```bash
+> cat > .claude/pipeline-state.json << EOF
+> {
+>   "current_phase": "review",
+>   "mode": "$(jq -r .mode .claude/pipeline-state.json)",
+>   "branch": "$(git branch --show-current)",
+>   "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+> }
+> EOF
+> ```
+
 ### Sequential Mode
 
 | Step | Action | Sub-Agent |
 |------|--------|-----------|
 | 10 | Run `code-reviewer` sub-agent (unified: quality + security + performance) | `Agent(subagent_type="code-reviewer")` |
 | 11 | Read report in `/docs/reports/code-review/` → fix ALL issues where status ≠ "complete" | — (main agent) |
-
-### Delegated Mode
-
-| Step | Action | Sub-Agent |
-|------|--------|-----------|
-| 12 | Spawn `quality-gate` worker agent with changed files list | `Agent(subagent_type="quality-gate")` |
-| 13 | **Supervisor waits** — do NOT review yourself | — |
-| 14 | Receive pass/fail summary from `quality-gate` | — |
-| 15 | IF Status=FAIL: Spawn `task-executor` to fix blocking issues | `Agent(subagent_type="task-executor")` |
-| 16 | IF Status=PASS: Proceed to Phase 4 | — |
-
-> `quality-gate` internally spawns `code-reviewer` + `e2e-tester`.
-
-```
-Quality Gate Loop:
-WHILE quality-gate returns FAIL:
-  1. Extract blocking issues from summary
-  2. Spawn task-executor with fix instructions
-  3. Re-run quality-gate
-  4. Max 3 iterations, then escalate to user
-```
 
 ### Team Mode
 
@@ -280,7 +321,7 @@ WHILE quality-gate returns FAIL:
 | 13 | Run `e2e-tester` sub-agent to validate user flows | `Agent(subagent_type="e2e-tester")` |
 | 14 | Read report in `/docs/reports/code-review/` → fix ALL issues where status ≠ "complete" | — (lead) |
 
-> **Why lead calls directly (not quality-gate)**: Lead is the integration reviewer across multiple teammates' work. Direct invocation gives better control over the review scope.
+> **Why lead calls directly**: Lead is the integration reviewer across multiple teammates' work. Direct invocation gives better control over the review scope.
 
 **Commit**: Per [workflow-commits.md](../git/references/workflow-commits.md) — Review phase
 
@@ -290,6 +331,18 @@ WHILE quality-gate returns FAIL:
 
 ## Phase 4: Validate & Finalize
 
+> **Pipeline State → `validate`**: Update before Phase 4 starts:
+> ```bash
+> cat > .claude/pipeline-state.json << EOF
+> {
+>   "current_phase": "validate",
+>   "mode": "$(jq -r .mode .claude/pipeline-state.json)",
+>   "branch": "$(git branch --show-current)",
+>   "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+> }
+> EOF
+> ```
+
 ### Sequential Mode
 
 | Step | Action | Sub-Agent |
@@ -298,15 +351,7 @@ WHILE quality-gate returns FAIL:
 | 13 | Fix bugs discovered in E2E (skip if all pass) | — (main agent) |
 | 14 | Run `development-planner` sub-agent | `Agent(subagent_type="development-planner")` |
 | 15 | Merge feature branch to `development` | — |
-
-### Delegated Mode
-
-| Step | Action | Sub-Agent |
-|------|--------|-----------|
-| 17 | E2E already run by `quality-gate` — check summary | — |
-| 18 | IF E2E failed: Spawn `task-executor` for fixes, re-run `quality-gate` | `Agent(subagent_type="task-executor")` |
-| 19 | Run `development-planner` sub-agent (Supervisor handles directly) | `Agent(subagent_type="development-planner")` |
-| 20 | Merge feature branch to `development` | — |
+| 16 | **Pipeline State → `complete`**: Update `pipeline-state.json` and reset state | — |
 
 ### Team Mode
 
@@ -316,6 +361,7 @@ WHILE quality-gate returns FAIL:
 | 16 | Run `development-planner` sub-agent | `Agent(subagent_type="development-planner")` |
 | 17 | Merge working branch → `development` | — |
 | 18 | Update `ROADMAP.md` and `PROJECT-STRUCTURE.md` | — |
+| 19 | **Cleanup**: `rm -f .claude/ownership.json` (Team session ended) + update pipeline-state to `complete` | — |
 
 **Commit**: Per [workflow-commits.md](../git/references/workflow-commits.md) — E2E fix phase (if needed)
 
@@ -379,54 +425,23 @@ IF context exceeds 80k tokens before Phase completion:
 
 ---
 
-## Supervisor Pattern Architecture (Delegated Mode)
+## Mode Comparison
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                 Supervisor (Main Agent)                      │
-│  • Orchestration only — minimal context                     │
-│  • Stores: task IDs, file lists, worker summaries           │
-│  • Does NOT: read code, write tests, review details         │
-└─────────────────────────────────────────────────────────────┘
-                    │                           │
-         ┌──────────┴──────────┐     ┌──────────┴──────────┐
-         ▼                     ▼     ▼                     ▼
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  task-executor  │     │  quality-gate   │     │ development-    │
-│    (Sonnet)     │     │    (Sonnet)     │     │    planner      │
-├─────────────────┤     ├─────────────────┤     │   (Opus)        │
-│ • TDD cycle     │     │ • Code review   │     └─────────────────┘
-│ • Red → Green   │     │ • E2E tests     │
-│ • Commits       │     │ • Pass/Fail     │
-└────────┬────────┘     └────────┬────────┘
-         │                       │
-         ▼                       ▼
-┌─────────────────┐     ┌─────────────────┐
-│ unit-test-writer│     │  code-reviewer  │
-│    (Sonnet)     │     │    (Sonnet)     │
-└─────────────────┘     ├─────────────────┤
-                        │   e2e-tester    │
-                        │    (Sonnet)     │
-                        └─────────────────┘
-```
-
-### Mode Comparison
-
-| Aspect | Sequential | Delegated | Team |
-|--------|------------|-----------|------|
-| Context usage | All in main | Distributed | Per teammate |
-| Cost | Higher (Opus all) | Lower (Sonnet workers) | Opus teammates |
-| Parallelization | None | Workers can overlap | Full parallel |
-| Recovery | Manual | Auto-retry via workers | Autonomous + lead |
-| Scalability | Limited | Medium | High |
+| Aspect | Sequential | Team |
+|--------|------------|------|
+| Context usage | All in main | Per teammate |
+| Cost | Opus for all | Opus teammates |
+| Parallelization | None | Full parallel |
+| Recovery | Manual | Autonomous + lead |
+| Scalability | Limited | High |
 
 ### When to Use Each Mode
 
 | Scenario | Recommended Mode |
 |----------|------------------|
 | Quick bug fix (1-2 files) | Sequential |
-| New component (3-5 files) | Delegated |
-| Feature with multiple components | Delegated |
+| New component (3-5 files) | Sequential |
+| Feature with multiple components (6+) | Team |
 | Cross-cutting refactor (10+ files) | Team |
 | Exploration / research | Sequential (no workers) |
 
@@ -499,7 +514,6 @@ See [workflow-commits.md](../git/references/workflow-commits.md)
 ## Cost Notes
 
 - **Teammates**: Use `opus` model — NO `code-reviewer` per teammate (TDD cycle is the quality gate, lead handles all review in Phase 3)
-- **Delegated workers**: Use `sonnet` model for cost efficiency
 - **Lead**: Runs `code-reviewer` + `e2e-tester` as the single review gate post-merge
 - Minimize sub-agent calls per teammate
 - Avoid broadcast messages — message lead directly

@@ -1,16 +1,16 @@
 #!/bin/bash
 set -euo pipefail
 
-# PreToolUse Hook: 위험한 명령어 차단
+# PreToolUse Hook: Block dangerous commands
 # matcher: Bash
 
 INPUT=$(cat)
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
 
-# 명령어가 없으면 통과
+# No command — pass through
 [[ -z "$COMMAND" ]] && exit 0
 
-# 위험한 패턴 목록
+# Dangerous pattern list
 DANGEROUS_PATTERNS=(
     "rm -rf /"
     "rm -rf ~"

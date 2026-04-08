@@ -33,7 +33,7 @@ Auto-detect project type from config files:
 2. Check for `app.json` AND `expo` dependency in `package.json` → **expo**
 3. Check for `nest-cli.json` → **nestjs**
 4. If detection fails → Use `AskUserQuestion` to ask:
-   - "프로젝트 타입을 선택해주세요"
+   - "Select your project type:"
    - Options: React Router Framework, Expo Router, NestJS
 
 ---

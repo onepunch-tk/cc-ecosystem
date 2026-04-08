@@ -114,6 +114,37 @@ All tests follow AAA (Arrange-Act-Assert) pattern:
 | **React Router v7** | Vitest/Jest | Vitest recommended |
 | **NestJS** | Jest | Official default |
 
+### Vitest + React Testing Library Setup
+
+When using **Vitest** with `@testing-library/react`, automatic cleanup between tests does NOT work by default. To prevent DOM accumulation across tests, add cleanup to `vitest.setup.ts`:
+
+```ts
+import "@testing-library/jest-dom/vitest";
+import { cleanup } from "@testing-library/react";
+import { afterEach } from "vitest";
+
+afterEach(() => {
+  cleanup();
+});
+```
+
+> If `vitest.setup.ts` already includes this cleanup, individual test files do NOT need their own `afterEach(cleanup)`.
+
+### ESM Import Rules
+
+All modern projects use ESM (`"type": "module"` in `package.json`). When writing tests:
+- **Always use static `import`** — never `require()`
+- Use relative paths from the test file to the source: `import Component from "../../../app/presentation/components/Component"`
+
+### Red Phase: Missing Source Files Are Expected
+
+During Red Phase, the source file being tested **does not exist yet**. This is normal and expected in TDD.
+
+- **DO** use static `import` even though the file doesn't exist — vitest resolves imports at runtime, not compile time
+- **DO NOT** use `require()` to "work around" missing modules — this breaks in ESM and defeats the purpose of Red Phase
+- **DO NOT** treat TypeScript/LSP import errors as problems to solve — they are expected diagnostics that disappear after Green Phase
+- The test should **fail at runtime** because the module is missing, confirming the Red Phase is correct
+
 ---
 
 ## Test Utility Structure

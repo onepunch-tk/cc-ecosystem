@@ -10,12 +10,12 @@ Commit and merge conventions for harness-pipeline.
 
 | Phase | Prefix | Message Pattern | Example |
 |-------|--------|-----------------|---------|
-| Red (tests) | `✅ test:` | `{feature} 실패 테스트 추가` | `✅ test: 인보이스 상세 조회 실패 테스트 추가` |
-| Green (impl) | `✨ feat:` | `{feature} 구현` | `✨ feat: 인보이스 상세 조회 구현` |
-| Review fix | `♻️ refactor:` | `{feature} 리뷰 피드백 반영` | `♻️ refactor: 인보이스 상세 조회 리뷰 피드백 반영` |
-| E2E fix | `🐛 fix:` | `{feature} E2E 테스트 실패 수정` | `🐛 fix: 인보이스 상세 조회 E2E 테스트 실패 수정` |
-| Bug fix | `🐛 fix:` | `{description}` | `🐛 fix: 날짜 포맷 오류 수정` |
-| Config/Build | `🔧 chore:` | `{description}` | `🔧 chore: 테스트 설정 업데이트` |
+| Red (tests) | `✅ test:` | `add failing tests for {feature}` | `✅ test: add failing tests for invoice detail view` |
+| Green (impl) | `✨ feat:` | `implement {feature}` | `✨ feat: implement invoice detail view` |
+| Review fix | `♻️ refactor:` | `apply review feedback for {feature}` | `♻️ refactor: apply review feedback for invoice detail view` |
+| E2E fix | `🐛 fix:` | `fix E2E test failure for {feature}` | `🐛 fix: fix E2E test failure for invoice detail view` |
+| Bug fix | `🐛 fix:` | `{description}` | `🐛 fix: fix date format error` |
+| Config/Build | `🔧 chore:` | `{description}` | `🔧 chore: update test configuration` |
 
 ---
 

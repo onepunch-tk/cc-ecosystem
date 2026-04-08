@@ -197,7 +197,8 @@ For NestJS:
 - [ ] Tree-shaking and dynamic import opportunities
 
 ### Phase 7: Report Generation
-Load the `review-report` skill and generate a unified report at `docs/reports/code-review/`.
+**Before writing the report**, ensure the output directory exists by running: `mkdir -p docs/reports/code-review/`
+Then load the `review-report` skill and generate a unified report at `docs/reports/code-review/`.
 
 ## Confidence-Based Filtering
 
