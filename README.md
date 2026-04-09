@@ -8,13 +8,18 @@ A **Claude Code ecosystem configuration repository** that can be copied into any
 
 ```
 cc-ecosystem/
-├── CLAUDE.md                          # Project guide template
+├── CLAUDE.md                          # Project guide template (lean — conventions in rules/)
 ├── .mcp.json                          # MCP server configuration
 ├── .gitignore
 └── .claude/
     ├── settings.json                  # Hooks, env vars, plugin settings
-    ├── pipeline-state.json            # Pipeline phase state (ABAC)
+    ├── pipeline-state.json            # Pipeline phase state (ABAC + plan_approved)
+    ├── hook-state.json                # Pipeline guardian dedup/cooldown state
     ├── ownership.json                 # Team file ownership (ReBAC)
+    ├── rules/                         # Conditional instructions (loaded on file edit)
+    │   ├── file-conventions.md        # File naming + CA layer rules (*.ts, *.tsx)
+    │   ├── react-rules.md             # React 19 optimization (*.tsx)
+    │   └── code-style.md              # Function defs + type safety (*.ts, *.tsx)
     ├── agents/
     │   ├── docs/                      # Documentation agents (5)
     │   │   ├── prd-generator.md
@@ -34,13 +39,21 @@ cc-ecosystem/
     │   ├── project-structure/
     │   ├── review-report/
     │   └── harness-pipeline/
-    └── hooks/                         # Hook scripts (9)
+    │       ├── SKILL.md               # Main pipeline (lean — phases in references/)
+    │       └── references/            # Phase-specific instructions (loaded on-demand)
+    │           ├── phase-1-plan.md
+    │           ├── phase-2-tdd.md
+    │           ├── phase-3-review.md
+    │           ├── phase-4-validate.md
+    │           └── team-protocol.md
+    └── hooks/                         # Hook scripts (10)
         ├── .env.hooks
         ├── biome-format.sh
         ├── block-dangerous-commands.sh
         ├── protect-files.sh
         ├── typecheck.sh
         ├── slack-notify.sh
+        ├── pipeline-guardian.sh
         ├── rbac-agent-role.sh
         ├── abac-phase-policy.sh
         ├── rebac-ownership.sh
@@ -53,13 +66,22 @@ cc-ecosystem/
 
 ### CLAUDE.md - Project Guide Template
 
-A Claude Code configuration file that defines the project's core principles, code conventions, and workflow. Copy to a new project and modify the `Project Overview` section to start.
+A lean Claude Code configuration file (32 lines) that defines core principles, tech stack, and workflow entry point. Detailed code conventions are loaded conditionally from `.claude/rules/` only when editing matching files.
 
 Key contents:
 - **Core Principles**: Clean Architecture (4-layer), TDD-First (Inside-Out), Side Effect Awareness
-- **Code Conventions**: File naming rules, CA layer file patterns, React 19 optimization, type safety
 - **Critical Document Links**: PRD, ROADMAP, PROJECT-STRUCTURE
 - **Commands**: `bun run test`, `bun run typecheck`, etc.
+
+### .claude/rules/ - Conditional Instructions
+
+Loaded only when editing files that match the `paths` frontmatter pattern. Reduces session startup token cost by deferring conventions until they are relevant.
+
+| Rule | Loaded When | Contents |
+|------|------------|----------|
+| `file-conventions.md` | Editing `*.ts`, `*.tsx` | File naming (.client.ts/.server.ts), CA layer file patterns |
+| `react-rules.md` | Editing `*.tsx` | React 19 Compiler optimization, useCallback/useMemo guidance |
+| `code-style.md` | Editing `*.ts`, `*.tsx` | Function definitions (arrow vs named), type safety (no `any`) |
 
 ### Agents
 
@@ -86,31 +108,37 @@ Key contents:
 
 | Skill | Command | Description |
 |-------|---------|-------------|
-| `prd` | — | PRD generation rules, platform-specific templates, consistency validation (Web/Backend/Mobile/Multi-platform) |
+| `prd` | -- | PRD generation rules, platform-specific templates, consistency validation (Web/Backend/Mobile/Multi-platform) |
 | `git` | `/git` | Select and execute commit, push, sync, merge operations via UI |
-| `tdd` | `/tdd` | TDD rules and patterns — Red-Green-Refactor cycle guide |
+| `tdd` | `/tdd` | TDD rules and patterns -- Red-Green-Refactor cycle guide |
 | `project-structure` | `/project-structure` | Auto-generate PROJECT-STRUCTURE.md from Clean Architecture templates |
 | `review-report` | `/review-report` | Generate standardized code review reports |
-| `harness-pipeline` | `/harness-pipeline` | Unified dev pipeline — auto-detects Sequential (1-5 files) or Team (6+ files) mode |
+| `harness-pipeline` | `/harness-pipeline` | Unified dev pipeline -- phases loaded on-demand from references/, auto-detects Sequential or Team mode |
 
-### Hooks (9)
+### Hooks (10)
 
 #### Base Hooks (5)
 
 | Hook | Trigger | Description |
 |------|---------|-------------|
 | `biome-format.sh` | PostToolUse (Edit/Write) | Auto-run Biome formatting on file save |
-| `block-dangerous-commands.sh` | PreToolUse (Bash) | Block dangerous commands like `rm -rf`, `sudo` |
-| `protect-files.sh` | PreToolUse (Edit/Write) | Block modifications to protected files (`bun.lock`, etc.) |
+| `block-dangerous-commands.sh` | PreToolUse (Bash) | Block dangerous commands (`rm -rf /`, `sudo`, `git clean -fd`, device writes) |
+| `protect-files.sh` | PreToolUse (Edit/Write) | Block modifications to protected files (lock files, `.env`, credentials) |
 | `typecheck.sh` | PostToolUse (Edit/Write) | Auto-run TypeScript type check on file save |
 | `slack-notify.sh` | Notification/Stop | Send Slack webhook notifications for permission requests, idle, completion |
+
+#### Workflow Hook (1)
+
+| Hook | Trigger | Description |
+|------|---------|-------------|
+| `pipeline-guardian.sh` | Stop | Monitors workflow compliance and auto-detects doc update needs. Blocks Claude from stopping when: plan not approved, TDD tests missing, review skipped, or docs need updating. Supports monorepo via `git ls-files`. |
 
 #### Access Control Hooks (4)
 
 | Hook | Trigger | Description |
 |------|---------|-------------|
-| `rbac-agent-role.sh` | PreToolUse (Edit/Write) | Role-based write permission — restricts each agent to designated paths |
-| `abac-phase-policy.sh` | PreToolUse (Edit/Write) | Phase-based source code blocking — prevents code edits during plan phase |
+| `rbac-agent-role.sh` | PreToolUse (Edit/Write) | Role-based write permission -- restricts each agent to designated paths |
+| `abac-phase-policy.sh` | PreToolUse (Edit/Write) | Phase-based source code blocking -- prevents code edits during plan phase and when plan is not approved (hard block) |
 | `rebac-ownership.sh` | PreToolUse (Edit/Write) | File ownership check for subagent-spawned agents (Team mode) |
 | `rebac-teammate-idle.sh` | TeammateIdle | Post-hoc ownership violation detection when teammates go idle |
 
@@ -142,47 +170,50 @@ CC-Ecosystem provides agent-assisted support for the entire development cycle fr
 
 ```
 Idea
-  │
-  ▼
-┌─────────────┐     ┌──────────────────┐     ┌──────────────────┐
-│ PRD Creation │────▶│ PRD Validation   │────▶│ Roadmap Creation │
-│ prd-generator│     │ prd-validator    │     │ development-     │
-│              │     │                  │     │ planner          │
-└─────────────┘     └──────────────────┘     └──────────────────┘
-                                                      │
-                                                      ▼
-                                            ┌──────────────────┐
-                                            │ Roadmap Validation│
-                                            │ roadmap-validator │
-                                            └──────────────────┘
-                                                      │
-                                                      ▼
-┌─────────────────────────────────────────────────────────────────┐
-│              Development (CA + TDD Inside-Out)                  │
-│                                                                 │
-│  /harness-pipeline                                              │
-│  Phase 1: Plan — Load CA template, plan file placement by layer │
-│  Phase 2: TDD  — Domain → App → Infra → Presentation order     │
-│  Phase 3: Review — CA dependency direction check included       │
-│  Phase 4: Validate & Finalize — E2E, ROADMAP update, merge     │
-│                                                                 │
-│  Mode: Sequential (1-5 files) │ Team (6+ files, parallel)      │
-│                                                                 │
-│  ┌────────┐    ┌────────┐    ┌────────┐    ┌────────────────┐  │
-│  │Red:    │───▶│Green:  │───▶│Refactor│───▶│ Code Review    │  │
-│  │Tests   │    │Impl    │    │        │    │ + CA Dependency │  │
-│  │(Domain │    │(Inside │    │        │    │   Direction     │  │
-│  │ first) │    │ -Out)  │    │        │    │   Check         │  │
-│  └────────┘    └────────┘    └────────┘    └────────────────┘  │
-│       ▲                                            │           │
-│       └────────────────────────────────────────────┘           │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-                    ┌──────────────────┐
-                    │  /git merge      │
-                    │  Merge           │
-                    └──────────────────┘
+  |
+  v
++---------------+     +------------------+     +------------------+
+| PRD Creation  |---->| PRD Validation   |---->| Roadmap Creation |
+| prd-generator |     | prd-validator    |     | development-     |
+|               |     |                  |     | planner          |
++---------------+     +------------------+     +------------------+
+                                                      |
+                                                      v
+                                            +------------------+
+                                            | Roadmap Validation|
+                                            | roadmap-validator |
+                                            +------------------+
+                                                      |
+                                                      v
++-----------------------------------------------------------------+
+|              Development (CA + TDD Inside-Out)                  |
+|                                                                 |
+|  /harness-pipeline                                              |
+|  Phase 1: Plan -- Load CA template, plan file placement by layer|
+|  Phase 2: TDD  -- Domain > App > Infra > Presentation order    |
+|  Phase 3: Review -- CA dependency direction check included      |
+|  Phase 4: Validate & Finalize -- E2E, ROADMAP update, merge    |
+|                                                                 |
+|  Mode: Sequential (1-5 files) | Team (6+ files, parallel)      |
+|                                                                 |
+|  +--------+    +--------+    +--------+    +----------------+   |
+|  |Red:    |--->|Green:  |--->|Refactor|--->| Code Review    |   |
+|  |Tests   |    |Impl    |    |        |    | + CA Dependency |   |
+|  |(Domain |    |(Inside |    |        |    |   Direction     |   |
+|  | first) |    | -Out)  |    |        |    |   Check         |   |
+|  +--------+    +--------+    +--------+    +----------------+   |
+|       ^                                            |            |
+|       +--------------------------------------------+            |
++-----------------------------------------------------------------+
+                              |
+                              v
+                    +------------------+
+                    |  /git merge      |
+                    |  Merge           |
+                    +------------------+
+
+  pipeline-guardian (Stop hook) monitors each phase transition
+  and reminds about doc updates before merge.
 ```
 
 ---
@@ -209,11 +240,12 @@ cp cc-ecosystem/CLAUDE.md /your/project/
 cp -r cc-ecosystem/.claude/agents /your/project/.claude/
 cp -r cc-ecosystem/.claude/skills /your/project/.claude/
 cp -r cc-ecosystem/.claude/hooks /your/project/.claude/
+cp -r cc-ecosystem/.claude/rules /your/project/.claude/
 ```
 
 ### 3. Modify CLAUDE.md
 
-Update the `Project Overview` section in `CLAUDE.md` to match your project.
+Update the `Project Overview` and `Tech Stack` sections in `CLAUDE.md` to match your project.
 
 ```markdown
 ## Project Overview
@@ -276,7 +308,7 @@ Set the API key to use the Context7 server.
 Modify `CLAUDE.md` if your project uses a different tech stack or conventions.
 
 - **Tech Stack**: Change package manager, language, linter to match your project
-- **Code Conventions**: Add/modify project-specific coding conventions
+- **Code Conventions**: Add/modify rules in `.claude/rules/` for project-specific conventions
 - **Commands**: Update with your project's actual script commands
 - **Critical Documents**: Modify if document paths differ
 
