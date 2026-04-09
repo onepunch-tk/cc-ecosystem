@@ -4,9 +4,10 @@ set -euo pipefail
 # PreToolUse Hook: Phase-based source code modification blocking (ABAC)
 # matcher: Edit|Write
 #
-# Reads current_phase from .claude/pipeline-state.json.
-# Blocks source code file modifications during plan phase.
-# docs/, tasks/, .claude/, test files are allowed even during plan phase.
+# Reads current_phase and plan_approved from .claude/pipeline-state.json.
+# Blocks source code file modifications during:
+#   - plan phase (always)
+#   - tdd phase when plan_approved is false (plan must be approved first)
 
 INPUT=$(cat)
 TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
@@ -23,12 +24,12 @@ STATE_FILE="$PROJECT_DIR/.claude/pipeline-state.json"
 
 PHASE=$(jq -r '.current_phase // "none"' "$STATE_FILE" 2>/dev/null || echo "none")
 
-# Only enforce during plan phase (other phases handled by RBAC/ReBAC)
-[[ "$PHASE" != "plan" ]] && exit 0
+# Only enforce during plan and tdd (unapproved) phases
+[[ "$PHASE" != "plan" && "$PHASE" != "tdd" ]] && exit 0
 
 REL="${FILE_PATH#$PROJECT_DIR/}"
 
-# Paths/file types allowed during plan phase
+# Paths/file types allowed during plan phase (non-source files)
 is_allowed_during_plan() {
   local rel="$1"
 
@@ -80,11 +81,29 @@ is_allowed_during_plan() {
   return 0
 }
 
-if ! is_allowed_during_plan "$REL"; then
-  echo "ABAC Blocked [plan phase]: Source code modifications are not allowed during plan phase." >&2
-  echo "  File: $REL" >&2
-  echo "  Update pipeline-state.json to 'tdd' after starting Phase 2." >&2
-  exit 2
+# ─── Plan phase: always block source code ───
+if [[ "$PHASE" == "plan" ]]; then
+    if ! is_allowed_during_plan "$REL"; then
+        echo "ABAC Blocked [plan phase]: Source code modifications are not allowed during plan phase." >&2
+        echo "  File: $REL" >&2
+        echo "  Complete Phase 1 (Plan) and update pipeline-state.json to 'tdd' to proceed." >&2
+        exit 2
+    fi
+    exit 0
+fi
+
+# ─── TDD phase: block source code if plan not approved ───
+if [[ "$PHASE" == "tdd" ]]; then
+    PLAN_APPROVED=$(jq -r '.plan_approved // false' "$STATE_FILE" 2>/dev/null || echo "false")
+    if [[ "$PLAN_APPROVED" != "true" ]]; then
+        if ! is_allowed_during_plan "$REL"; then
+            echo "ABAC Blocked [tdd phase — plan not approved]: Source code modifications require plan approval." >&2
+            echo "  File: $REL" >&2
+            echo "  Run ExitPlanMode for approval, then set plan_approved to true in pipeline-state.json." >&2
+            exit 2
+        fi
+    fi
+    exit 0
 fi
 
 exit 0

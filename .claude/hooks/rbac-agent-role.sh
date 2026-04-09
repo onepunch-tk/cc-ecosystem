@@ -42,8 +42,6 @@ file_allowed() {
     "unit-test-writer")
       # Test files + own memory only
       [[ "$rel" == *__tests__/* ]] && return 0
-      [[ "$rel" == *.test.* ]] && return 0
-      [[ "$rel" == *.spec.* ]] && return 0
       [[ "$rel" == *.test.ts ]] && return 0
       [[ "$rel" == *.test.tsx ]] && return 0
       [[ "$rel" == *.spec.ts ]] && return 0
@@ -92,8 +90,10 @@ file_allowed() {
       [[ "$rel" == cypress/* ]] && return 0
       [[ "$rel" == playwright/* ]] && return 0
       [[ "$rel" == *__tests__/* ]] && return 0
-      [[ "$rel" == *.test.* ]] && return 0
-      [[ "$rel" == *.spec.* ]] && return 0
+      [[ "$rel" == *.test.ts ]] && return 0
+      [[ "$rel" == *.test.tsx ]] && return 0
+      [[ "$rel" == *.spec.ts ]] && return 0
+      [[ "$rel" == *.spec.tsx ]] && return 0
       [[ "$rel" == .claude/agent-memory/e2e-tester/* ]] && return 0
       return 1
       ;;

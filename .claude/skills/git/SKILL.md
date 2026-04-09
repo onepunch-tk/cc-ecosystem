@@ -132,21 +132,7 @@ Parse the `args` parameter when the skill is invoked to separate the action and 
 
 ### Type & Emoji Map
 
-| Type | Emoji | Usage |
-|------|-------|-------|
-| `feat` | ✨ | New feature |
-| `fix` | 🐛 | Bug fix |
-| `docs` | 📝 | Documentation changes |
-| `style` | 💄 | Code style |
-| `refactor` | ♻️ | Refactoring |
-| `perf` | ⚡ | Performance improvement |
-| `test` | ✅ | Tests |
-| `chore` | 🔧 | Config/build |
-| `ci` | 🚀 | CI/CD |
-| `build` | 📦 | Build system |
-| `revert` | ⏪ | Revert |
-
-Detailed rules: [references/commit-prefix-rules.md](references/commit-prefix-rules.md)
+See [references/commit-prefix-rules.md](references/commit-prefix-rules.md) for the complete type/emoji table.
 
 ### Commit Message Rules
 

@@ -11,11 +11,9 @@
 > **Side Effect Awareness**: All code modifications (except tests) must be written with careful consideration of potential side effects.
 
 ## Tech Stack
-- **Package Manager**
-  - bun
+- **Package Manager**: bun
 - **Language**: TypeScript
-- **Lint & Formatter**
-  - biome
+- **Lint & Formatter**: biome
 
 ## Critical Documents
 - Project Structure [docs/PROJECT-STRUCTURE.md](docs/PROJECT-STRUCTURE.md): **MANDATORY** - Reference before ANY task
@@ -23,50 +21,6 @@
 
 ## Workflow
 > Before starting any implementation task, load the `harness-pipeline` skill.
-
-## Code Conventions [MANDATORY]
-
-### File Naming Convention (React Router Framework) [CRITICAL]
-- `*.client.ts` / `*.client.tsx` → **Client-side ONLY** (browser execution)
-- `*.server.ts` / `*.server.tsx` → **Server-side ONLY** (SSR execution)
-
-⚠️ **CRITICAL WARNING**:
-Files with `.client.ts` suffix are EXCLUDED from server bundles.
-If you name a server-side utility `something.client.ts`, it will be bundled as `void 0` and cause runtime errors like `X is not a function`.
-
-**Correct naming**:
-- ✅ `notion-client.ts` — Hyphen, not dot before "client"
-- ✅ `notion.service.ts` — Different suffix
-- ❌ `notion.client.ts` — Treated as client-only, causes SSR errors
-
-### React 19 Optimization
-- **Trust React Compiler**: `useCallback` and `useMemo` are unnecessary in most cases — React Compiler handles memoization automatically.
-- Use `useCallback`/`useMemo` **only** when a measured performance bottleneck justifies it (e.g., profiler evidence of expensive re-renders).
-- Prioritize code readability over premature optimization.
-
-### Function Definitions
-- **Utility/Handler functions**: Arrow syntax → `export const fn = () => { ... }`
-- **React Components**: Named export → `export default function Component() { ... }`
-
-### Type Safety
-- **NO `any`**: Use `unknown` + type guards (Zod, `is` keyword)
-- **Generics**: Always use `extends` constraints → `<T extends Record<string, unknown>>`
-
-## File Creation Rules
-| Pattern | CA Layer | Rule |
-|---------|----------|------|
-| `*.entity.ts` | Domain | Entity classes (no external deps) |
-| `*.vo.ts` | Domain | Value Objects (immutable, no external deps) |
-| `*.schema.ts` | Domain | Zod validation schemas |
-| `*.service.ts` | Application | Business logic services |
-| `**/*.port.ts` | Application | Interface definitions (Port) |
-| `*.mapper.ts` | Application | Entity ↔ DTO conversion |
-| `*.repository.ts` | Infrastructure | Repository implementations |
-| `*.client.ts(x)` | — | **CLIENT-SIDE ONLY** — excluded from SSR bundle |
-| `*.server.ts(x)` | — | **SERVER-SIDE ONLY** — not available in browser |
-| `*.d.ts` | — | Type declarations only |
-| `**/types.ts` | — | Type definitions only |
-| `**/index.ts` | — | Barrel files (re-exports) |
 
 ## Commands
 | Command | Description |
@@ -76,13 +30,3 @@ If you name a server-side utility `something.client.ts`, it will be bundled as `
 | `bun run test:coverage` | Run tests with coverage report |
 | `bun run test:coverage:check` | Run tests with coverage (flexible thresholds) |
 | `bun run typecheck` | TypeScript type checking |
-
-## Post-Completion Documentation
-After workflow completion, update **as needed** using the designated agent:
-
-| Document | Update When | Agent |
-|----------|-------------|-------|
-| `docs/PROJECT-STRUCTURE.md` | New directories or architectural changes | `project-structure-analyzer` |
-| `docs/PRD.md` | Feature scope changes or new requirements | `prd-generator` (Web/Backend/Mobile/Multi-platform 통합) |
-| `docs/ROADMAP.md` | Task completion, phase addition, status/priority changes | `development-planner` |
-| `CLAUDE.md` | Tech stack changes, new code conventions, new commands | Manual (direct edit) |

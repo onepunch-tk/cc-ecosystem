@@ -12,12 +12,13 @@ COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
 
 # Dangerous pattern list
 DANGEROUS_PATTERNS=(
-    "rm -rf /"
+    "rm -rf /[[:space:]]*$"
+    "rm -rf / "
     "rm -rf ~"
     "rm -rf \."
     "sudo "
     "chmod 777"
-    "> /dev/"
+    "> /dev/(sd|hd|disk|zero|random)"
     "dd if="
     ":\(\){:|:&};:"
     "mkfs\."
@@ -26,6 +27,8 @@ DANGEROUS_PATTERNS=(
     "reset --hard"
     "push --force"
     "push -f"
+    "push origin \+"
+    "clean -fd"
 )
 
 for pattern in "${DANGEROUS_PATTERNS[@]}"; do

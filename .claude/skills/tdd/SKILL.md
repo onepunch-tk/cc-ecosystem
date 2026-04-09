@@ -179,6 +179,8 @@ Based on detected framework, read the corresponding reference file (paths relati
 
 ## Output Language Rules
 
+See [commit-prefix-rules.md](../git/references/commit-prefix-rules.md) for project-wide language conventions.
+
 | Item | Language |
 |------|----------|
 | Test descriptions (`it`, `describe`) | Korean |

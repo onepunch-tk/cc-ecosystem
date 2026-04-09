@@ -4,9 +4,9 @@ set -euo pipefail
 # PreToolUse Hook: Subagent file ownership check (ReBAC)
 # matcher: Edit|Write
 #
-# Scope (verified):
-#   - Agents spawned via subagent_type: agent_id present → ownership check works
-#   - Team teammates via TeamCreate: PreToolUse stdin has NO agent_id
+# Scope (verified 2026-04-09 via debug-stdin-capture):
+#   - Agents spawned via subagent_type: agent_id/agent_type present → ownership check works
+#   - Team teammates via TeamCreate: PreToolUse stdin has NO agent_id/agent_type
 #     → Cannot identify at PreToolUse level → rebac-teammate-idle.sh handles post-hoc
 #
 # ownership.json format (teammate_name as key):
