@@ -76,6 +76,17 @@ case "$PHASE" in
             if [[ -z "$HAS_REPORT" ]]; then
                 REMINDERS+=("[WORKFLOW] REVIEW REMINDER: You are in the review phase but no code-review report found. Run the code-reviewer subagent (Agent with subagent_type=\"code-reviewer\") before proceeding to validate phase.")
             fi
+
+            # Review report Status must be "Complete" before validate
+            if [[ -n "$HAS_REPORT" ]]; then
+                REPORT_STATUS=$(grep -m1 '^\\*\\*Status\\*\\*:' "$HAS_REPORT" 2>/dev/null | head -1 || echo "")
+                UNCHECKED=$(grep -c '^\- \[ \]' "$HAS_REPORT" 2>/dev/null || echo "0")
+                if [[ "$UNCHECKED" -gt 0 ]]; then
+                    REMINDERS+=("[WORKFLOW] REVIEW INCOMPLETE: Code-review report has $UNCHECKED unresolved issue(s). Fix each issue and check off its checkbox (- [x]) in the report. Update report Status to Complete when all issues are resolved.")
+                elif ! echo "$REPORT_STATUS" | grep -qi "complete"; then
+                    REMINDERS+=("[WORKFLOW] REVIEW STATUS: All checkboxes are checked but report Status is not 'Complete'. Update the Status field at the top of the report to 'Complete'.")
+                fi
+            fi
         fi
         ;;
 

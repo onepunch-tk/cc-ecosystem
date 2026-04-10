@@ -73,6 +73,20 @@ git push origin development
 
 # Delete feature branch
 git branch -d "$FEATURE_BRANCH"
+
+# Reset pipeline state (Local Mode must do this manually — GitHub Mode is handled by git-pr.sh)
+cat > .claude/pipeline-state.json << EOF
+{
+  "current_phase": "none",
+  "mode": "none",
+  "branch": "development",
+  "plan_approved": false,
+  "github_mode": false,
+  "issue_number": null,
+  "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+EOF
+echo '{"last_reminded_phase":"","doc_reminders_sent":{},"workflow_warnings_sent":{},"cooldown_until":""}' > .claude/hook-state.json
 ```
 
 ## Team Mode

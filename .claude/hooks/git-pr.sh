@@ -57,14 +57,14 @@ if [[ -n "$(git status --porcelain)" ]]; then
     exit 1
 fi
 
-# ─── Append Closes #N to body ───
+# ─── Append Related #N to body (not Closes — auto-close only works on default branch) ───
 if [[ -n "$ISSUE_NUMBER" && -n "$BODY" ]]; then
     BODY="$BODY
 
 ---
-Closes #$ISSUE_NUMBER"
+Related: #$ISSUE_NUMBER"
 elif [[ -n "$ISSUE_NUMBER" ]]; then
-    BODY="Closes #$ISSUE_NUMBER"
+    BODY="Related: #$ISSUE_NUMBER"
 fi
 
 echo "═══════════════════════════════════════"
@@ -105,7 +105,14 @@ echo ""
 echo "[3/4] Merging PR..."
 if gh pr merge "$PR_NUMBER" --merge --delete-branch 2>&1; then
     echo "      ✅ Merge complete (merge commit)"
-    [[ -n "$ISSUE_NUMBER" ]] && echo "      ✅ Issue #$ISSUE_NUMBER auto-closed"
+    # Explicitly close issue (auto-close only works on default branch)
+    if [[ -n "$ISSUE_NUMBER" ]]; then
+        if gh issue close "$ISSUE_NUMBER" 2>/dev/null; then
+            echo "      ✅ Issue #$ISSUE_NUMBER closed"
+        else
+            echo "      ⚠️ Issue #$ISSUE_NUMBER close failed (may need manual close)"
+        fi
+    fi
 else
     echo "      ❌ Merge failed. Possible conflict." >&2
     echo "      PR URL: $PR_URL" >&2
@@ -124,6 +131,28 @@ if git branch -d "$CURRENT_BRANCH" 2>/dev/null; then
 else
     echo "      ⚠️ Local branch deletion skipped (may already be deleted)"
 fi
+
+# Reset pipeline-state.json and hook-state.json
+if [[ -f "$PROJECT_DIR/.claude/pipeline-state.json" ]]; then
+    cat > "$PROJECT_DIR/.claude/pipeline-state.json" << STATEEOF
+{
+  "current_phase": "none",
+  "mode": "none",
+  "branch": "development",
+  "plan_approved": false,
+  "github_mode": $(jq -r '.github_mode // false' "$PROJECT_DIR/.claude/pipeline-state.json"),
+  "issue_number": null,
+  "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+STATEEOF
+    echo "      ✅ pipeline-state.json reset"
+fi
+
+if [[ -f "$PROJECT_DIR/.claude/hook-state.json" ]]; then
+    echo '{"last_reminded_phase":"","doc_reminders_sent":{},"workflow_warnings_sent":{},"cooldown_until":""}' > "$PROJECT_DIR/.claude/hook-state.json"
+    echo "      ✅ hook-state.json reset"
+fi
+
 echo "      ✅ Checked out to development"
 
 echo ""
