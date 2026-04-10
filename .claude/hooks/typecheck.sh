@@ -4,15 +4,15 @@ set -euo pipefail
 INPUT=$(cat)
 FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
-# 파일 경로가 없으면 종료
+# No file path — exit
 [[ -z "$FILE_PATH" ]] && exit 0
 
-# TypeScript 지원 파일 확장자 체크
+# TypeScript file extension check
 case "$FILE_PATH" in
     *.ts|*.tsx)
-        # typecheck 실행
+        # Run typecheck
         cd "$CLAUDE_PROJECT_DIR"
-        # 패키지매니저 감지
+        # Detect package manager
         if [[ -f "bun.lock" ]]; then PKG_CMD="bun run"
         elif [[ -f "pnpm-lock.yaml" ]]; then PKG_CMD="pnpm run"
         elif [[ -f "yarn.lock" ]]; then PKG_CMD="yarn"

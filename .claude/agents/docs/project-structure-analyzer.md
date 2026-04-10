@@ -5,7 +5,7 @@ description: |
 
   <example>
   Context: The user wants to document the project structure after significant refactoring.
-  user: "프로젝트 구조 문서를 업데이트해줘"
+  user: "Update the project structure documentation"
   assistant: "I'm going to use the Task tool to launch the project-structure-analyzer agent to analyze the current project structure and update the documentation."
   <commentary>
   Since the user is requesting project structure documentation, use the project-structure-analyzer agent to analyze directories and create/update PROJECT-STRUCTURE.md.
@@ -14,7 +14,7 @@ description: |
 
   <example>
   Context: A new project has been set up and needs initial structure documentation.
-  user: "새 프로젝트의 구조를 문서화해줘"
+  user: "Document the structure of the new project"
   assistant: "I'm going to use the Task tool to launch the project-structure-analyzer agent to analyze the project architecture and generate the PROJECT-STRUCTURE.md file."
   <commentary>
   Since the user needs project structure documentation for a new project, use the project-structure-analyzer agent to create the initial documentation.
@@ -23,7 +23,7 @@ description: |
 
   <example>
   Context: User is reviewing the codebase organization.
-  user: "이 프로젝트가 어떤 아키텍처 패턴을 사용하는지 분석해줘"
+  user: "Analyze what architectural patterns this project uses"
   assistant: "I'm going to use the Task tool to launch the project-structure-analyzer agent to analyze the architectural patterns and directory organization of this project."
   <commentary>
   Since the user is asking about architectural patterns, use the project-structure-analyzer agent which specializes in analyzing project structure and architecture.

@@ -16,7 +16,7 @@ Follows the [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/
 
 - `<emoji>`: Emoji corresponding to the type
 - `<type>`: Commit type (see table below)
-- `<description>`: Summary of changes (in Korean)
+- `<description>`: Summary of changes (in user's language, detected from conversation context)
 
 ### Optional Elements
 

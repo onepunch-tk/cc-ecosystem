@@ -1,254 +1,295 @@
 # CC-Ecosystem
 
-어떤 프로젝트에서든 `.claude/` 디렉토리와 설정 파일들을 복사하여 즉시 사용할 수 있는 **Claude Code 에코시스템 설정 저장소**입니다. 에이전트, 스킬, 훅, MCP 서버 설정, 그리고 CLAUDE.md 템플릿을 포함합니다.
+A **Claude Code ecosystem configuration repository** that can be copied into any project via the `.claude/` directory and config files for immediate use. Includes agents, skills, hooks, MCP server settings, and a CLAUDE.md template.
 
 ---
 
-## 프로젝트 구조
+## Project Structure
 
 ```
 cc-ecosystem/
-├── CLAUDE.md                          # 프로젝트 가이드 템플릿
-├── .mcp.json                          # MCP 서버 설정
+├── CLAUDE.md                          # Project guide template (lean — conventions in rules/)
+├── .mcp.json                          # MCP server configuration
 ├── .gitignore
 └── .claude/
-    ├── settings.json                  # 훅, 환경변수, 플러그인 설정
+    ├── settings.json                  # Hooks, env vars, plugin settings
+    ├── pipeline-state.json            # Pipeline phase state (ABAC + plan_approved)
+    ├── hook-state.json                # Pipeline guardian dedup/cooldown state
+    ├── ownership.json                 # Team file ownership (ReBAC)
+    ├── rules/                         # Conditional instructions (loaded on file edit)
+    │   ├── file-conventions.md        # File naming + CA layer rules (*.ts, *.tsx)
+    │   ├── react-rules.md             # React 19 optimization (*.tsx)
+    │   └── code-style.md              # Function defs + type safety (*.ts, *.tsx)
     ├── agents/
-    │   ├── docs/                      # 문서 에이전트 (5개)
+    │   ├── docs/                      # Documentation agents (5)
     │   │   ├── prd-generator.md
     │   │   ├── prd-validator.md
     │   │   ├── development-planner.md
     │   │   ├── roadmap-validator.md
     │   │   └── project-structure-analyzer.md
-    │   └── dev/                       # 개발 에이전트 (6개)
-    │       ├── task-executor.md
+    │   └── dev/                       # Development agents (4)
     │       ├── unit-test-writer.md
     │       ├── e2e-tester.md
     │       ├── code-reviewer.md
-    │       ├── quality-gate.md
     │       └── starter-cleaner.md
-    ├── skills/                        # 스킬 (6개)
+    ├── skills/                        # Skills (6)
     │   ├── prd/
     │   ├── git/
     │   ├── tdd/
     │   ├── project-structure/
     │   ├── review-report/
     │   └── harness-pipeline/
-    └── hooks/                         # 훅 스크립트 (5개)
+    │       ├── SKILL.md               # Main pipeline (lean — phases in references/)
+    │       └── references/            # Phase-specific instructions (loaded on-demand)
+    │           ├── phase-1-plan.md
+    │           ├── phase-2-tdd.md
+    │           ├── phase-3-review.md
+    │           ├── phase-4-validate.md
+    │           └── team-protocol.md
+    └── hooks/                         # Hook scripts (10)
         ├── .env.hooks
         ├── biome-format.sh
         ├── block-dangerous-commands.sh
         ├── protect-files.sh
         ├── typecheck.sh
-        └── slack-notify.sh
+        ├── slack-notify.sh
+        ├── pipeline-guardian.sh
+        ├── rbac-agent-role.sh
+        ├── abac-phase-policy.sh
+        ├── rebac-ownership.sh
+        └── rebac-teammate-idle.sh
 ```
 
 ---
 
-## 구성 요소 상세
+## Components
 
-### CLAUDE.md - 프로젝트 가이드 템플릿
+### CLAUDE.md - Project Guide Template
 
-프로젝트의 코어 원칙, 코드 컨벤션, 워크플로우를 정의하는 Claude Code용 설정 파일입니다. 새 프로젝트에 복사 후 `Project Overview` 섹션만 수정하면 바로 사용할 수 있습니다.
+A lean Claude Code configuration file (32 lines) that defines core principles, tech stack, and workflow entry point. Detailed code conventions are loaded conditionally from `.claude/rules/` only when editing matching files.
 
-주요 내용:
-- **코어 원칙**: Clean Architecture (4-layer), TDD-First (Inside-Out), Side Effect Awareness
-- **코드 컨벤션**: 파일 네이밍 규칙, CA 레이어별 파일 패턴, React 19 최적화, 타입 안전성
-- **필수 문서 연동**: PRD, ROADMAP, PROJECT-STRUCTURE
-- **커맨드**: `bun run test`, `bun run typecheck` 등
+Key contents:
+- **Core Principles**: Clean Architecture (4-layer), TDD-First (Inside-Out), Side Effect Awareness
+- **Critical Document Links**: PRD, ROADMAP, PROJECT-STRUCTURE
+- **Commands**: `bun run test`, `bun run typecheck`, etc.
 
-### Agents - 에이전트
+### .claude/rules/ - Conditional Instructions
 
-#### 문서 에이전트 (5개)
+Loaded only when editing files that match the `paths` frontmatter pattern. Reduces session startup token cost by deferring conventions until they are relevant.
 
-| 에이전트 | 설명 |
-|----------|------|
-| `prd-generator` | Web/Backend/Mobile/Multi-platform PRD 통합 생성 (prd 스킬 활용) |
-| `prd-validator` | 작성된 PRD를 기술적 관점에서 검증하고 실현 가능성 분석 |
-| `development-planner` | ROADMAP.md 파일을 생성, 업데이트, 유지보수하는 프로젝트 매니저 |
-| `roadmap-validator` | ROADMAP.md와 작업 파일들의 완성도 및 일관성 검증 |
-| `project-structure-analyzer` | 프로젝트 구조를 분석하여 PROJECT-STRUCTURE.md 작성/업데이트 |
+| Rule | Loaded When | Contents |
+|------|------------|----------|
+| `file-conventions.md` | Editing `*.ts`, `*.tsx` | File naming (.client.ts/.server.ts), CA layer file patterns |
+| `react-rules.md` | Editing `*.tsx` | React 19 Compiler optimization, useCallback/useMemo guidance |
+| `code-style.md` | Editing `*.ts`, `*.tsx` | Function definitions (arrow vs named), type safety (no `any`) |
 
-#### 개발 에이전트 (6개)
+### Agents
 
-| 에이전트 | 설명 |
-|----------|------|
-| `task-executor` | TDD 사이클(Red-Green 단계)을 자동으로 실행하는 워커 에이전트 |
-| `unit-test-writer` | TDD 원칙에 따라 단위 테스트를 작성하는 테스트 엔지니어 |
-| `e2e-tester` | 웹 애플리케이션의 전체 사용자 흐름을 검증하는 E2E 테스팅 |
-| `code-reviewer` | 코드 품질, 보안(OWASP Top 10), 성능을 종합 검토 |
-| `quality-gate` | TDD 사이클 완료 후 코드 리뷰와 E2E 테스트를 자동 실행하고 결과 요약 |
-| `starter-cleaner` | 스타터 킷에서 데모 코드와 보일러플레이트를 제거하여 프로덕션 준비 |
+#### Documentation Agents (5)
 
-### Skills - 스킬 (6개)
+| Agent | Description |
+|-------|-------------|
+| `prd-generator` | Unified PRD generation for Web/Backend/Mobile/Multi-platform (uses prd skill) |
+| `prd-validator` | Technical feasibility analysis and validation of written PRDs |
+| `development-planner` | Project manager that creates, updates, and maintains ROADMAP.md |
+| `roadmap-validator` | Validates completeness and consistency of ROADMAP.md and task files |
+| `project-structure-analyzer` | Analyzes project structure and writes/updates PROJECT-STRUCTURE.md |
 
-| 스킬 | 명령어 | 설명 |
-|------|--------|------|
-| `prd` | — | PRD 생성 규칙, 플랫폼별 템플릿, 일관성 검증 (Web/Backend/Mobile/Multi-platform) |
-| `git` | `/git` | 커밋, 푸시, 동기화, 병합 작업을 UI로 선택 및 실행 |
-| `tdd` | `/tdd` | TDD 규칙과 패턴 정의, Red-Green-Refactor 사이클 가이드 |
-| `project-structure` | `/project-structure` | 클린 아키텍처 템플릿으로 PROJECT-STRUCTURE.md 자동 생성 |
-| `review-report` | `/review-report` | 코드 리뷰 결과를 표준화된 보고서 형식으로 생성 |
-| `harness-pipeline` | `/harness-pipeline` | 통합 개발 파이프라인 — 태스크 규모에 따라 Sequential/Delegated/Team 모드 자동 감지 |
+#### Development Agents (4)
 
-### Hooks - 훅 (5개)
+| Agent | Description |
+|-------|-------------|
+| `unit-test-writer` | Test engineer that writes unit tests following TDD principles (uses tdd skill) |
+| `e2e-tester` | Validates full user flows in web applications via E2E testing |
+| `code-reviewer` | Unified review covering code quality, security (OWASP Top 10), and performance |
+| `starter-cleaner` | Removes demo code and boilerplate from starter kits for production readiness |
 
-| 훅 | 트리거 | 설명 |
-|----|--------|------|
-| `biome-format.sh` | PostToolUse (Edit/Write) | 파일 저장 시 Biome 포매팅 자동 실행 |
-| `block-dangerous-commands.sh` | PreToolUse (Bash) | `rm -rf`, `sudo` 등 위험한 명령어 실행 차단 |
-| `protect-files.sh` | PreToolUse (Edit/Write) | `package-lock.json`, `bun.lock` 등 보호 대상 파일 수정 차단 |
-| `typecheck.sh` | PostToolUse (Edit/Write) | TypeScript 파일 저장 시 타입 체크 자동 실행 |
-| `slack-notify.sh` | Notification/Stop | 권한 요청, 입력 대기, 작업 완료 시 Slack 웹훅 알림 전송 |
+### Skills (6)
 
-### MCP Servers (3개)
+| Skill | Command | Description |
+|-------|---------|-------------|
+| `prd` | -- | PRD generation rules, platform-specific templates, consistency validation (Web/Backend/Mobile/Multi-platform) |
+| `git` | `/git` | Select and execute commit, push, sync, merge operations via UI |
+| `tdd` | `/tdd` | TDD rules and patterns -- Red-Green-Refactor cycle guide |
+| `project-structure` | `/project-structure` | Auto-generate PROJECT-STRUCTURE.md from Clean Architecture templates |
+| `review-report` | `/review-report` | Generate standardized code review reports |
+| `harness-pipeline` | `/harness-pipeline` | Unified dev pipeline -- phases loaded on-demand from references/, auto-detects Sequential or Team mode |
 
-| 서버 | 타입 | 설명 |
-|------|------|------|
-| `context7` | HTTP | 라이브러리의 최신 문서와 코드 예제를 실시간으로 조회 |
-| `sequential-thinking` | stdio | 복잡한 문제를 단계적으로 분석하는 사고 도구 |
-| `shadcn` | stdio | shadcn/ui 컴포넌트 검색, 설치, 예제 조회 |
+### Hooks (10)
 
-### Settings - 설정
+#### Base Hooks (5)
 
-`.claude/settings.json`에서 관리되는 주요 설정:
+| Hook | Trigger | Description |
+|------|---------|-------------|
+| `biome-format.sh` | PostToolUse (Edit/Write) | Auto-run Biome formatting on file save |
+| `block-dangerous-commands.sh` | PreToolUse (Bash) | Block dangerous commands (`rm -rf /`, `sudo`, `git clean -fd`, device writes) |
+| `protect-files.sh` | PreToolUse (Edit/Write) | Block modifications to protected files (lock files, `.env`, credentials) |
+| `typecheck.sh` | PostToolUse (Edit/Write) | Auto-run TypeScript type check on file save |
+| `slack-notify.sh` | Notification/Stop | Send Slack webhook notifications for permission requests, idle, completion |
 
-| 설정 | 값 | 설명 |
-|------|---|------|
-| `enabledPlugins` | `typescript-lsp` | TypeScript LSP 플러그인 활성화 |
-| `ENABLE_TOOL_SEARCH` | `true` | 도구 검색 기능 활성화 |
-| `MAX_MCP_OUTPUT_TOKENS` | `50000` | MCP 출력 토큰 제한 |
-| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | `1` | 에이전트 팀 기능 활성화 |
+#### Workflow Hook (1)
 
----
+| Hook | Trigger | Description |
+|------|---------|-------------|
+| `pipeline-guardian.sh` | Stop | Monitors workflow compliance and auto-detects doc update needs. Blocks Claude from stopping when: plan not approved, TDD tests missing, review skipped, or docs need updating. Supports monorepo via `git ls-files`. |
 
-## 워크플로우 개요
+#### Access Control Hooks (4)
 
-CC-Ecosystem은 아이디어에서 머지까지의 전체 개발 사이클을 에이전트가 지원합니다.
-**Clean Architecture가 기본 아키텍처**이며, 모든 코드는 CA 레이어 순서(Inside-Out)로 개발됩니다.
+| Hook | Trigger | Description |
+|------|---------|-------------|
+| `rbac-agent-role.sh` | PreToolUse (Edit/Write) | Role-based write permission -- restricts each agent to designated paths |
+| `abac-phase-policy.sh` | PreToolUse (Edit/Write) | Phase-based source code blocking -- prevents code edits during plan phase and when plan is not approved (hard block) |
+| `rebac-ownership.sh` | PreToolUse (Edit/Write) | File ownership check for subagent-spawned agents (Team mode) |
+| `rebac-teammate-idle.sh` | TeammateIdle | Post-hoc ownership violation detection when teammates go idle |
 
-```
-아이디어
-  │
-  ▼
-┌─────────────┐     ┌──────────────────┐     ┌──────────────────┐
-│  PRD 생성    │────▶│  PRD 검증         │────▶│  로드맵 생성      │
-│ prd-generator│     │  prd-validator   │     │ development-     │
-│              │     │                  │     │ planner          │
-└─────────────┘     └──────────────────┘     └──────────────────┘
-                                                      │
-                                                      ▼
-                                            ┌──────────────────┐
-                                            │  로드맵 검증      │
-                                            │ roadmap-validator│
-                                            └──────────────────┘
-                                                      │
-                                                      ▼
-┌─────────────────────────────────────────────────────────────────┐
-│              개발 (CA + TDD Inside-Out)                          │
-│                                                                 │
-│  /harness-pipeline                                              │
-│  Phase 1: Plan — CA 템플릿 로드, 레이어별 파일 배치 계획          │
-│  Phase 2: TDD  — Domain → App → Infra → Presentation 순서 구현  │
-│  Phase 3: Review — CA 의존성 방향 검증 포함                      │
-│  Phase 4: Validate & Finalize — E2E, ROADMAP 업데이트, 머지      │
-│                                                                 │
-│  ┌────────┐    ┌────────┐    ┌────────┐    ┌────────────────┐  │
-│  │Red:    │───▶│Green:  │───▶│Refactor│───▶│ Code Review    │  │
-│  │테스트   │    │구현     │    │리팩터링 │    │ + CA 의존성    │  │
-│  │(Domain │    │(Inside │    │        │    │   방향 체크     │  │
-│  │ first) │    │ -Out)  │    │        │    │                │  │
-│  └────────┘    └────────┘    └────────┘    └────────────────┘  │
-│       ▲                                            │           │
-│       └────────────────────────────────────────────┘           │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-                    ┌──────────────────┐
-                    │  Quality Gate    │
-                    │  품질 검증        │
-                    └──────────────────┘
-                              │
-                              ▼
-                    ┌──────────────────┐
-                    │  /git merge      │
-                    │  머지             │
-                    └──────────────────┘
-```
+### MCP Servers (3)
+
+| Server | Type | Description |
+|--------|------|-------------|
+| `context7` | HTTP | Real-time lookup of latest library documentation and code examples |
+| `sequential-thinking` | stdio | Step-by-step analysis tool for complex problems |
+| `shadcn` | stdio | Search, install, and browse shadcn/ui component examples |
+
+### Settings
+
+Key settings managed in `.claude/settings.json`:
+
+| Setting | Value | Description |
+|---------|-------|-------------|
+| `enabledPlugins` | `typescript-lsp`, `discord` | TypeScript LSP and Discord plugins enabled |
+| `ENABLE_TOOL_SEARCH` | `true` | Enable tool search feature |
+| `MAX_MCP_OUTPUT_TOKENS` | `50000` | MCP output token limit |
+| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | `1` | Enable agent teams feature |
 
 ---
 
-## 사용 방법
+## Workflow Overview
 
-### 1. 저장소 클론
+CC-Ecosystem provides agent-assisted support for the entire development cycle from idea to merge.
+**Clean Architecture is the default**, and all code is developed in CA layer order (Inside-Out).
+
+```
+Idea
+  |
+  v
++---------------+     +------------------+     +------------------+
+| PRD Creation  |---->| PRD Validation   |---->| Roadmap Creation |
+| prd-generator |     | prd-validator    |     | development-     |
+|               |     |                  |     | planner          |
++---------------+     +------------------+     +------------------+
+                                                      |
+                                                      v
+                                            +------------------+
+                                            | Roadmap Validation|
+                                            | roadmap-validator |
+                                            +------------------+
+                                                      |
+                                                      v
++-----------------------------------------------------------------+
+|              Development (CA + TDD Inside-Out)                  |
+|                                                                 |
+|  /harness-pipeline                                              |
+|  Phase 1: Plan -- Load CA template, plan file placement by layer|
+|  Phase 2: TDD  -- Domain > App > Infra > Presentation order    |
+|  Phase 3: Review -- CA dependency direction check included      |
+|  Phase 4: Validate & Finalize -- E2E, ROADMAP update, merge    |
+|                                                                 |
+|  Mode: Sequential (1-5 files) | Team (6+ files, parallel)      |
+|                                                                 |
+|  +--------+    +--------+    +--------+    +----------------+   |
+|  |Red:    |--->|Green:  |--->|Refactor|--->| Code Review    |   |
+|  |Tests   |    |Impl    |    |        |    | + CA Dependency |   |
+|  |(Domain |    |(Inside |    |        |    |   Direction     |   |
+|  | first) |    | -Out)  |    |        |    |   Check         |   |
+|  +--------+    +--------+    +--------+    +----------------+   |
+|       ^                                            |            |
+|       +--------------------------------------------+            |
++-----------------------------------------------------------------+
+                              |
+                              v
+                    +------------------+
+                    |  /git merge      |
+                    |  Merge           |
+                    +------------------+
+
+  pipeline-guardian (Stop hook) monitors each phase transition
+  and reminds about doc updates before merge.
+```
+
+---
+
+## Usage
+
+### 1. Clone Repository
 
 ```bash
 git clone <repository-url> cc-ecosystem
 ```
 
-### 2. 프로젝트에 복사
+### 2. Copy to Project
 
-대상 프로젝트의 루트 디렉토리에 필요한 파일들을 복사합니다.
+Copy the required files to your target project's root directory.
 
 ```bash
-# 전체 복사 (권장)
+# Full copy (recommended)
 cp -r cc-ecosystem/.claude /your/project/
 cp cc-ecosystem/.mcp.json /your/project/
 cp cc-ecosystem/CLAUDE.md /your/project/
 
-# 또는 선택적 복사
+# Or selective copy
 cp -r cc-ecosystem/.claude/agents /your/project/.claude/
 cp -r cc-ecosystem/.claude/skills /your/project/.claude/
 cp -r cc-ecosystem/.claude/hooks /your/project/.claude/
+cp -r cc-ecosystem/.claude/rules /your/project/.claude/
 ```
 
-### 3. CLAUDE.md 수정
+### 3. Modify CLAUDE.md
 
-`CLAUDE.md`의 `Project Overview` 섹션을 프로젝트에 맞게 수정합니다.
+Update the `Project Overview` and `Tech Stack` sections in `CLAUDE.md` to match your project.
 
 ```markdown
 ## Project Overview
 - **Service Name**: My Awesome App
-- **Goal**: 사용자에게 최고의 경험을 제공하는 앱
-- **Target Users**: 일반 사용자
+- **Goal**: An app that delivers the best user experience
+- **Target Users**: General users
 ```
 
-### 4. 환경 설정
+### 4. Environment Setup
 
 ```bash
-# 훅 스크립트 실행 권한 부여
+# Grant execute permissions to hook scripts
 chmod +x /your/project/.claude/hooks/*.sh
 
-# Slack 알림 설정 (선택)
+# Slack notification setup (optional)
 vi /your/project/.claude/hooks/.env.hooks
 ```
 
-### 5. 개발 시작
+### 5. Start Development
 
 ```bash
-# Claude Code 실행 후 워크플로우 시작
+# Launch Claude Code and start workflow
 claude
 
-# 개발 파이프라인 시작 (모드 자동 감지)
+# Start development pipeline (auto-detects mode)
 > /harness-pipeline
 ```
 
 ---
 
-## 커스터마이징
+## Customization
 
-### 훅 환경변수 (`.claude/hooks/.env.hooks`)
+### Hook Environment Variables (`.claude/hooks/.env.hooks`)
 
-Slack 알림을 사용하려면 웹훅 URL을 설정합니다.
+Set the webhook URL to enable Slack notifications.
 
 ```bash
 SLACK_WEBHOOK_URL="https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
 PROJECT_NAME="your-project-name"
 ```
 
-### MCP 서버 API 키 (`.mcp.json`)
+### MCP Server API Keys (`.mcp.json`)
 
-Context7 서버를 사용하려면 API 키를 설정합니다.
+Set the API key to use the Context7 server.
 
 ```json
 {
@@ -262,19 +303,19 @@ Context7 서버를 사용하려면 API 키를 설정합니다.
 }
 ```
 
-### CLAUDE.md 템플릿 수정
+### CLAUDE.md Template Customization
 
-프로젝트의 기술 스택이나 컨벤션이 다른 경우 `CLAUDE.md`를 수정합니다.
+Modify `CLAUDE.md` if your project uses a different tech stack or conventions.
 
-- **Tech Stack**: 패키지 매니저, 언어, 린터 등을 프로젝트에 맞게 변경
-- **Code Conventions**: 프로젝트 고유의 코딩 컨벤션 추가/수정
-- **Commands**: 프로젝트의 실제 스크립트 명령어로 업데이트
-- **Critical Documents**: 문서 경로가 다른 경우 수정
+- **Tech Stack**: Change package manager, language, linter to match your project
+- **Code Conventions**: Add/modify rules in `.claude/rules/` for project-specific conventions
+- **Commands**: Update with your project's actual script commands
+- **Critical Documents**: Modify if document paths differ
 
-### 훅 선택적 비활성화
+### Selective Hook Disabling
 
-특정 훅이 필요하지 않은 경우 `.claude/settings.json`에서 해당 훅 항목을 제거합니다.
+Remove the corresponding hook entry from `.claude/settings.json` if a specific hook is not needed.
 
-### 에이전트/스킬 추가
+### Adding Agents/Skills
 
-`.claude/agents/` 또는 `.claude/skills/` 디렉토리에 새 마크다운 파일을 추가하여 커스텀 에이전트나 스킬을 만들 수 있습니다.
+Add new markdown files to `.claude/agents/` or `.claude/skills/` directories to create custom agents or skills.
