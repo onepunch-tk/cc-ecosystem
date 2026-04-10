@@ -11,10 +11,65 @@
 | 2 | **Enter plan mode**: Call `EnterPlanMode` to start local planning. Output a summary of gathered context and task description for the user. Inform the user they can upgrade to ultraplan via `/ultraplan` if desired. |
 | 2a | **Pipeline State → `plan`**: Set `pipeline-state.json` `current_phase` to `"plan"`, `plan_approved` to `false` (ABAC hook blocks source code modifications during plan phase). Mode is finalized after Step 4, so set `"pending"` for now. (see Pipeline State Management in SKILL.md) |
 | 3 | Analyze current state and create detailed step-by-step plan in the plan file. **File placement MUST follow the CA template's layer structure**: Domain → Application → Infrastructure → Presentation |
+| 3a | **Stakeholder Consultation** (conditional — see Stakeholder Consultation section below) |
 | 4 | **Count files and features** → determine execution mode (Sequential / Team) |
 | 4z | **Pipeline State mode finalized**: Update `pipeline-state.json` with the mode determined in Step 4 (`"sequential"` \| `"team"`) |
 | 5 | Plan review → approve via `ExitPlanMode` (user may upgrade to ultraplan at this point) |
 | 5z | **CRITICAL**: After plan approval, update `pipeline-state.json` with `"plan_approved": true`. The `pipeline-guardian` hook will **block Phase 2 entry** if this is `false`. |
+
+## Stakeholder Consultation (Step 3a)
+
+> **Purpose**: After creating the initial plan, the agent (acting as team lead) self-reviews
+> the plan for gaps and ambiguities, then reports to the user in their declared persona role
+> for strategic direction before finalizing.
+
+### Skip Conditions
+
+Skip Step 3a entirely (proceed directly to Step 4) if ANY:
+
+| Condition | Reason |
+|-----------|--------|
+| `My Role` in CLAUDE.md is empty or missing | No persona declared |
+| Task is a bug fix, typo fix, or config change | Trivial — no strategic input needed |
+| Plan has ≤ 2 files AND ≤ 1 feature | Scope too small |
+| All requirements are explicit and unambiguous | Nothing to clarify |
+
+> **Judgment call**: Only surface genuine gaps. Do not manufacture questions.
+
+### Consultation Report Format
+
+Address the user by their declared persona role:
+
+```
+[Role]님, [task summary]에 대한 초기 플랜이 완성되었습니다.
+진행 전 다음 사항에 대해 의견을 구합니다:
+
+**Ambiguities & Open Questions**
+[numbered — requirements gaps the agent cannot resolve from existing docs]
+
+**Decision Points**
+[numbered — multiple valid approaches with trade-offs and recommendation]
+
+**Risk Flags** (if any)
+[numbered — potential issues identified during plan analysis]
+
+**Assumptions Made**
+[numbered — implicit decisions baked into the plan for validation]
+
+---
+위 사항에 대해 결정해주시면 플랜에 반영하겠습니다.
+"proceed"로 응답하시면 현재 플랜대로 진행합니다.
+```
+
+### Rules
+
+- **One round only**: Present report once. No back-and-forth loop.
+- **No fictional gaps**: Only surface genuine ambiguities.
+- **Respect hierarchy**: Frame recommendations as proposals, not decisions. The user's response is the final word.
+- **Plan file updates**: Reflect feedback in plan file before Step 4. If user says "proceed," move on without changes.
+- **Works in both modes**: Occurs before mode detection (Step 4) — applies identically to Sequential and Team paths. Also works with ultraplan (consultation happens before any upgrade).
+
+---
 
 ## Ultraplan (Optional Upgrade)
 
