@@ -67,6 +67,13 @@ Before writing tests, check for reusable utilities:
 Read skill's **Code Examples** section for framework-specific patterns.
 The skill routes to the appropriate reference file based on detected framework.
 
+#### Library API Verification
+
+When writing tests that exercise external library APIs (e.g., framework hooks, ORM methods, SDK calls):
+- Use `resolve-library-id` → `query-docs` to verify API signatures match the installed version
+- Focus: method signatures, required parameters, return types, hook behavior
+- Skip: test utilities (`vitest`, `@testing-library`), internal modules, pure domain logic with no external dependencies
+
 ### Step 5: Run, Verify & Coverage
 
 ```bash

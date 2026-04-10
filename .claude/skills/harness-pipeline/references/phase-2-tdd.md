@@ -33,6 +33,20 @@
 > Domain code MUST NOT import from Application/Infrastructure/Presentation.
 > Application code MUST NOT import from Infrastructure/Presentation.
 
+### Library Documentation Lookup (Step 9)
+
+When implementing with external library APIs, verify correctness via context7 MCP:
+
+**Lookup** (`resolve-library-id` → `query-docs`):
+- First use of an external library API in this implementation session
+- Version-sensitive features (check `package.json` for installed version)
+- Test failure suggesting wrong API usage (e.g., "X is not a function", deprecated warnings)
+
+**Skip**:
+- Language built-ins (TypeScript, Node.js core modules)
+- Already verified libraries in current session
+- Internal project modules, type-only imports
+
 **Auto-verify (no human wait needed)**:
 - After Step 8: If tests pass immediately → review test logic, likely not testing correctly
 - After Step 9: If any test fails → fix implementation before proceeding

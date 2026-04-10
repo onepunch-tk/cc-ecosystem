@@ -34,7 +34,7 @@ description: |
 model: sonnet
 color: magenta
 memory: project
-tools: Read, Glob, Grep, Bash, Write
+tools: Read, Glob, Grep, Bash, Write, mcp__context7__resolve-library-id, mcp__context7__query-docs
 skills: review-report
 ---
 
@@ -214,12 +214,8 @@ Every finding MUST include a confidence level:
 
 When reviewing code using external libraries:
 1. Check `package.json` for versions
-2. **Check MCP availability**: List available MCP servers first
-3. **If context7 MCP available**: Use it for documentation lookup
-4. **Fallback**: Use WebFetch for official docs (e.g., `https://docs.example.com`)
-5. Verify API usage matches current library version
-
-> **Note**: Do not assume MCP servers are available. Always verify before use.
+2. **context7 MCP**: Use `resolve-library-id` → `query-docs` to get official, version-specific documentation
+3. Verify API usage matches current library version
 
 ## Severity Classification
 
