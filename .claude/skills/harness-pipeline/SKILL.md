@@ -109,7 +109,7 @@ Each phase has detailed steps in its reference file. **Read the reference for th
 
 | Phase | Reference | Key Actions |
 |-------|-----------|-------------|
-| **1. Plan** | [references/phase-1-plan.md](references/phase-1-plan.md) | Load docs, create plan, detect mode, create branch + tasks |
+| **1. Plan** | [references/phase-1-plan.md](references/phase-1-plan.md) | Load docs, create plan, stakeholder consultation (if persona set), detect mode, create branch + tasks |
 | **2. TDD** | [references/phase-2-tdd.md](references/phase-2-tdd.md) | Red (unit-test-writer) → Green (implement) → commit |
 | **3. Review** | [references/phase-3-review.md](references/phase-3-review.md) | code-reviewer → fix issues → commit |
 | **4. Validate** | [references/phase-4-validate.md](references/phase-4-validate.md) | E2E test → development-planner → merge → cleanup |
