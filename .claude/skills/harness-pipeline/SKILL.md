@@ -54,9 +54,14 @@ Updated at each Phase transition. The ABAC hook reads this to block source code 
   "mode": "sequential",
   "branch": "feature/xxx",
   "plan_approved": false,
+  "github_mode": true,
+  "issue_number": null,
   "updated_at": "2026-04-08T10:00:00Z"
 }
 ```
+
+- **`github_mode`**: `true` if `Remote Platform: GitHub` is set in CLAUDE.md, `false` otherwise. Determines whether Issue/PR operations are available.
+- **`issue_number`**: GitHub Issue number (GitHub Mode only). Set during Phase 1 Issue creation. Used for PR `Closes #N` linking.
 
 **Phase order:** `none` → `plan` → `tdd` → `review` → `validate` → `complete`
 
@@ -70,6 +75,8 @@ cat > .claude/pipeline-state.json << EOF
   "mode": "MODE",
   "branch": "$(git branch --show-current)",
   "plan_approved": PLAN_APPROVED,
+  "github_mode": GITHUB_MODE,
+  "issue_number": ISSUE_NUMBER,
   "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 }
 EOF
@@ -109,10 +116,10 @@ Each phase has detailed steps in its reference file. **Read the reference for th
 
 | Phase | Reference | Key Actions |
 |-------|-----------|-------------|
-| **1. Plan** | [references/phase-1-plan.md](references/phase-1-plan.md) | Load docs, create plan, stakeholder consultation (if persona set), detect mode, create branch + tasks |
+| **1. Plan** | [references/phase-1-plan.md](references/phase-1-plan.md) | Load docs, gh check, create Issue (GitHub Mode), create plan, stakeholder consultation (if persona set), detect mode, create branch + tasks |
 | **2. TDD** | [references/phase-2-tdd.md](references/phase-2-tdd.md) | Red (unit-test-writer) → Green (implement) → commit |
 | **3. Review** | [references/phase-3-review.md](references/phase-3-review.md) | code-reviewer → fix issues → commit |
-| **4. Validate** | [references/phase-4-validate.md](references/phase-4-validate.md) | E2E test → development-planner → merge → cleanup |
+| **4. Validate** | [references/phase-4-validate.md](references/phase-4-validate.md) | E2E test → docs update → PR create + merge (GitHub) or direct merge (Local) → cleanup |
 
 **Team Protocol**: [references/team-protocol.md](references/team-protocol.md) — teammate execution steps, file ownership, communication, merge strategy
 

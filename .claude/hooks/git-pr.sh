@@ -1,0 +1,135 @@
+#!/bin/bash
+set -euo pipefail
+
+# git-pr.sh — PR creation + merge + cleanup utility
+# Agent composes title/body, this script handles push → PR → merge → cleanup
+#
+# Usage:
+#   .claude/hooks/git-pr.sh --title "✨ feat: implement login" --body "## Summary ..." [--issue 42]
+#
+# Output: success/failure result
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+
+# ─── Parse arguments ───
+TITLE=""
+BODY=""
+ISSUE_NUMBER=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --title) TITLE="$2"; shift 2 ;;
+        --body) BODY="$2"; shift 2 ;;
+        --issue) ISSUE_NUMBER="$2"; shift 2 ;;
+        *) echo "❌ Unknown option: $1" >&2; exit 1 ;;
+    esac
+done
+
+if [[ -z "$TITLE" ]]; then
+    echo "❌ --title is required" >&2
+    exit 1
+fi
+
+cd "$PROJECT_DIR"
+
+# ─── Prerequisites ───
+if ! command -v gh &>/dev/null; then
+    echo "❌ gh CLI is not installed." >&2
+    exit 1
+fi
+
+if ! gh auth status &>/dev/null 2>&1; then
+    echo "❌ gh authentication required. Run: ! gh auth login" >&2
+    exit 1
+fi
+
+CURRENT_BRANCH=$(git branch --show-current)
+
+if [[ "$CURRENT_BRANCH" == "main" || "$CURRENT_BRANCH" == "development" ]]; then
+    echo "❌ Cannot create PR from main or development branch." >&2
+    exit 1
+fi
+
+# ─── Check for uncommitted changes ───
+if [[ -n "$(git status --porcelain)" ]]; then
+    echo "❌ Uncommitted changes detected. Please commit first." >&2
+    exit 1
+fi
+
+# ─── Append Closes #N to body ───
+if [[ -n "$ISSUE_NUMBER" && -n "$BODY" ]]; then
+    BODY="$BODY
+
+---
+Closes #$ISSUE_NUMBER"
+elif [[ -n "$ISSUE_NUMBER" ]]; then
+    BODY="Closes #$ISSUE_NUMBER"
+fi
+
+echo "═══════════════════════════════════════"
+echo "🔀 Pull Request: $CURRENT_BRANCH → development"
+echo "═══════════════════════════════════════"
+echo ""
+
+# ─── Step 1: Push ───
+echo "[1/4] Pushing branch..."
+if git push origin "$CURRENT_BRANCH" 2>&1; then
+    echo "      ✅ Push complete"
+else
+    echo "      ❌ Push failed" >&2
+    exit 1
+fi
+echo ""
+
+# ─── Step 2: Create PR ───
+echo "[2/4] Creating PR..."
+PR_CMD=(gh pr create --base development --title "$TITLE")
+if [[ -n "$BODY" ]]; then
+    PR_CMD+=(--body "$BODY")
+fi
+
+PR_URL=$("${PR_CMD[@]}" 2>&1)
+
+if [[ $? -ne 0 ]]; then
+    echo "      ❌ PR creation failed: $PR_URL" >&2
+    exit 1
+fi
+
+PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
+echo "      ✅ PR #$PR_NUMBER created"
+echo "      URL: $PR_URL"
+echo ""
+
+# ─── Step 3: Merge PR ───
+echo "[3/4] Merging PR..."
+if gh pr merge "$PR_NUMBER" --merge --delete-branch 2>&1; then
+    echo "      ✅ Merge complete (merge commit)"
+    [[ -n "$ISSUE_NUMBER" ]] && echo "      ✅ Issue #$ISSUE_NUMBER auto-closed"
+else
+    echo "      ❌ Merge failed. Possible conflict." >&2
+    echo "      PR URL: $PR_URL" >&2
+    exit 1
+fi
+echo ""
+
+# ─── Step 4: Cleanup ───
+echo "[4/4] Cleaning up..."
+git checkout development 2>/dev/null
+git pull origin development 2>/dev/null || true
+
+# Delete local branch (remote handled by --delete-branch)
+if git branch -d "$CURRENT_BRANCH" 2>/dev/null; then
+    echo "      ✅ Local branch deleted"
+else
+    echo "      ⚠️ Local branch deletion skipped (may already be deleted)"
+fi
+echo "      ✅ Checked out to development"
+
+echo ""
+echo "───────────────────────────────────────"
+echo "✅ PR Complete"
+echo "   PR: #$PR_NUMBER"
+[[ -n "$ISSUE_NUMBER" ]] && echo "   Issue: #$ISSUE_NUMBER (closed)"
+echo "   Branch: development (current)"
+echo "───────────────────────────────────────"

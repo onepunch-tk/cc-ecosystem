@@ -80,6 +80,28 @@ case "$PHASE" in
         ;;
 
     "validate"|"complete")
+        # GitHub Mode: Issue/PR enforcement
+        GITHUB_MODE=$(jq -r '.github_mode // false' "$STATE_FILE")
+        ISSUE_NUMBER=$(jq -r '.issue_number // null' "$STATE_FILE")
+        if [[ "$GITHUB_MODE" == "true" ]]; then
+            WARNED_ISSUE=$(jq -r '.workflow_warnings_sent.validate_no_issue // ""' "$HOOK_STATE")
+            if [[ ("$ISSUE_NUMBER" == "null" || -z "$ISSUE_NUMBER") && -z "$WARNED_ISSUE" ]]; then
+                REMINDERS+=("[WORKFLOW] ISSUE MISSING: GitHub Mode is active but no Issue was created. Verify Issue creation in Phase 1. pipeline-state.json issue_number is empty.")
+            fi
+
+            # Check if PR was created (only on complete phase)
+            if [[ "$PHASE" == "complete" ]]; then
+                WARNED_PR=$(jq -r '.workflow_warnings_sent.validate_no_pr // ""' "$HOOK_STATE")
+                if [[ -z "$WARNED_PR" ]]; then
+                    CURRENT_BR=$(cd "$PROJECT_DIR" && git branch --show-current 2>/dev/null || echo "")
+                    # If still on feature branch, PR hasn't been created yet
+                    if echo "$CURRENT_BR" | grep -qE '^(feature|fix|docs|refactor|test|chore)/'; then
+                        REMINDERS+=("[WORKFLOW] PR NOT CREATED: Transitioned to complete without creating a PR in GitHub Mode. Use .claude/hooks/git-pr.sh to create and merge a PR.")
+                    fi
+                fi
+            fi
+        fi
+
         # Doc update detection
         REMINDED=$(jq -r '.doc_reminders_sent.validate_docs // ""' "$HOOK_STATE")
         if [[ -z "$REMINDED" ]]; then
@@ -168,7 +190,7 @@ if [[ ${#REMINDERS[@]} -gt 0 ]]; then
         .cooldown_until = $cooldown |
         if $phase == "tdd" then .workflow_warnings_sent.tdd_no_tests = $now | .workflow_warnings_sent.tdd_no_plan = $now
         elif $phase == "review" then .workflow_warnings_sent.review_no_report = $now
-        elif ($phase == "validate" or $phase == "complete") then .doc_reminders_sent.validate_docs = $now
+        elif ($phase == "validate" or $phase == "complete") then .doc_reminders_sent.validate_docs = $now | .workflow_warnings_sent.validate_no_issue = $now | .workflow_warnings_sent.validate_no_pr = $now
         else . end
         ' "$HOOK_STATE")
     echo "$UPDATED_STATE" > "$HOOK_STATE"

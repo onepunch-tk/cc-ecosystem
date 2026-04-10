@@ -191,5 +191,5 @@ BREAKING CHANGE: Existing API clients need modification
 
 - Don't commit if no changes exist
 - Warn if sensitive files (.env, credentials, etc.) are included
-- Write commit messages in Korean
+- Write commit messages in the user's language (detected from conversation context)
 - Never add `Co-Authored-By` pattern

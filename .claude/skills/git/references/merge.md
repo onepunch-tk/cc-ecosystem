@@ -1,21 +1,25 @@
-# Git Merge (Trunk-Based)
+# Git Merge (Local Mode)
 
-Merge current feature branch into main branch (Trunk-Based Development).
+Merge current feature branch into `development` branch. **Local Mode only** — used when `Remote Platform` is NOT set in CLAUDE.md.
+
+> **GitHub Mode**: If `Remote Platform: GitHub` is configured, `/git merge` redirects to `/git pr`.
 
 ## Workflow
 
 ```
 [1] Check current branch
        ↓
-[2] Update main branch
+[2] Check for uncommitted changes
        ↓
-[3] Checkout to main
+[3] Update development branch
        ↓
-[4] Merge feature branch (--no-ff)
+[4] Checkout to development
        ↓
-[5] Push main
+[5] Merge feature branch (--no-ff)
        ↓
-[6] Ask about feature branch deletion
+[6] Push development
+       ↓
+[7] Ask about feature branch deletion
 ```
 
 ## Step-by-Step Details
@@ -26,11 +30,7 @@ Merge current feature branch into main branch (Trunk-Based Development).
 git branch --show-current
 ```
 
-**If on main branch**: Stop and notify
-```
-⚠️ Currently on main branch.
-   Please checkout to a feature branch to merge first.
-```
+**If on main or development branch**: Stop and notify user.
 
 ### 2. Check for Changes
 
@@ -38,110 +38,42 @@ git branch --show-current
 git status
 ```
 
-**If uncommitted changes exist**: Stop and notify
-```
-⚠️ Uncommitted changes detected.
-   Please commit or stash first, then try again.
-```
+**If uncommitted changes exist**: Stop and notify user.
 
-### 3. Update Main Branch
+### 3. Update Development Branch
 
 ```bash
-git fetch origin main
-git checkout main
-git pull origin main
+git fetch origin development
+git checkout development
+git pull origin development
 ```
 
 ### 4. Merge Feature Branch
 
 ```bash
-git merge --no-ff <feature-branch> -m "🔀 merge: <feature-branch> → main
+git merge --no-ff <feature-branch> -m "🔀 merge: <feature-branch> → development
 
 - Feature summary (based on change analysis)"
 ```
 
-**Reason for `--no-ff`**: Creates merge commit to clarify branch history
+**`--no-ff`**: Creates merge commit to preserve branch history.
 
-**Note**: Merge commits use emoji + merge format since it's not a Conventional Commits standard type.
-
-### 5. Push Main
+### 5. Push Development
 
 ```bash
-git push origin main
+git push origin development
 ```
 
 ### 6. Feature Branch Deletion
 
-**Use AskUserQuestion**:
-```
-Delete feature branch '<branch-name>'?
-
-Options:
-1. Delete (local + remote)
-2. Delete local only
-3. Keep
-```
-
-**If deletion selected**:
-```bash
-# Delete local
-git branch -d <feature-branch>
-
-# Delete remote (if selected)
-git push origin --delete <feature-branch>
-```
-
-## Output Format
-
-```
-═══════════════════════════════════════
-🔀 Git Merge (Trunk-Based) Started
-═══════════════════════════════════════
-
-[1/5] Checking current branch...
-      Branch: feature/user-auth
-
-[2/5] Updating main branch...
-      ✅ Main updated
-
-[3/5] Checking out to main...
-      ✅ Main checkout complete
-
-[4/5] Merging feature branch...
-      ✅ Merge complete (--no-ff)
-
-[5/5] Pushing main...
-      ✅ Push complete
-
-───────────────────────────────────────
-✅ Git Merge Complete
-───────────────────────────────────────
-```
-
-## Examples
-
-### Execute from Feature Branch
-
-Current branch: `feature/user-auth`
-
-1. Update main
-2. Checkout main
-3. `git merge --no-ff feature/user-auth -m "🔀 merge: feature/user-auth → main"`
-4. Push main
-5. Ask about branch deletion
-
-### Merge Commit Message Example
-
-```
-🔀 merge: feature/user-auth → main
-
-- Implement user authentication feature
-- Add login/signup flow
-```
+**Use AskUserQuestion** to ask whether to delete the feature branch:
+- Delete (local + remote)
+- Delete local only
+- Keep
 
 ## Cautions
 
-- Stop if executed from main branch
+- Stop if executed from main or development branch
 - Stop if uncommitted changes exist
 - Guide manual resolution if merge conflict occurs
 - Never perform force push

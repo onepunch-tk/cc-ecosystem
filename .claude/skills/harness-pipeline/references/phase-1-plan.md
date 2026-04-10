@@ -8,8 +8,10 @@
 | 1 | Read `CLAUDE.md`. Read `docs/ROADMAP.md` if it exists (skip if not — e.g., bug fix without roadmap) |
 | 1a | **CA Structure Check**: Read `docs/PROJECT-STRUCTURE.md`. If it does NOT exist → auto-invoke `project-structure` skill to generate it from the CA template |
 | 1b | **Load CA Template**: Detect framework type and load the matching CA template from `.claude/skills/project-structure/references/` (react-router, nestjs, or expo). Use the template's **File Location Summary by Task** table as the file placement guide |
+| 1c | **GitHub Mode Check**: Read `Remote Platform` from CLAUDE.md. If set to `GitHub` → run `gh auth status`. If auth fails → instruct user to run `! gh auth login` and **STOP**. If not set → Local Mode (skip Issue/PR steps). Store result in `github_mode` variable for later steps. |
 | 2 | **Enter plan mode**: Call `EnterPlanMode` to start local planning. Output a summary of gathered context and task description for the user. Inform the user they can upgrade to ultraplan via `/ultraplan` if desired. |
-| 2a | **Pipeline State → `plan`**: Set `pipeline-state.json` `current_phase` to `"plan"`, `plan_approved` to `false` (ABAC hook blocks source code modifications during plan phase). Mode is finalized after Step 4, so set `"pending"` for now. (see Pipeline State Management in SKILL.md) |
+| 2a | **Pipeline State → `plan`**: Set `pipeline-state.json` `current_phase` to `"plan"`, `plan_approved` to `false`, `github_mode` to detected value, `issue_number` to `null`. (ABAC hook blocks source code modifications during plan phase). Mode is finalized after Step 4, so set `"pending"` for now. (see Pipeline State Management in SKILL.md) |
+| 2b | **Create GitHub Issue** (GitHub Mode only — skip if Local Mode): Agent가 title/body를 작성 후 `"$CLAUDE_PROJECT_DIR"/.claude/hooks/git-issue.sh --title "..." --body "..." --label "..."` 호출. 출력 마지막 줄 `ISSUE_NUMBER=N`을 파싱하여 `pipeline-state.json`의 `issue_number`에 저장. |
 | 3 | Analyze current state and create detailed step-by-step plan in the plan file. **File placement MUST follow the CA template's layer structure**: Domain → Application → Infrastructure → Presentation |
 | 3a | **Stakeholder Consultation** (conditional — see Stakeholder Consultation section below) |
 | 4 | **Count files and features** → determine execution mode (Sequential / Team) |
@@ -154,7 +156,16 @@ When planning file locations, refer to the **CA template loaded in Step 1b** and
 | Step | Action |
 |------|--------|
 | 5a | Fetch latest and switch to `development` branch: `git fetch origin && git checkout development 2>/dev/null \|\| git checkout -b development main && git pull origin development 2>/dev/null \|\| true` |
-| 5b | Create feature branch from `development`. Branch name MUST follow the naming convention in [commit-prefix-rules.md](../../git/references/commit-prefix-rules.md): `feature/*`, `fix/*`, `docs/*`, `refactor/*`, `test/*`, `chore/*`. Derive the name dynamically from the task content |
+| 5b | Create feature branch from `development`. Branch naming depends on mode: |
+
+**Branch Naming Convention:**
+
+| Mode | Pattern | Example |
+|------|---------|---------|
+| GitHub Mode | `{type}/issue-{N}-{slug}` | `feature/issue-42-login` |
+| Local Mode | `{type}/{slug}` | `feature/login` |
+
+Branch type MUST follow [commit-prefix-rules.md](../../git/references/commit-prefix-rules.md): `feature/*`, `fix/*`, `docs/*`, `refactor/*`, `test/*`, `chore/*`. Derive the slug dynamically from the task content.
 
 ## Team Mode Addition (Phase 1)
 
