@@ -20,6 +20,9 @@
 - Project Structure [docs/PROJECT-STRUCTURE.md](docs/PROJECT-STRUCTURE.md): **MANDATORY** - Reference before ANY task
 - Development RoadMap [docs/ROADMAP.md](docs/ROADMAP.md): **MANDATORY** - Defines "in what order" to build (implementation phases)
 
+## Git Integration
+- **Remote Platform**: GitHub
+
 ## Workflow
 > Before starting any implementation task, load the `harness-pipeline` skill.
 

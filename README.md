@@ -46,7 +46,7 @@ cc-ecosystem/
     │           ├── phase-3-review.md
     │           ├── phase-4-validate.md
     │           └── team-protocol.md
-    └── hooks/                         # Hook scripts (10)
+    └── hooks/                         # Hook scripts (11) + Utility scripts (3)
         ├── .env.hooks
         ├── biome-format.sh
         ├── block-dangerous-commands.sh
@@ -54,10 +54,14 @@ cc-ecosystem/
         ├── typecheck.sh
         ├── slack-notify.sh
         ├── pipeline-guardian.sh
+        ├── gh-auth-check.sh             # PreToolUse: gh auth validation
         ├── rbac-agent-role.sh
         ├── abac-phase-policy.sh
         ├── rebac-ownership.sh
-        └── rebac-teammate-idle.sh
+        ├── rebac-teammate-idle.sh
+        ├── git-issue.sh                 # Utility: GitHub Issue creation
+        ├── git-pr.sh                    # Utility: PR creation + merge + cleanup
+        └── git-release.sh              # Utility: Release PR + tag
 ```
 
 ---
@@ -109,13 +113,13 @@ Loaded only when editing files that match the `paths` frontmatter pattern. Reduc
 | Skill | Command | Description |
 |-------|---------|-------------|
 | `prd` | -- | PRD generation rules, platform-specific templates, consistency validation (Web/Backend/Mobile/Multi-platform) |
-| `git` | `/git` | Select and execute commit, push, sync, merge operations via UI |
+| `git` | `/git` | Git operations: commit, push, sync, issue, pr, release, merge. GitHub Mode auto-detected from CLAUDE.md |
 | `tdd` | `/tdd` | TDD rules and patterns -- Red-Green-Refactor cycle guide |
 | `project-structure` | `/project-structure` | Auto-generate PROJECT-STRUCTURE.md from Clean Architecture templates |
 | `review-report` | `/review-report` | Generate standardized code review reports |
 | `harness-pipeline` | `/harness-pipeline` | Unified dev pipeline -- phases loaded on-demand from references/, auto-detects Sequential or Team mode |
 
-### Hooks (10)
+### Hooks (11) + Utility Scripts (3)
 
 #### Base Hooks (5)
 
@@ -132,6 +136,22 @@ Loaded only when editing files that match the `paths` frontmatter pattern. Reduc
 | Hook | Trigger | Description |
 |------|---------|-------------|
 | `pipeline-guardian.sh` | Stop | Monitors workflow compliance and auto-detects doc update needs. Blocks Claude from stopping when: plan not approved, TDD tests missing, review skipped, or docs need updating. Supports monorepo via `git ls-files`. |
+
+#### GitHub Integration Hook (1)
+
+| Hook | Trigger | Description |
+|------|---------|-------------|
+| `gh-auth-check.sh` | PreToolUse (Bash) | Auto-validates `gh` auth when any `gh` command is executed. Blocks if GitHub Mode is not configured or auth is expired. |
+
+#### Git Utility Scripts (3)
+
+Called by the agent via Bash (not event-driven hooks). Handle mechanical git operations — agent only composes title/body (intelligence), scripts handle push/merge/cleanup (automation).
+
+| Script | Description |
+|--------|-------------|
+| `git-issue.sh` | Creates GitHub Issue via `gh issue create`. Handles prerequisite checks, duplicate detection, returns issue number. |
+| `git-pr.sh` | Full PR lifecycle: push → create PR → merge → close issue → delete branch → reset pipeline state. |
+| `git-release.sh` | Release workflow: development → main PR → merge → tag → GitHub Release → return to development. |
 
 #### Access Control Hooks (4)
 
@@ -208,12 +228,17 @@ Idea
                               |
                               v
                     +------------------+
+                    | GitHub Mode:     |
+                    |  Issue → PR →    |
+                    |  Merge → Close   |
+                    |                  |
+                    | Local Mode:      |
                     |  /git merge      |
-                    |  Merge           |
                     +------------------+
 
   pipeline-guardian (Stop hook) monitors each phase transition
   and reminds about doc updates before merge.
+  gh-auth-check (PreToolUse hook) validates gh auth on every gh command.
 ```
 
 ---
@@ -245,14 +270,42 @@ cp -r cc-ecosystem/.claude/rules /your/project/.claude/
 
 ### 3. Modify CLAUDE.md
 
-Update the `Project Overview` and `Tech Stack` sections in `CLAUDE.md` to match your project.
+Update `CLAUDE.md` to match your project. Key sections to configure:
+
+#### Project Overview
 
 ```markdown
 ## Project Overview
 - **Service Name**: My Awesome App
 - **Goal**: An app that delivers the best user experience
 - **Target Users**: General users
+- **My Role**: CTO
 ```
+
+**`My Role`** determines how the agent interacts with you during plan consultation (Phase 1 Step 3a — Stakeholder Consultation). Examples:
+
+| Value | Effect |
+|-------|--------|
+| `CTO` | Agent addresses you as CTO, asks for technical direction |
+| `Product Manager` | Agent focuses on product requirements, prioritization |
+| `Tech Lead` | Agent asks about architecture decisions, team impact |
+| *(empty)* | Stakeholder Consultation is skipped entirely |
+
+#### Git Integration
+
+```markdown
+## Git Integration
+- **Remote Platform**: GitHub
+```
+
+**`Remote Platform`** enables Issue-Driven Development with automatic PR workflow:
+
+| Value | Effect |
+|-------|--------|
+| `GitHub` | `gh` CLI required. Enables `/git issue`, `/git pr`, `/git release`. Pipeline creates Issues, PRs, auto-closes Issues on merge. |
+| *(empty or omitted)* | Local Mode. Uses direct `git merge`. No Issue/PR features. |
+
+When GitHub is configured but `gh` is not authenticated, the `gh-auth-check` hook blocks all `gh` commands and instructs the user to run `! gh auth login`.
 
 ### 4. Environment Setup
 

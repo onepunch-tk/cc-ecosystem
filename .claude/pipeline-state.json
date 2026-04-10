@@ -1,1 +1,9 @@
-{"current_phase":"none","mode":"none","branch":"","plan_approved":false,"updated_at":""}
+{
+  "current_phase": "none",
+  "mode": "none",
+  "branch": "development",
+  "plan_approved": false,
+  "github_mode": true,
+  "issue_number": null,
+  "updated_at": "2026-04-10T11:46:21Z"
+}
