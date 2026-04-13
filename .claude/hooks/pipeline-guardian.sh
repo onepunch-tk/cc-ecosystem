@@ -34,10 +34,10 @@ fi
 if [[ "$PHASE" == "tdd" ]]; then
     PHASE_START=$(jq -r '.updated_at // ""' "$STATE_FILE")
     if [[ -n "$PHASE_START" ]]; then
-        RED_DONE=$(cd "$PROJECT_DIR" && git log --format="%s" --after="$PHASE_START" 2>/dev/null | grep -m1 "^✅ test:" || true)
-        GREEN_DONE=$(cd "$PROJECT_DIR" && git log --format="%s" --after="$PHASE_START" 2>/dev/null | grep -m1 "^✨ feat:" || true)
+        RED_COUNT=$(cd "$PROJECT_DIR" && git log --format="%s" --after="$PHASE_START" 2>/dev/null | grep -c "^✅ test:" || true)
+        GREEN_COUNT=$(cd "$PROJECT_DIR" && git log --format="%s" --after="$PHASE_START" 2>/dev/null | grep -c "^✨ feat:" || true)
 
-        if [[ -n "$RED_DONE" && -z "$GREEN_DONE" ]]; then
+        if [[ $RED_COUNT -gt 0 && $RED_COUNT -gt $GREEN_COUNT ]]; then
             SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // "default"')
             RETRY_COUNT=$(jq -r --arg s "$SESSION_ID" '.failure_recovery[$s].retry_count // 0' "$HOOK_STATE" 2>/dev/null | head -1 || echo 0)
             RETRY_COUNT=$(echo "$RETRY_COUNT" | tr -cd '0-9')
@@ -58,9 +58,9 @@ if [[ "$PHASE" == "tdd" ]]; then
 
             # Build context message
             if [[ $NEXT -eq $MAX_RETRIES ]]; then
-                CTX="[FAILURE RECOVERY] Green phase incomplete — last retry ($NEXT/$MAX_RETRIES).\nTests written (Red) but not all passing (no ✨ feat: commit).\nThis is your FINAL attempt. If tests cannot pass:\n1. Write failure report to docs/reports/failures/\n2. Include: failing tests, attempted approaches, blocking issues\n3. Then stop."
+                CTX="[FAILURE RECOVERY] Green phase incomplete — last retry ($NEXT/$MAX_RETRIES).\nRed commits: $RED_COUNT, Green commits: $GREEN_COUNT ($(($RED_COUNT - $GREEN_COUNT)) feature(s) missing Green).\nThis is your FINAL attempt. If tests cannot pass:\n1. Write failure report to docs/reports/failures/\n2. Include: failing tests, attempted approaches, blocking issues\n3. Then stop."
             else
-                CTX="[FAILURE RECOVERY] Green phase incomplete — retry $NEXT/$MAX_RETRIES.\nTests written (Red) but not all passing (no ✨ feat: commit found since phase start).\nContinue implementing. Follow CA Inside-Out order. Run tests after changes."
+                CTX="[FAILURE RECOVERY] Green phase incomplete — retry $NEXT/$MAX_RETRIES.\nRed commits: $RED_COUNT, Green commits: $GREEN_COUNT ($(($RED_COUNT - $GREEN_COUNT)) feature(s) missing Green).\nContinue implementing. Follow CA Inside-Out order. Run tests after changes."
             fi
 
             jq -n --arg ctx "$CTX" '{
