@@ -27,7 +27,48 @@ BRANCH=$(jq -r '.branch // ""' "$STATE_FILE")
 # ─── Hook state (dedup + cooldown tracking) ───
 HOOK_STATE="$PROJECT_DIR/.claude/hook-state.json"
 if [[ ! -f "$HOOK_STATE" ]]; then
-    echo '{"last_reminded_phase":"","doc_reminders_sent":{},"workflow_warnings_sent":{},"cooldown_until":""}' > "$HOOK_STATE"
+    echo '{"last_reminded_phase":"","doc_reminders_sent":{},"workflow_warnings_sent":{},"cooldown_until":"","failure_recovery":{}}' > "$HOOK_STATE"
+fi
+
+# ─── Failure Recovery Guard (before cooldown — must not be bypassed) ───
+if [[ "$PHASE" == "tdd" ]]; then
+    PHASE_START=$(jq -r '.updated_at // ""' "$STATE_FILE")
+    if [[ -n "$PHASE_START" ]]; then
+        RED_DONE=$(cd "$PROJECT_DIR" && git log --oneline --after="$PHASE_START" --grep="✅ test:" 2>/dev/null | head -1)
+        GREEN_DONE=$(cd "$PROJECT_DIR" && git log --oneline --after="$PHASE_START" --grep="✨ feat:" 2>/dev/null | head -1)
+
+        if [[ -n "$RED_DONE" && -z "$GREEN_DONE" ]]; then
+            SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // "default"')
+            RETRY_COUNT=$(jq -r --arg s "$SESSION_ID" '.failure_recovery[$s].retry_count // 0' "$HOOK_STATE" 2>/dev/null || echo 0)
+            MAX_RETRIES=${FAILURE_RECOVERY_MAX_RETRIES:-20}
+
+            if [[ $RETRY_COUNT -ge $MAX_RETRIES ]]; then
+                # Max retries reached — allow stop
+                exit 0
+            fi
+
+            # Increment retry counter
+            NEXT=$((RETRY_COUNT + 1))
+            NOW=$(date -u "+%Y-%m-%dT%H:%M:%SZ")
+            jq --arg s "$SESSION_ID" --argjson n "$NEXT" --arg t "$NOW" \
+                '.failure_recovery[$s] = { retry_count: $n, last_at: $t }' \
+                "$HOOK_STATE" > "${HOOK_STATE}.tmp" && mv "${HOOK_STATE}.tmp" "$HOOK_STATE"
+
+            # Build context message
+            if [[ $NEXT -eq $MAX_RETRIES ]]; then
+                CTX="[FAILURE RECOVERY] Green phase incomplete — last retry ($NEXT/$MAX_RETRIES).\nTests written (Red) but not all passing (no ✨ feat: commit).\nThis is your FINAL attempt. If tests cannot pass:\n1. Write failure report to docs/reports/failures/\n2. Include: failing tests, attempted approaches, blocking issues\n3. Then stop."
+            else
+                CTX="[FAILURE RECOVERY] Green phase incomplete — retry $NEXT/$MAX_RETRIES.\nTests written (Red) but not all passing (no ✨ feat: commit found since phase start).\nContinue implementing. Follow CA Inside-Out order. Run tests after changes."
+            fi
+
+            jq -n --arg ctx "$CTX" '{
+                decision: "block",
+                reason: "Failure Recovery: Green phase incomplete",
+                hookSpecificOutput: { hookEventName: "Stop", additionalContext: $ctx }
+            }'
+            exit 0
+        fi
+    fi
 fi
 
 # Cooldown check (30s window)

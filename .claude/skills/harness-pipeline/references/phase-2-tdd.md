@@ -14,6 +14,10 @@
 
 > **Note**: Git branch setup (Steps 5a-5b) was already completed in Phase 1. All work below happens on the feature branch.
 
+> **Failure Recovery**: The pipeline-guardian Stop hook automatically guards Green phase completion.
+> If you attempt to stop before committing a `✨ feat:` commit, the hook will block and provide retry context.
+> Retries: `FAILURE_RECOVERY_MAX_RETRIES` env (default: 20). Tracked per-session for Team Mode safety.
+
 ## Sequential Mode (1-5 files)
 
 | Step | Action | Sub-Agent |
