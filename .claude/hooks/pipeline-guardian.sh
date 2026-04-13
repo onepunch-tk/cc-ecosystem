@@ -34,12 +34,14 @@ fi
 if [[ "$PHASE" == "tdd" ]]; then
     PHASE_START=$(jq -r '.updated_at // ""' "$STATE_FILE")
     if [[ -n "$PHASE_START" ]]; then
-        RED_DONE=$(cd "$PROJECT_DIR" && git log --oneline --after="$PHASE_START" --grep="✅ test:" 2>/dev/null | head -1)
-        GREEN_DONE=$(cd "$PROJECT_DIR" && git log --oneline --after="$PHASE_START" --grep="✨ feat:" 2>/dev/null | head -1)
+        RED_DONE=$(cd "$PROJECT_DIR" && git log --format="%s" --after="$PHASE_START" 2>/dev/null | grep -m1 "^✅ test:" || true)
+        GREEN_DONE=$(cd "$PROJECT_DIR" && git log --format="%s" --after="$PHASE_START" 2>/dev/null | grep -m1 "^✨ feat:" || true)
 
         if [[ -n "$RED_DONE" && -z "$GREEN_DONE" ]]; then
             SESSION_ID=$(echo "$INPUT" | jq -r '.session_id // "default"')
-            RETRY_COUNT=$(jq -r --arg s "$SESSION_ID" '.failure_recovery[$s].retry_count // 0' "$HOOK_STATE" 2>/dev/null || echo 0)
+            RETRY_COUNT=$(jq -r --arg s "$SESSION_ID" '.failure_recovery[$s].retry_count // 0' "$HOOK_STATE" 2>/dev/null | head -1 || echo 0)
+            RETRY_COUNT=$(echo "$RETRY_COUNT" | tr -cd '0-9')
+            [[ -z "$RETRY_COUNT" ]] && RETRY_COUNT=0
             MAX_RETRIES=${FAILURE_RECOVERY_MAX_RETRIES:-20}
 
             if [[ $RETRY_COUNT -ge $MAX_RETRIES ]]; then
