@@ -125,28 +125,20 @@ Each phase has detailed steps in its reference file. **Read the reference for th
 
 ---
 
-## Failure Recovery (All Modes)
+## Failure Recovery (Enforced by pipeline-guardian Stop Hook)
 
-```
-IF any step fails:
-  1. Log failure to docs/reports/failures/{timestamp}-{step}.md
-  2. Retry SAME approach (1 attempt)
-  3. Retry DIFFERENT approach (1 attempt)
-  4. After 3 total failures → STOP, report to user, WAIT for instruction
-```
+The pipeline-guardian Stop hook automatically guards TDD Green Phase completion.
 
-### Team Mode Variant (Teammates)
+**Detection**: Red phase commit (`✅ test:`) exists + Green phase commit (`✨ feat:`) missing → stop blocked
+**Retries**: `FAILURE_RECOVERY_MAX_RETRIES` env variable (default: 20) — configurable in `.claude/settings.json`
+**Reporting**: On final retry, agent is instructed to write failure report to `docs/reports/failures/`
+**Reset**: Retry counters auto-reset on phase transition (tdd → review)
 
-```
-IF any step fails (teammate):
-  1. Log to docs/reports/failures/{teammate-name}-{timestamp}.md
-  2. Retry SAME approach (1 attempt)
-  3. Retry DIFFERENT approach (1 attempt)
-  4. After 3 failures:
-     → Message lead: "Blocked on [issue]. Attempted [approaches]."
-     → Pick up next available task
-     → DO NOT STOP
-```
+### Sequential Mode
+Agent stop blocked while Green phase incomplete. Up to 20 retries with increasing context about what to fix. On success (✨ feat: commit detected), stop is immediately allowed regardless of retry count.
+
+### Team Mode
+Each teammate's retries tracked independently per session. When max retries reached, teammate stops → TeammateIdle hook notifies lead. Failure report written to `docs/reports/failures/{teammate-name}-{timestamp}.md`.
 
 ---
 

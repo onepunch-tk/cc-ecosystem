@@ -135,7 +135,7 @@ Loaded only when editing files that match the `paths` frontmatter pattern. Reduc
 
 | Hook | Trigger | Description |
 |------|---------|-------------|
-| `pipeline-guardian.sh` | Stop | Monitors workflow compliance and auto-detects doc update needs. Blocks Claude from stopping when: plan not approved, TDD tests missing, review skipped, or docs need updating. Supports monorepo via `git ls-files`. |
+| `pipeline-guardian.sh` | Stop | Monitors workflow compliance, enforces Failure Recovery, and auto-detects doc update needs. Blocks Claude from stopping when: plan not approved, TDD Green phase incomplete (with configurable retry up to `FAILURE_RECOVERY_MAX_RETRIES`, default 20), review skipped, or docs need updating. Per-session retry tracking for Team Mode safety. |
 
 #### GitHub Integration Hook (1)
 
@@ -180,6 +180,7 @@ Key settings managed in `.claude/settings.json`:
 | `ENABLE_TOOL_SEARCH` | `true` | Enable tool search feature |
 | `MAX_MCP_OUTPUT_TOKENS` | `50000` | MCP output token limit |
 | `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | `1` | Enable agent teams feature |
+| `FAILURE_RECOVERY_MAX_RETRIES` | `20` | Max stop-block retries during TDD Green phase (0 to disable) |
 
 ---
 
@@ -236,8 +237,9 @@ Idea
                     |  /git merge      |
                     +------------------+
 
-  pipeline-guardian (Stop hook) monitors each phase transition
-  and reminds about doc updates before merge.
+  pipeline-guardian (Stop hook) monitors each phase transition,
+  enforces Failure Recovery (Green phase guard), and reminds
+  about doc updates before merge.
   gh-auth-check (PreToolUse hook) validates gh auth on every gh command.
 ```
 
