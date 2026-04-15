@@ -8,7 +8,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const baseClasses = [
 	"inline-flex items-center justify-center",
-	"rounded-lg font-semibold select-none",
+	"rounded-lg font-bold select-none",
 	"transition-all duration-200 ease-in-out",
 	"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
 	"disabled:opacity-50 disabled:cursor-not-allowed",

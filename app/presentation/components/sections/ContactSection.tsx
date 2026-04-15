@@ -15,14 +15,14 @@ export default function ContactSection() {
 	const isSubmitting = navigation.state === "submitting";
 
 	return (
-		<section id="contact" className="bg-white py-16 md:py-24 px-6">
+		<section id="contact" className="bg-background py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-8 lg:px-12">
 			<div className="max-w-7xl mx-auto">
 				{/* Section header */}
 				<div className="text-center mb-12 md:mb-20">
 					<h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-on-surface mb-6 tracking-tight">
 						Contact Us
 					</h2>
-					<p className="text-on-surface-muted text-lg max-w-2xl mx-auto">
+					<p className="text-on-surface-muted text-lg max-w-2xl mx-auto leading-relaxed">
 						프로젝트에 대해 상담받으세요. 전문 컨설턴트가 답변드립니다.
 					</p>
 				</div>
@@ -31,7 +31,7 @@ export default function ContactSection() {
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
 					{/* Left column: Contact info */}
 					<div className="space-y-8 lg:space-y-12">
-						<div className="relative overflow-hidden rounded-xl bg-surface p-8 border border-border">
+						<div className="relative overflow-hidden rounded-xl bg-surface p-8 border border-border/20">
 							<h3 className="text-2xl font-bold mb-8 text-on-surface">연락처 정보</h3>
 							<div className="space-y-8">
 								{contactInfo.map((info) => (
@@ -53,7 +53,7 @@ export default function ContactSection() {
 						</div>
 
 						{/* Map placeholder */}
-						<div className="rounded-xl overflow-hidden h-64 bg-surface border border-border flex items-center justify-center" aria-hidden="true">
+						<div className="rounded-xl overflow-hidden h-64 bg-surface border border-border/20 shadow-card hover:shadow-card-hover transition-all duration-500 flex items-center justify-center" aria-hidden="true">
 							<div className="text-center space-y-2">
 								<span className="material-symbols-outlined text-on-surface-muted text-[32px]">location_on</span>
 								<p className="text-on-surface-muted text-sm">Seoul, South Korea</p>
@@ -62,18 +62,30 @@ export default function ContactSection() {
 					</div>
 
 					{/* Right column: Contact form */}
-					<div className="bg-white p-2 md:p-8">
+					<div className="bg-background p-2 md:p-8">
 						{actionData?.success ? (
-							<div className="text-center py-12 space-y-4">
-								<span className="material-symbols-outlined text-primary text-[48px]" aria-hidden="true">check_circle</span>
+							<div className="text-center py-16 space-y-6 animate-in">
+								{/* Success icon with subtle background circle */}
+								<div className="mx-auto w-20 h-20 rounded-full bg-success/10 flex items-center justify-center">
+									<span className="material-symbols-outlined text-success text-[40px]" aria-hidden="true">check_circle</span>
+								</div>
 								<h3 className="text-2xl font-bold text-on-surface">문의가 접수되었습니다</h3>
-								<p className="text-on-surface-muted">영업일 기준 24시간 이내 답변드립니다.</p>
+								<p className="text-on-surface-muted leading-relaxed max-w-sm mx-auto">
+									영업일 기준 24시간 이내 답변드립니다.
+								</p>
 							</div>
 						) : (
 							<Form method="post" className="space-y-6">
+								{/* General error banner */}
 								{actionData && !actionData.success && !actionData.fieldErrors && (
-									<div className="p-4 rounded-lg bg-error/10 border border-error/20" role="alert">
-										<p className="text-error text-sm">{actionData.error}</p>
+									<div
+										className="flex items-start gap-3 p-4 rounded-lg bg-error/5 border border-error/20"
+										role="alert"
+									>
+										<span className="material-symbols-outlined text-error text-xl flex-shrink-0 mt-0.5" aria-hidden="true">
+											error
+										</span>
+										<p className="text-error text-sm leading-relaxed">{actionData.error}</p>
 									</div>
 								)}
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -109,7 +121,7 @@ export default function ContactSection() {
 										type="submit"
 										variant="solid"
 										size="lg"
-										className="w-full"
+										className="w-full shadow-card hover:shadow-card-hover active:scale-[0.98] transition-all"
 										disabled={isSubmitting}
 									>
 										{isSubmitting ? "제출 중..." : "문의하기"}
