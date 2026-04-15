@@ -20,27 +20,31 @@ const coreValues = [
 
 export default function AboutSection() {
 	return (
-		<section id="about" className="bg-white px-4 py-20">
+		<section id="about" className="bg-white px-4 py-16 md:px-6 md:py-20 lg:px-8 lg:py-24">
 			<div className="mx-auto max-w-6xl">
-				<h2 className="mb-6 text-center text-3xl font-bold text-slate-900 md:text-4xl">
+				<h2 className="mb-4 text-center text-2xl font-bold text-on-surface md:mb-6 md:text-3xl lg:text-4xl">
 					About Us
 				</h2>
-				<p className="mx-auto mb-12 max-w-3xl text-center text-lg text-slate-600">
+				<p className="mx-auto mb-10 max-w-3xl text-center text-base leading-relaxed text-on-surface-muted md:mb-12 md:text-lg">
 					TechFlow의 비전은 기술을 통해 모든 기업이 디지털 시대에서 성공할 수
 					있도록 돕는 것입니다. 우리의 미션은 혁신적인 IT 컨설팅 서비스를 통해
 					고객의 비즈니스 가치를 극대화하는 것입니다.
 				</p>
-				<div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+				<div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
 					{coreValues.map((value) => (
 						<div
 							key={value.title}
-							className="rounded-xl bg-slate-50 p-6 text-center shadow-sm"
+							className="rounded-xl bg-surface p-6 text-center shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card-hover md:p-8"
 						>
-							<span className="mb-4 block text-4xl">{value.icon}</span>
-							<h3 className="mb-2 text-xl font-semibold text-slate-900">
+							<span className="mb-4 block text-4xl" role="img" aria-hidden="true">
+								{value.icon}
+							</span>
+							<h3 className="mb-2 text-lg font-semibold text-on-surface md:text-xl">
 								{value.title}
 							</h3>
-							<p className="text-slate-600">{value.description}</p>
+							<p className="text-sm leading-relaxed text-on-surface-muted md:text-base">
+								{value.description}
+							</p>
 						</div>
 					))}
 				</div>
