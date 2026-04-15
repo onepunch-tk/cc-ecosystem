@@ -10,8 +10,18 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 # TypeScript file extension check
 case "$FILE_PATH" in
     *.ts|*.tsx)
-        # Run typecheck
-        cd "$CLAUDE_PROJECT_DIR"
+        # Run typecheck — find nearest package.json from file path
+        SEARCH_DIR=$(dirname "$FILE_PATH")
+        PROJECT_ROOT=""
+        while [[ "$SEARCH_DIR" != "/" ]]; do
+            if [[ -f "$SEARCH_DIR/package.json" ]]; then
+                PROJECT_ROOT="$SEARCH_DIR"
+                break
+            fi
+            SEARCH_DIR=$(dirname "$SEARCH_DIR")
+        done
+        [[ -z "$PROJECT_ROOT" ]] && exit 0
+        cd "$PROJECT_ROOT"
         # Detect package manager
         if [[ -f "bun.lock" ]]; then PKG_CMD="bun run"
         elif [[ -f "pnpm-lock.yaml" ]]; then PKG_CMD="pnpm run"
