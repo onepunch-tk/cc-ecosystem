@@ -53,18 +53,24 @@ TDD rules and patterns for Node/TypeScript/React projects.
 
 ## Naming Convention
 
+**Pattern**: Co-located `__tests__/` directory within each CA layer module. Place the test file next to the source it tests, inside a `__tests__/` subdirectory, and add `.test` before the extension.
+
 Source → Test path mapping:
 
 | Source Path | Test Path |
 |-------------|-----------|
-| `{root}/{domain-layer}/user/user.entity.ts` | `__tests__/{domain-layer}/user/user.entity.test.ts` |
-| `{root}/{domain-layer}/user/email.vo.ts` | `__tests__/{domain-layer}/user/email.vo.test.ts` |
-| `{root}/{app-layer}/auth/auth.service.ts` | `__tests__/{app-layer}/auth/auth.service.test.ts` |
-| `{root}/{presentation-layer}/components/Button.tsx` | `__tests__/{presentation-layer}/components/Button.test.tsx` |
+| `{root}/{domain-layer}/entities/user.entity.ts` | `{root}/{domain-layer}/entities/__tests__/user.entity.test.ts` |
+| `{root}/{domain-layer}/schemas/email.schema.ts` | `{root}/{domain-layer}/schemas/__tests__/email.schema.test.ts` |
+| `{root}/{app-layer}/services/auth.service.ts` | `{root}/{app-layer}/services/__tests__/auth.service.test.ts` |
+| `{root}/{presentation-layer}/components/Button.tsx` | `{root}/{presentation-layer}/components/__tests__/Button.test.tsx` |
 
 > `{root}`, `{domain-layer}`, `{app-layer}`, `{presentation-layer}` are actual paths from `docs/PROJECT-STRUCTURE.md`.
 
-**Pattern**: Replace root folder with `__tests__/`, mirror the CA layer path, and add `.test` before extension.
+**Why co-located `__tests__/`**:
+- Expo Router requires it — standalone `.test.ts` in `app/` causes bundler errors
+- NestJS aligns — `nest generate` co-locates specs next to source
+- Vitest/Jest agnostic — `**/__tests__/**/*.test.{ts,tsx}` glob covers all frameworks
+- CA compliance — tests live in the layer they verify, dependency violations are structurally visible
 
 ---
 
@@ -149,10 +155,12 @@ During Red Phase, the source file being tested **does not exist yet**. This is n
 
 ## Test Utility Structure
 
+Shared test utilities live at the project root level (not inside CA layers):
+
 | Path | Purpose |
 |------|---------|
-| `__tests__/fixtures/` | Mock data builders |
-| `__tests__/utils/` | Test helper functions |
+| `test/fixtures/` | Mock data builders |
+| `test/utils/` | Test helper functions |
 
 **Rules**:
 1. No inline helpers in test files - use shared locations
@@ -198,7 +206,7 @@ Before completing tests:
 - [ ] AAA pattern followed
 - [ ] Mocks initialized in `beforeEach`
 - [ ] No `any` type in test code
-- [ ] Shared helpers in `__tests__/fixtures/` or `__tests__/utils/`
+- [ ] Shared helpers in `test/fixtures/` or `test/utils/`
 - [ ] Domain layer tests have zero mocks
 - [ ] Test order follows CA Inside-Out priority (Domain first)
 - [ ] All tests pass

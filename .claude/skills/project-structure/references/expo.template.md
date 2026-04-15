@@ -303,7 +303,7 @@ const { authService } = useServices();
 | Add API client | `src/infrastructure/api/` |
 | Add native feature (camera, location) | `src/infrastructure/native/` |
 | Define types/entities | `src/domain/{domain}/` |
-| Write test files | `__tests__/` or `*.test.ts` co-located |
+| Write test files | Co-located `__tests__/` directories (e.g., `src/{layer}/components/__tests__/`). **Do NOT place `.test.ts` files directly in `app/`** — Expo Router treats them as routes. |
 | Add static assets | `assets/` |
 
 ---

@@ -25,7 +25,7 @@
 - `server/` - Node.js server entry point
 - `workers/` - Cloudflare Workers entry point
 - `public/` - Static assets
-- `__tests__/` - Test files
+- `test/` - Shared test utilities (fixtures, helpers)
 - `docs/` - Documentation
 - `.claude/` - AI agent configuration
 
@@ -201,13 +201,13 @@ Follows Clean Architecture 4-layer structure.
 
 ---
 
-### __tests__/
+### test/ (Shared Test Utilities)
 
-**Role**: Actual test file location
+**Role**: Shared test fixtures, helpers, and mock data builders
 
-**File pattern**: `**/*.test.{ts,tsx}`
+**Contains**: `fixtures/`, `utils/`
 
-**When to use**: When writing unit tests, component tests
+**Note**: Unit test files are **co-located** with source code using `__tests__/` subdirectories within each CA layer (e.g., `app/domain/entities/__tests__/user.entity.test.ts`). This `test/` directory is only for shared utilities across layers.
 
 ---
 
@@ -235,5 +235,5 @@ Follows Clean Architecture 4-layer structure.
 | Add DB schema | `app/infrastructure/persistence/schema/` |
 | Add external API integration | `app/infrastructure/external/` |
 | Define types/entities | `app/domain/{domain}/` |
-| Write test files | `__tests__/` |
+| Write test files | Co-located `__tests__/` directories (e.g., `app/{layer}/components/__tests__/`) |
 | Add static files | `public/` |

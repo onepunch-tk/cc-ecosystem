@@ -2,7 +2,7 @@
 name: design-system
 description: "Design system bootstrap, token schema definition, and platform-specific library setup procedures. Loaded by the ux-design-lead agent to create design-system.md, tokens.json, and configure UI library settings. Use `/design-system update` to refresh web-setup.md and mobile-setup.md to match installed library versions."
 allowed-tools: Read, Write, Glob, Grep, Bash
-argument-hint: "[update]"
+argument-hint: "[token | html | update]"
 ---
 
 # Design System Skill
@@ -243,11 +243,144 @@ Extract `$value` from each token and map to the platform's config format:
 #### Non-DTCG Format
 Read the token values directly from the JSON structure and map accordingly.
 
-### 5. Constraints
+### 5. Library Management
 
-- **Do NOT install packages.** If a library is referenced but not in `package.json`, inform the user.
-- **Do NOT modify package.json.** Only create/modify configuration files.
-- **Verify API compatibility** via Context7 MCP before writing any config file.
+- Read `package.json` and prioritize existing library patterns
+- If a required library is missing, detect the lockfile (`bun.lock` → bun, `pnpm-lock.yaml` → pnpm, etc.) and install with the correct package manager
+- **Verify API compatibility** via Context7 MCP before writing any config file
+
+---
+
+## `/design-system token` — Download Design System from Stitch MCP
+
+Calls Stitch MCP to download a design system and writes exactly two files: **`docs/design-system/tokens.json`** and **`docs/design-system/design-system.md`**. No other files are created or modified.
+
+### Procedure
+
+#### 1. Verify Stitch MCP Availability
+
+Check `.mcp.json` for a `stitch` key.
+
+- **Not configured** → Print `"Stitch MCP is not configured in .mcp.json."` and abort
+- **Configured** → Call `mcp__stitch__list_projects` to verify connectivity. Abort on failure
+
+#### 2. Select Project
+
+From the `mcp__stitch__list_projects` response:
+
+| Condition | Action |
+|-----------|--------|
+| 0 projects | Print `"No projects found in Stitch."` and abort |
+| 1 project | Auto-select |
+| 2+ projects | Display the list and ask the user to choose |
+
+Use the selected project's `projectId` for subsequent steps.
+
+#### 3. Retrieve Design System
+
+Call `mcp__stitch__list_design_systems(projectId)`.
+
+- 0 design systems → Print `"No design systems found for this project."` and abort
+- 1 design system → Extract theme data
+- 2+ design systems → Ask the user to choose, then extract theme data
+
+#### 4. Generate `docs/design-system/tokens.json`
+
+Convert Stitch theme data to DTCG format and save. **Overwrites** existing file (Stitch is source of truth).
+
+**Stitch → DTCG Mapping Rules:**
+
+| Stitch Theme Field | tokens.json Path | Notes |
+|---|---|---|
+| `overridePrimaryColor` \|\| `customColor` | `color.primary.$value` | Override takes precedence |
+| `overrideSecondaryColor` | `color.secondary.$value` | |
+| `overrideTertiaryColor` | `color.accent.$value` | |
+| `overrideNeutralColor` | `color.surface.$value` | |
+| `colorMode` | `color.background.$value` | LIGHT → `#FFFFFF`, DARK → `#121212` |
+| `headlineFont` | `typography.font-family.headline.$value` | Enum → CSS font name |
+| `bodyFont` | `typography.font-family.primary.$value` | Enum → CSS font name |
+| `labelFont` | `typography.font-family.label.$value` | Omit if absent |
+| `roundness` | `border-radius.*` | See roundness table below |
+| `spacing` | `spacing.*` | Pass through key-value pairs |
+| `typography` | `typography.font-size.*`, `font-weight.*`, `line-height.*`, `letter-spacing.*` | Decompose Typography objects |
+
+**Roundness Mapping:**
+
+| Stitch Enum | border-radius Defaults |
+|---|---|
+| `ROUND_FOUR` | sm: 2px, md: 4px, lg: 6px, xl: 8px |
+| `ROUND_EIGHT` | sm: 4px, md: 8px, lg: 12px, xl: 16px |
+| `ROUND_TWELVE` | sm: 6px, md: 12px, lg: 16px, xl: 24px |
+| `ROUND_FULL` | sm: 8px, md: 16px, lg: 24px, full: 9999px |
+
+**Font Enum → CSS Name (examples):**
+`INTER` → `"Inter, system-ui, sans-serif"`, `MANROPE` → `"Manrope, sans-serif"`, etc. Convert the enum name to PascalCase/space-separated form and append a generic fallback.
+
+For tokens not present in the Stitch response (shadow, breakpoint, etc.), use the DTCG defaults from SKILL.md §4.
+
+#### 5. Generate `docs/design-system/design-system.md`
+
+If the Stitch theme includes a `designMd` field, use it as the base content. Otherwise, derive the document from the theme data following the template structure in SKILL.md §3. **Overwrites** existing file.
+
+Required content:
+- Token Format: Record as `Stitch (exported)`
+- Extracted color palette, typography, spacing, and roundness summary
+- If `colorVariant` is present, record it under Color Philosophy
+
+#### 6. Report Results
+
+Print the following:
+- Downloaded project name and design system name
+- Files created/updated: `docs/design-system/tokens.json`, `docs/design-system/design-system.md`
+- Key token summary (primary color, fonts, roundness, colorMode)
+
+---
+
+## `/design-system html` — Download Page HTML from Stitch MCP
+
+Downloads screen HTML from Stitch MCP and saves to `docs/design-system/source-html/`. Used as 1:1 design reference by the ux-design-lead agent's STITCH_IMPLEMENT mode.
+
+### Procedure
+
+#### 1. Verify Stitch MCP Availability
+
+Check `.mcp.json` for a `stitch` key.
+
+- **Not configured** → Print `"Stitch MCP is not configured in .mcp.json."` and abort
+- **Configured** → Call `mcp__stitch__list_projects` to verify connectivity. Abort on failure
+
+#### 2. Select Project
+
+From the `mcp__stitch__list_projects` response:
+
+| Condition | Action |
+|-----------|--------|
+| 0 projects | Print `"No projects found in Stitch."` and abort |
+| 1 project | Auto-select |
+| 2+ projects | Display the list and ask the user to choose |
+
+#### 3. List Screens
+
+Call `mcp__stitch__list_screens(projectId)`. Display screen list with names and dimensions.
+
+If 0 screens → Print `"No screens found for this project."` and abort.
+
+#### 4. Download HTML
+
+For each screen:
+1. Call `mcp__stitch__get_screen(screenId)` to retrieve screen data
+2. Extract HTML content from the response
+3. Save to `docs/design-system/source-html/{screen-name}.html`
+   - Sanitize screen name for filename (replace spaces with hyphens, lowercase)
+   - Create `source-html/` directory if it doesn't exist
+
+#### 5. Report Results
+
+Print the following:
+- Downloaded project name
+- Number of screens downloaded
+- File paths for each saved HTML
+- Reminder: "Run ux-design-lead with STITCH_IMPLEMENT mode to apply these designs to your components."
 
 ---
 
