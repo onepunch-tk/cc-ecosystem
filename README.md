@@ -48,7 +48,7 @@ cc-ecosystem/
     │           ├── phase-3-review.md
     │           ├── phase-4-validate.md
     │           └── team-protocol.md
-    └── hooks/                         # Hook scripts (11) + Utility scripts (3)
+    └── hooks/                         # Hook scripts (12) + Utility scripts (3)
         ├── .env.hooks
         ├── biome-format.sh
         ├── block-dangerous-commands.sh
@@ -56,6 +56,7 @@ cc-ecosystem/
         ├── typecheck.sh
         ├── slack-notify.sh
         ├── pipeline-guardian.sh
+        ├── phase-gate.sh                 # PreToolUse: phase transition precondition gate
         ├── gh-auth-check.sh             # PreToolUse: gh auth validation
         ├── rbac-agent-role.sh
         ├── abac-phase-policy.sh
@@ -123,7 +124,7 @@ Loaded only when editing files that match the `paths` frontmatter pattern. Reduc
 | `design-system` | `/design-system` | Design token bootstrap, platform library setup (Tailwind/NativeWind/Unistyles). Sub-commands: `token` (Stitch import), `html` (screen HTML export), `update` (refresh setup references) |
 | `harness-pipeline` | `/harness-pipeline` | Unified dev pipeline -- phases loaded on-demand from references/, auto-detects Sequential or Team mode |
 
-### Hooks (11) + Utility Scripts (3)
+### Hooks (12) + Utility Scripts (3)
 
 #### Base Hooks (5)
 
@@ -135,11 +136,12 @@ Loaded only when editing files that match the `paths` frontmatter pattern. Reduc
 | `typecheck.sh` | PostToolUse (Edit/Write) | Auto-run TypeScript type check on file save |
 | `slack-notify.sh` | Notification/Stop | Send Slack webhook notifications for permission requests, idle, completion |
 
-#### Workflow Hook (1)
+#### Workflow Hooks (2)
 
 | Hook | Trigger | Description |
 |------|---------|-------------|
 | `pipeline-guardian.sh` | Stop | Monitors workflow compliance, enforces Failure Recovery, and auto-detects doc update needs. Blocks Claude from stopping when: plan not approved, TDD Green phase incomplete (with configurable retry up to `FAILURE_RECOVERY_MAX_RETRIES`, default 20), review skipped, or docs need updating. Per-session retry tracking for Team Mode safety. |
+| `phase-gate.sh` | PreToolUse (Bash) | Phase transition precondition gate. Blocks `review → validate` unless code-review report is Complete. Also requires design-review report Complete when `ui_involved: true`. |
 
 #### GitHub Integration Hook (1)
 

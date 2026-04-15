@@ -48,7 +48,7 @@ cc-ecosystem/
     │           ├── phase-3-review.md
     │           ├── phase-4-validate.md
     │           └── team-protocol.md
-    └── hooks/                         # 훅 스크립트 (11개) + 유틸리티 스크립트 (3개)
+    └── hooks/                         # 훅 스크립트 (12개) + 유틸리티 스크립트 (3개)
         ├── .env.hooks
         ├── biome-format.sh
         ├── block-dangerous-commands.sh
@@ -56,6 +56,7 @@ cc-ecosystem/
         ├── typecheck.sh
         ├── slack-notify.sh
         ├── pipeline-guardian.sh
+        ├── phase-gate.sh                 # PreToolUse: Phase 전환 전제조건 게이트
         ├── gh-auth-check.sh             # PreToolUse: gh 인증 검증
         ├── rbac-agent-role.sh
         ├── abac-phase-policy.sh
@@ -123,7 +124,7 @@ cc-ecosystem/
 | `design-system` | `/design-system` | 디자인 토큰 부트스트랩, 플랫폼별 라이브러리 설정 (Tailwind/NativeWind/Unistyles). 하위 명령: `token` (Stitch 가져오기), `html` (스크린 HTML 내보내기), `update` (설정 레퍼런스 갱신) |
 | `harness-pipeline` | `/harness-pipeline` | 통합 개발 파이프라인 -- Phase별 지침을 references/에서 필요 시 로드, Sequential 또는 Team 모드 자동 감지 |
 
-### 훅 (11개) + 유틸리티 스크립트 (3개)
+### 훅 (12개) + 유틸리티 스크립트 (3개)
 
 #### 기본 훅 (5개)
 
@@ -135,11 +136,12 @@ cc-ecosystem/
 | `typecheck.sh` | PostToolUse (Edit/Write) | TypeScript 파일 저장 시 타입 체크 자동 실행 |
 | `slack-notify.sh` | Notification/Stop | 권한 요청, 입력 대기, 작업 완료 시 Slack 웹훅 알림 전송 |
 
-#### 워크플로우 훅 (1개)
+#### 워크플로우 훅 (2개)
 
 | 훅 | 트리거 | 설명 |
 |----|--------|------|
 | `pipeline-guardian.sh` | Stop | 워크플로우 준수를 감시하고 문서 업데이트 필요성을 자동 감지. Plan 미승인, TDD 테스트 누락, 리뷰 생략, 문서 업데이트 필요 시 Claude의 응답 중단을 차단하고 리마인드. `git ls-files`로 monorepo 지원. |
+| `phase-gate.sh` | PreToolUse (Bash) | Phase 전환 전제조건 게이트. code-review 리포트가 Complete가 아니면 `review → validate` 전환을 차단. `ui_involved: true`일 때 design-review 리포트도 Complete 필요. |
 
 #### GitHub 연동 훅 (1개)
 
