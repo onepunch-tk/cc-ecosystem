@@ -16,12 +16,14 @@ export default function Textarea({
 	required,
 	...rest
 }: TextareaProps) {
+	const errorId = error ? `${name}-error` : undefined;
+
 	return (
 		<div>
 			<label htmlFor={name} className="mb-1 block text-sm font-medium text-on-surface">
 				{label}
 				{required && (
-					<span className="ml-1 text-error">*</span>
+					<span className="ml-1 text-error" aria-hidden="true">*</span>
 				)}
 			</label>
 			<textarea
@@ -29,11 +31,13 @@ export default function Textarea({
 				name={name}
 				rows={rows}
 				required={required}
-				className="w-full rounded-lg border border-on-surface-muted/30 bg-background px-4 py-2 text-on-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-50"
+				aria-invalid={error ? true : undefined}
+				aria-describedby={errorId}
+				className={`w-full rounded-lg border bg-background px-4 py-2.5 text-on-surface placeholder:text-on-surface-muted/50 motion-safe:transition-colors motion-safe:duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 ${error ? "border-error" : "border-on-surface-muted/30 hover:border-on-surface-muted/50"}`}
 				{...rest}
 			/>
 			{error && (
-				<p role="alert" className="mt-1 text-sm text-error">
+				<p id={errorId} role="alert" className="mt-1 text-sm text-error">
 					{error}
 				</p>
 			)}

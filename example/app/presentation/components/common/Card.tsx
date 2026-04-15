@@ -6,7 +6,7 @@ interface CardProps {
 export default function Card({ children, className = "" }: CardProps) {
 	return (
 		<div
-			className={`rounded-xl shadow-card motion-safe:transition-all motion-safe:duration-200 motion-safe:hover:-translate-y-0.5 hover:shadow-card-hover ${className}`}
+			className={`rounded-xl bg-background shadow-card motion-safe:transition-all motion-safe:duration-200 motion-safe:hover:-translate-y-0.5 hover:shadow-card-hover ${className}`}
 		>
 			{children}
 		</div>

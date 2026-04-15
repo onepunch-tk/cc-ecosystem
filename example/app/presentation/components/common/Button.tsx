@@ -9,11 +9,11 @@ interface ButtonProps {
 
 const variantClasses = {
 	primary:
-		"bg-primary text-on-primary hover:bg-primary-light",
+		"bg-primary text-on-primary hover:bg-primary-light focus-visible:ring-offset-primary",
 	secondary:
-		"bg-surface text-on-surface hover:bg-background",
+		"bg-surface text-on-surface hover:bg-background border border-surface focus-visible:ring-offset-background",
 	outline:
-		"border border-primary text-primary bg-transparent hover:bg-surface",
+		"border border-on-surface-muted/30 text-on-surface bg-transparent hover:bg-surface hover:border-on-surface-muted/50 focus-visible:ring-offset-background",
 } as const;
 
 const sizeClasses = {
@@ -35,7 +35,7 @@ export default function Button({
 			type={type}
 			disabled={disabled}
 			onClick={onClick}
-			className={`min-h-11 rounded-lg font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus focus-visible:ring-offset-2 motion-safe:transition-all motion-safe:duration-200 motion-safe:active:scale-[0.98] ${variantClasses[variant]} ${sizeClasses[size]} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+			className={`inline-flex items-center justify-center min-h-11 rounded-lg font-semibold cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus focus-visible:ring-offset-2 motion-safe:transition-all motion-safe:duration-200 motion-safe:active:scale-[0.98] ${variantClasses[variant]} ${sizeClasses[size]} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
 		>
 			{children}
 		</button>
