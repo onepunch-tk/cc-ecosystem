@@ -53,6 +53,14 @@ describe("contactFormSchema", () => {
 		expect(result.success).toBe(false);
 	});
 
+	it("should fail with invalid phone format", () => {
+		const result = contactFormSchema.safeParse({
+			...validInput,
+			phone: "abc-invalid",
+		});
+		expect(result.success).toBe(false);
+	});
+
 	it("should fail when required fields are missing", () => {
 		const result = contactFormSchema.safeParse({});
 		expect(result.success).toBe(false);
