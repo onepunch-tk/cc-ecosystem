@@ -11,7 +11,7 @@ export default function Card({ children, className = "", interactive = true }: C
 
 	return (
 		<div
-			className={`rounded-xl bg-background shadow-card ${hoverClasses} ${className}`}
+			className={`rounded-xl bg-background p-6 shadow-card ${hoverClasses} ${className}`}
 		>
 			{children}
 		</div>

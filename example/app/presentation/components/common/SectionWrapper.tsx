@@ -9,7 +9,7 @@ interface SectionWrapperProps {
 
 const bgClasses = {
 	default: "bg-background",
-	surface: "bg-surface",
+	surface: "bg-surface-dim",
 } as const;
 
 export default function SectionWrapper({

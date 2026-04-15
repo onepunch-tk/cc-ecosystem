@@ -13,6 +13,8 @@
   --color-accent-hover: #0284C7;
   --color-accent-focus: #38BDF8;
   --color-surface: #64748B;
+  --color-surface-dim: #F8FAFC;
+  --color-surface-container: #F1F5F9;
   --color-on-surface: #1E3A5F;
   --color-on-surface-muted: #64748B;
   --color-on-primary: #ffffff;
@@ -24,9 +26,10 @@
   --color-success: #34C759;
   --color-warning: #FF9500;
 
-  /* Shadows */
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-card-hover: 0 10px 15px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
+  /* Shadows — aligned with tokens.json shadow scale */
+  --shadow-card: 0 1px 3px rgba(30, 58, 95, 0.06), 0 1px 2px rgba(30, 58, 95, 0.04);
+  --shadow-card-hover: 0 10px 25px rgba(30, 58, 95, 0.1), 0 4px 10px rgba(30, 58, 95, 0.05);
+  --shadow-nav: 0 1px 3px rgba(30, 58, 95, 0.08);
 }
 
 html,

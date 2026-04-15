@@ -16,11 +16,11 @@ export default function Header() {
 	};
 
 	return (
-		<header className="sticky top-0 z-50 border-b border-on-surface-muted/10 bg-background/95 backdrop-blur-sm">
-			<div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
-				<span className="text-xl font-bold text-primary">TechFlow</span>
+		<header className="sticky top-0 z-50 border-b border-on-surface-muted/10 bg-background/95 shadow-nav backdrop-blur-sm">
+			<div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-6">
+				<span className="text-xl font-bold tracking-tight text-primary">TechFlow</span>
 
-				<nav className="hidden gap-6 md:flex">
+				<nav className="hidden gap-8 md:flex">
 					{navLinks.map((link) => (
 						<a
 							key={link.href}
@@ -29,7 +29,7 @@ export default function Header() {
 								e.preventDefault();
 								handleNavClick(link.href);
 							}}
-							className="text-sm font-medium text-on-surface-muted transition-colors hover:text-primary"
+							className="text-sm font-medium text-on-surface-muted transition-colors duration-200 hover:text-primary"
 						>
 							{link.label}
 						</a>
@@ -40,7 +40,7 @@ export default function Header() {
 					type="button"
 					aria-label="Menu"
 					onClick={() => setIsMenuOpen(!isMenuOpen)}
-					className="inline-flex items-center justify-center rounded-lg p-2 text-on-surface-muted hover:bg-surface/30 md:hidden"
+					className="inline-flex items-center justify-center rounded-lg p-2 text-on-surface-muted transition-colors duration-200 hover:bg-surface-container hover:text-primary md:hidden"
 				>
 					<svg
 						className="h-6 w-6"
@@ -59,7 +59,7 @@ export default function Header() {
 			</div>
 
 			{isMenuOpen && (
-				<nav className="border-t border-on-surface-muted/10 bg-background px-4 py-2 md:hidden">
+				<nav className="border-t border-on-surface-muted/10 bg-background px-4 py-3 md:hidden">
 					{navLinks.map((link) => (
 						<a
 							key={link.href}
@@ -68,7 +68,7 @@ export default function Header() {
 								e.preventDefault();
 								handleNavClick(link.href);
 							}}
-							className="block py-2 text-sm font-medium text-on-surface-muted hover:text-primary"
+							className="block rounded-md px-2 py-2.5 text-sm font-medium text-on-surface-muted transition-colors duration-200 hover:bg-surface-dim hover:text-primary"
 						>
 							{link.label}
 						</a>
