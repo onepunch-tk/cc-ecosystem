@@ -85,6 +85,49 @@ fi
 
 REMINDERS=()
 
+# ─── Helper: Check review report completeness ───
+# Usage: check_review_report <report_dir> <report_type> <require_exists>
+# Sets REMINDERS array entries if issues found.
+# report_type: "code-review" or "design-review"
+# require_exists: "true" to warn when missing, "false" to silently skip
+check_review_report() {
+    local report_dir="$1"
+    local report_type="$2"
+    local require_exists="${3:-true}"
+    local label
+    label=$(echo "$report_type" | tr '[:lower:]-' '[:upper:]_')
+
+    if [[ ! -d "$report_dir" ]]; then
+        [[ "$require_exists" == "true" ]] && \
+            REMINDERS+=("[WORKFLOW] ${label} MISSING: No ${report_type} report directory found. Run the appropriate subagent before proceeding.")
+        return
+    fi
+
+    local latest
+    latest=$(find "$report_dir" -name "*.md" -type f 2>/dev/null | sort | tail -1)
+
+    if [[ -z "$latest" ]]; then
+        [[ "$require_exists" == "true" ]] && \
+            REMINDERS+=("[WORKFLOW] ${label} MISSING: No ${report_type} report found in $report_dir. Run the appropriate subagent.")
+        return
+    fi
+
+    local unchecked
+    unchecked=$(grep -c '^\- \[ \]' "$latest" 2>/dev/null || true)
+
+    if [[ "$unchecked" -gt 0 ]]; then
+        REMINDERS+=("[WORKFLOW] ${label} INCOMPLETE: Report has $unchecked unresolved issue(s). Fix each issue and check its checkbox (- [ ] → - [x]). Then update **Status** to Complete. Report: $latest")
+        return
+    fi
+
+    local status_line
+    status_line=$(grep -m1 '^\*\*Status\*\*:' "$latest" 2>/dev/null || echo "")
+
+    if ! echo "$status_line" | grep -qi "complete"; then
+        REMINDERS+=("[WORKFLOW] ${label} STATUS: All checkboxes checked but Status is not Complete. Update **Status**: Pending → **Status**: Complete in $latest")
+    fi
+}
+
 # ─── Concern A: Workflow Enforcement ───
 
 case "$PHASE" in
@@ -108,55 +151,24 @@ case "$PHASE" in
         ;;
 
     "review")
-        # Review phase: code-review report must exist (+ design-review if ui_involved)
-        WARNED=$(jq -r '.workflow_warnings_sent.review_no_report // ""' "$HOOK_STATE")
-        if [[ -z "$WARNED" ]]; then
-            REPORT_DIR="$PROJECT_DIR/docs/reports/code-review"
-            HAS_REPORT=""
-            if [[ -d "$REPORT_DIR" ]]; then
-                HAS_REPORT=$(find "$REPORT_DIR" -name "*.md" -newer "$STATE_FILE" 2>/dev/null | head -1 || true)
-            fi
-            if [[ -z "$HAS_REPORT" ]]; then
-                REMINDERS+=("[WORKFLOW] REVIEW REMINDER: You are in the review phase but no code-review report found. Run the code-reviewer subagent (Agent with subagent_type=\"code-reviewer\") before proceeding to validate phase.")
-            fi
+        # Review report completeness — always check (no one-shot dedup)
+        check_review_report "$PROJECT_DIR/docs/reports/code-review" "code-review" "true"
 
-            # Review report Status must be "Complete" before validate
-            if [[ -n "$HAS_REPORT" ]]; then
-                REPORT_STATUS=$(grep -m1 '^\*\*Status\*\*:' "$HAS_REPORT" 2>/dev/null | head -1 || echo "")
-                UNCHECKED=$(grep -c '^\- \[ \]' "$HAS_REPORT" 2>/dev/null || true)
-                if [[ "$UNCHECKED" -gt 0 ]]; then
-                    REMINDERS+=("[WORKFLOW] REVIEW INCOMPLETE: Code-review report has $UNCHECKED unresolved issue(s). Fix each issue and check off its checkbox (- [x]) in the report. Update report Status to Complete when all issues are resolved.")
-                elif ! echo "$REPORT_STATUS" | grep -qi "complete"; then
-                    REMINDERS+=("[WORKFLOW] REVIEW STATUS: All checkboxes are checked but report Status is not 'Complete'. Update the Status field at the top of the report to 'Complete'.")
-                fi
-            fi
-        fi
-
-        # Design review report check (if UI-involved task)
+        # Design review report (if UI-involved)
         UI_INVOLVED=$(jq -r '.ui_involved // false' "$STATE_FILE")
         if [[ "$UI_INVOLVED" == "true" ]]; then
-            WARNED_DESIGN=$(jq -r '.workflow_warnings_sent.review_no_design_report // ""' "$HOOK_STATE")
-            if [[ -z "$WARNED_DESIGN" ]]; then
-                DESIGN_REPORT_DIR="$PROJECT_DIR/docs/reports/design-review"
-                HAS_DESIGN_REPORT=""
-                if [[ -d "$DESIGN_REPORT_DIR" ]]; then
-                    HAS_DESIGN_REPORT=$(find "$DESIGN_REPORT_DIR" -name "*.md" -newer "$STATE_FILE" 2>/dev/null | head -1 || true)
-                fi
-                if [[ -z "$HAS_DESIGN_REPORT" ]]; then
-                    REMINDERS+=("[WORKFLOW] DESIGN REVIEW MISSING: UI-involved task but no design-review report found. Run the ux-design-lead subagent (Agent with subagent_type=\"ux-design-lead\") for design review before proceeding to validate phase.")
-                elif [[ -n "$HAS_DESIGN_REPORT" ]]; then
-                    DESIGN_UNCHECKED=$(grep -c '^\- \[ \]' "$HAS_DESIGN_REPORT" 2>/dev/null || true)
-                    if [[ "$DESIGN_UNCHECKED" -gt 0 ]]; then
-                        REMINDERS+=("[WORKFLOW] DESIGN REVIEW INCOMPLETE: Design-review report has $DESIGN_UNCHECKED unresolved issue(s). Fix each issue and check off its checkbox (- [x]) in the report. Update report Status to Complete when all issues are resolved.")
-                    elif ! grep -m1 '^\*\*Status\*\*:' "$HAS_DESIGN_REPORT" 2>/dev/null | grep -qi "complete"; then
-                        REMINDERS+=("[WORKFLOW] DESIGN REVIEW STATUS: All checkboxes are checked but report Status is not 'Complete'. Update the Status field at the top of the design-review report to 'Complete'.")
-                    fi
-                fi
-            fi
+            check_review_report "$PROJECT_DIR/docs/reports/design-review" "design-review" "true"
         fi
         ;;
 
     "validate"|"complete")
+        # ─── Retrospective review gate (catch-all for bypassed review phase) ───
+        check_review_report "$PROJECT_DIR/docs/reports/code-review" "code-review" "false"
+
+        UI_INVOLVED=$(jq -r '.ui_involved // false' "$STATE_FILE")
+        if [[ "$UI_INVOLVED" == "true" ]]; then
+            check_review_report "$PROJECT_DIR/docs/reports/design-review" "design-review" "false"
+        fi
         # GitHub Mode: Issue/PR enforcement
         GITHUB_MODE=$(jq -r '.github_mode // false' "$STATE_FILE")
         ISSUE_NUMBER=$(jq -r '.issue_number // null' "$STATE_FILE")
@@ -266,7 +278,6 @@ if [[ ${#REMINDERS[@]} -gt 0 ]]; then
         .last_reminded_phase = $phase |
         .cooldown_until = $cooldown |
         if $phase == "tdd" then .workflow_warnings_sent.tdd_no_tests = $now | .workflow_warnings_sent.tdd_no_plan = $now
-        elif $phase == "review" then .workflow_warnings_sent.review_no_report = $now | .workflow_warnings_sent.review_no_design_report = $now
         elif ($phase == "validate" or $phase == "complete") then .doc_reminders_sent.validate_docs = $now | .workflow_warnings_sent.validate_no_issue = $now | .workflow_warnings_sent.validate_no_pr = $now
         else . end
         ' "$HOOK_STATE")
