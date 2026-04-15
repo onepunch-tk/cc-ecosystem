@@ -1,3 +1,5 @@
 export default function ServicesSection() {
-	return <section id="services">Services Section</section>;
+	return (
+		<section id="services">{/* Services placeholder */}</section>
+	);
 }
