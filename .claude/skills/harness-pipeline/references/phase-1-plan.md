@@ -157,6 +157,7 @@ When planning file locations, refer to the **CA template loaded in Step 1b** and
 | Step | Action |
 |------|--------|
 | 5a | Fetch latest and switch to `development` branch: `git fetch origin && git checkout development 2>/dev/null \|\| git checkout -b development main && git pull origin development 2>/dev/null \|\| true` |
+| 5a-clean | **Ensure development is clean before branching**: Check `git status --porcelain`. If uncommitted changes exist on `development`, commit them with appropriate type prefix and push: `git add -A && git commit -m "🔧 chore: commit pending changes on development" && git push origin development`. This prevents dirty state from leaking into feature branches. |
 | 5b | Create feature branch from `development`. Branch naming depends on mode: |
 
 **Branch Naming Convention:**

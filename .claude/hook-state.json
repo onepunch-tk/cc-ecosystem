@@ -1,12 +1,1 @@
-{
-  "last_reminded_phase": "validate",
-  "doc_reminders_sent": {
-    "validate_docs": "2026-04-15T11:03:22Z"
-  },
-  "workflow_warnings_sent": {
-    "validate_no_issue": "2026-04-15T11:03:22Z",
-    "validate_no_pr": "2026-04-15T11:03:22Z"
-  },
-  "cooldown_until": "2026-04-15T11:03:52Z",
-  "failure_recovery": {}
-}
+{"last_reminded_phase":"","doc_reminders_sent":{},"workflow_warnings_sent":{},"cooldown_until":""}
