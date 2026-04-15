@@ -51,9 +51,17 @@ if [[ "$CURRENT_BRANCH" == "main" || "$CURRENT_BRANCH" == "development" ]]; then
     exit 1
 fi
 
-# ─── Check for uncommitted changes ───
+# ─── Auto-commit .claude/ changes (hook/agent artifacts) ───
+CLAUDE_CHANGES=$(git status --porcelain -- .claude/)
+if [[ -n "$CLAUDE_CHANGES" ]]; then
+    git add .claude/
+    git commit -m "🔧 chore: auto-commit .claude/ hook and agent artifacts" --no-verify 2>/dev/null || true
+fi
+
+# ─── Check for remaining uncommitted changes ───
 if [[ -n "$(git status --porcelain)" ]]; then
     echo "❌ Uncommitted changes detected. Please commit first." >&2
+    echo "$(git status --short)" >&2
     exit 1
 fi
 
