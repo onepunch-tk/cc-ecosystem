@@ -21,6 +21,20 @@
   --color-border: #e2e8f0;
   --color-border-muted: #f1f5f9;
 
+  /* Navy scale — from Stitch Hero HTML config */
+  --color-navy-800: #304360;
+  --color-navy-900: #2c3951;
+  --color-navy-950: #1d2536;
+
+  /* Blue palette — for gradients and accents from source HTML */
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-sky-100: #e0f2fe;
+
+  /* Footer dark background — from contact-us-and-footer.html */
+  --color-footer-bg: #0a192f;
+
   /* Semantic Colors */
   --color-error: #FF3B30;
   --color-success: #34C759;
@@ -29,6 +43,7 @@
   /* Shadows — mapped from tokens.json shadow scale */
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-card-hover: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.04);
+  --shadow-card-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 /* Mobile menu slide-in animation */
@@ -54,4 +69,47 @@ body {
 
 section[id] {
   scroll-margin-top: 5rem;
+}
+
+/* Hero background gradient — navy-950 → navy-900 → navy-800 */
+.bg-hero-gradient {
+  background: linear-gradient(
+    to bottom right,
+    var(--color-navy-950),
+    var(--color-navy-900),
+    var(--color-navy-800)
+  );
+}
+
+/* Hero text gradient — blue-300 → sky-100 */
+.text-hero-gradient {
+  background: linear-gradient(to right, var(--color-blue-300), var(--color-sky-100));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Services section dark gradient heading */
+.text-services-gradient {
+  background: linear-gradient(to right, var(--color-blue-300), var(--color-sky-100));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Services section glass card (from source HTML) */
+.glass-card {
+  background: rgba(29, 37, 54, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-card:hover {
+  border-color: rgba(116, 151, 191, 0.4);
+}
+
+/* Services section dot-grid background pattern */
+.tech-grid {
+  background-image: radial-gradient(rgba(116, 151, 191, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
