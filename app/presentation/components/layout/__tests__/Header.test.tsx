@@ -40,24 +40,13 @@ describe("Header", () => {
 
 	it("네비게이션 링크 클릭 시 해당 섹션으로 스크롤해야 한다", () => {
 		// Arrange
-		const targetElement = document.createElement("div");
-		targetElement.id = "about";
-		document.body.appendChild(targetElement);
-		vi.spyOn(document, "getElementById").mockReturnValue(targetElement);
-
 		render(<Header />);
 
 		// Act
 		fireEvent.click(screen.getByRole("button", { name: "소개" }));
 
 		// Assert
-		expect(targetElement.scrollIntoView).toHaveBeenCalledWith({
-			behavior: "smooth",
-			block: "start",
-		});
-
-		// Cleanup
-		document.body.removeChild(targetElement);
+		expect(mockScrollToSection).toHaveBeenCalledWith("about");
 	});
 
 	it("모바일 메뉴 토글 버튼을 렌더링해야 한다", () => {
