@@ -142,13 +142,15 @@ fi
 
 # Reset pipeline-state.json and hook-state.json
 if [[ -f "$PROJECT_DIR/.claude/pipeline-state.json" ]]; then
+    # Read values BEFORE truncating the file (heredoc race condition)
+    PREV_GITHUB_MODE=$(jq -r '.github_mode // false' "$PROJECT_DIR/.claude/pipeline-state.json")
     cat > "$PROJECT_DIR/.claude/pipeline-state.json" << STATEEOF
 {
   "current_phase": "none",
   "mode": "none",
   "branch": "development",
   "plan_approved": false,
-  "github_mode": $(jq -r '.github_mode // false' "$PROJECT_DIR/.claude/pipeline-state.json"),
+  "github_mode": $PREV_GITHUB_MODE,
   "issue_number": null,
   "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 }
