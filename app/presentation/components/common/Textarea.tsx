@@ -24,10 +24,12 @@ export default function Textarea({
 			<textarea
 				id={textareaId}
 				rows={rows}
-				className={`w-full border rounded-md px-4 py-2.5 text-on-surface placeholder:text-on-surface-muted transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent ${error ? "border-error" : "border-border"} ${className ?? ""}`.trim()}
+				aria-invalid={error ? true : undefined}
+				aria-describedby={error ? `${textareaId}-error` : undefined}
+				className={`w-full border rounded-md px-4 py-2.5 text-on-surface bg-white placeholder:text-on-surface-muted transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed resize-y ${error ? "border-error" : "border-border"} ${className ?? ""}`.trim()}
 				{...props}
 			/>
-			{error && <p className="text-sm text-error">{error}</p>}
+			{error && <p id={`${textareaId}-error`} className="text-sm text-error" role="alert">{error}</p>}
 		</div>
 	);
 }

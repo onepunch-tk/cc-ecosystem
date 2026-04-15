@@ -25,7 +25,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 	return (
 		<nav
 			aria-label="모바일 네비게이션"
-			className="md:hidden absolute top-full left-0 w-full bg-background border-b border-border shadow-card"
+			className="md:hidden absolute top-full left-0 w-full bg-background border-b border-border shadow-card animate-in"
 		>
 			<div className="flex flex-col py-2">
 				{navItems.map((item) => (
@@ -36,7 +36,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 							scrollToSection(item.targetId);
 							onClose();
 						}}
-						className="w-full text-left px-4 py-3 text-on-surface hover:bg-surface transition-colors"
+						className="w-full text-left px-4 py-3 text-on-surface hover:bg-surface focus-visible:outline-none focus-visible:bg-surface focus-visible:ring-inset focus-visible:ring-2 focus-visible:ring-accent transition-colors duration-200"
 					>
 						{item.label}
 					</button>
