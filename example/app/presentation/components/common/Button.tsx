@@ -44,7 +44,7 @@ export default function Button({
 		baseClasses,
 		variantClasses[variant],
 		sizeClasses[size],
-		disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "",
+		disabled ? "opacity-50 cursor-not-allowed" : "",
 		className,
 	]
 		.filter(Boolean)

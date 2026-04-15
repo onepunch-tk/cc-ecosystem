@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const navLinks = [
 	{ label: "About", href: "#about" },
@@ -8,6 +8,15 @@ const navLinks = [
 
 export default function Header() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+	useEffect(() => {
+		if (!isMenuOpen) return;
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "Escape") setIsMenuOpen(false);
+		};
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [isMenuOpen]);
 
 	const handleNavClick = (href: string) => {
 		setIsMenuOpen(false);
@@ -39,6 +48,8 @@ export default function Header() {
 				<button
 					type="button"
 					aria-label="Menu"
+					aria-expanded={isMenuOpen}
+					aria-controls="mobile-nav"
 					onClick={() => setIsMenuOpen(!isMenuOpen)}
 					className="inline-flex items-center justify-center rounded-lg p-2 text-on-surface-muted transition-colors duration-200 hover:bg-surface-container hover:text-primary md:hidden"
 				>
@@ -59,7 +70,7 @@ export default function Header() {
 			</div>
 
 			{isMenuOpen && (
-				<nav className="border-t border-on-surface-muted/10 bg-background px-4 py-3 md:hidden">
+				<nav id="mobile-nav" className="border-t border-on-surface-muted/10 bg-background px-4 py-3 md:hidden">
 					{navLinks.map((link) => (
 						<a
 							key={link.href}
