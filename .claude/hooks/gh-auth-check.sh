@@ -26,8 +26,8 @@ fi
 # ─── GitHub Mode check ───
 CLAUDE_MD="$PROJECT_DIR/CLAUDE.md"
 if [[ -f "$CLAUDE_MD" ]]; then
-    REMOTE_PLATFORM=$(grep 'Remote Platform' "$CLAUDE_MD" 2>/dev/null | grep -o 'GitHub' || echo "")
-    if [[ "$REMOTE_PLATFORM" != "GitHub" ]]; then
+    REMOTE_PLATFORM=$(grep -i 'Remote Platform' "$CLAUDE_MD" 2>/dev/null | grep -oi 'github' || echo "")
+    if [[ "${REMOTE_PLATFORM,,}" != "github" ]]; then
         jq -n '{
             decision: "block",
             reason: "GitHub Mode is not configured. Add Remote Platform: GitHub to CLAUDE.md, or use git commands instead of gh."

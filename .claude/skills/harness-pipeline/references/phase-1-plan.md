@@ -11,11 +11,12 @@
 | 1c | **GitHub Mode Check**: Read `Remote Platform` from CLAUDE.md. If set to `GitHub` → run `gh auth status`. If auth fails → instruct user to run `! gh auth login` and **STOP**. If not set → Local Mode (skip Issue/PR steps). Store result in `github_mode` variable for later steps. |
 | 2 | **Enter plan mode**: Call `EnterPlanMode` to start local planning. Output a summary of gathered context and task description for the user. Inform the user they can upgrade to ultraplan via `/ultraplan` if desired. |
 | 2a | **Pipeline State → `plan`**: Set `pipeline-state.json` `current_phase` to `"plan"`, `plan_approved` to `false`, `github_mode` to detected value, `issue_number` to `null`. (ABAC hook blocks source code modifications during plan phase). Mode is finalized after Step 4, so set `"pending"` for now. (see Pipeline State Management in SKILL.md) |
-| 2b | **Create GitHub Issue** (GitHub Mode only — skip if Local Mode): Agent가 title/body를 작성 후 `"$CLAUDE_PROJECT_DIR"/.claude/hooks/git-issue.sh --title "..." --body "..." --label "..."` 호출. 출력 마지막 줄 `ISSUE_NUMBER=N`을 파싱하여 `pipeline-state.json`의 `issue_number`에 저장. |
+| 2b | **Create GitHub Issue** (GitHub Mode only — skip if Local Mode): Agent composes title/body, then calls `"$CLAUDE_PROJECT_DIR"/.claude/hooks/git-issue.sh --title "..." --body "..." --label "..."`. Parse `ISSUE_NUMBER=N` from the last line of output and store in `pipeline-state.json` `issue_number`. |
 | 3 | Analyze current state and create detailed step-by-step plan in the plan file. **File placement MUST follow the CA template's layer structure**: Domain → Application → Infrastructure → Presentation |
 | 3a | **Stakeholder Consultation** (conditional — see Stakeholder Consultation section below) |
 | 4 | **Count files and features** → determine execution mode (Sequential / Team) |
-| 4z | **Pipeline State mode finalized**: Update `pipeline-state.json` with the mode determined in Step 4 (`"sequential"` \| `"team"`) |
+| 4-ui | **UI Detection**: Scan the plan's file list for Presentation layer patterns (`**/presentation/components/**`, `**/presentation/routes/**`, `**/presentation/layouts/**`, `**/presentation/pages/**`, `**/presentation/screens/**`, `app/routes/**`). Also check task description for UI keywords (`component`, `page`, `screen`, `layout`, `UI`, `design`, `디자인`, `화면`). If ANY match → set `ui_involved = true`, otherwise `false`. |
+| 4z | **Pipeline State mode finalized**: Update `pipeline-state.json` with the mode determined in Step 4 (`"sequential"` \| `"team"`) and `"ui_involved"` from Step 4-ui |
 | 5 | Plan review → approve via `ExitPlanMode` (user may upgrade to ultraplan at this point) |
 | 5z | **CRITICAL**: After plan approval, update `pipeline-state.json` with `"plan_approved": true`. The `pipeline-guardian` hook will **block Phase 2 entry** if this is `false`. |
 
@@ -173,7 +174,7 @@ Branch type MUST follow [commit-prefix-rules.md](../../git/references/commit-pre
 |------|--------|
 | 4a | Break work into tasks with **clear file ownership** (no overlapping files) |
 | 4b | Verify NO file overlap between tasks before spawning teammates |
-| 4c | Prepare teammate task prompts with file ownership lists |
+| 4c | Prepare teammate task prompts with file ownership lists. If `ui_involved` is true, include in each teammate's prompt: "After Green phase, do NOT apply design tokens or styling yourself — lead will handle design application via ux-design-lead after all teammates complete." |
 
 > **WARNING: File Ownership is CRITICAL**
 > Overlapping file assignments = merge conflicts = wasted work.

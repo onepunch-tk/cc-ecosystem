@@ -3,7 +3,8 @@
     "CLAUDE_CODE_TASK_LIST_ID": "CC-ECOSYSTEM",
     "ENABLE_TOOL_SEARCH": "true",
     "MAX_MCP_OUTPUT_TOKENS": "50000",
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "FAILURE_RECOVERY_MAX_RETRIES": "20"
   },
   "hooks": {
     "PreToolUse": [
@@ -38,6 +39,11 @@
           {
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/block-dangerous-commands.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/phase-gate.sh",
             "timeout": 5
           },
           {

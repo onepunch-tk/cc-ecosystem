@@ -56,12 +56,14 @@ Updated at each Phase transition. The ABAC hook reads this to block source code 
   "plan_approved": false,
   "github_mode": true,
   "issue_number": null,
+  "ui_involved": false,
   "updated_at": "2026-04-08T10:00:00Z"
 }
 ```
 
 - **`github_mode`**: `true` if `Remote Platform: GitHub` is set in CLAUDE.md, `false` otherwise. Determines whether Issue/PR operations are available.
 - **`issue_number`**: GitHub Issue number (GitHub Mode only). Set during Phase 1 Issue creation. Used for PR `Closes #N` linking.
+- **`ui_involved`**: `true` if the plan's file list includes Presentation layer files or task description contains UI keywords. Set during Phase 1 Step 4-ui. Read by Phase 2 and Phase 3 to conditionally invoke `ux-design-lead`.
 
 **Phase order:** `none` → `plan` → `tdd` → `review` → `validate` → `complete`
 
@@ -77,6 +79,7 @@ cat > .claude/pipeline-state.json << EOF
   "plan_approved": PLAN_APPROVED,
   "github_mode": GITHUB_MODE,
   "issue_number": ISSUE_NUMBER,
+  "ui_involved": UI_INVOLVED,
   "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 }
 EOF
@@ -117,36 +120,28 @@ Each phase has detailed steps in its reference file. **Read the reference for th
 | Phase | Reference | Key Actions |
 |-------|-----------|-------------|
 | **1. Plan** | [references/phase-1-plan.md](references/phase-1-plan.md) | Load docs, gh check, create Issue (GitHub Mode), create plan, stakeholder consultation (if persona set), detect mode, create branch + tasks |
-| **2. TDD** | [references/phase-2-tdd.md](references/phase-2-tdd.md) | Red (unit-test-writer) → Green (implement) → commit |
-| **3. Review** | [references/phase-3-review.md](references/phase-3-review.md) | code-reviewer → fix issues → commit |
+| **2. TDD** | [references/phase-2-tdd.md](references/phase-2-tdd.md) | Red (unit-test-writer) → Green (implement) → Design apply (ux-design-lead, if UI) → commit |
+| **3. Review** | [references/phase-3-review.md](references/phase-3-review.md) | code-reviewer + design-reviewer (ux-design-lead, if UI) → fix issues → commit |
 | **4. Validate** | [references/phase-4-validate.md](references/phase-4-validate.md) | E2E test → docs update → PR create + merge (GitHub) or direct merge (Local) → cleanup |
 
 **Team Protocol**: [references/team-protocol.md](references/team-protocol.md) — teammate execution steps, file ownership, communication, merge strategy
 
 ---
 
-## Failure Recovery (All Modes)
+## Failure Recovery (Enforced by pipeline-guardian Stop Hook)
 
-```
-IF any step fails:
-  1. Log failure to docs/reports/failures/{timestamp}-{step}.md
-  2. Retry SAME approach (1 attempt)
-  3. Retry DIFFERENT approach (1 attempt)
-  4. After 3 total failures → STOP, report to user, WAIT for instruction
-```
+The pipeline-guardian Stop hook automatically guards TDD Green Phase completion.
 
-### Team Mode Variant (Teammates)
+**Detection**: Red phase commit (`✅ test:`) exists + Green phase commit (`✨ feat:`) missing → stop blocked
+**Retries**: `FAILURE_RECOVERY_MAX_RETRIES` env variable (default: 20) — configurable in `.claude/settings.json`
+**Reporting**: On final retry, agent is instructed to write failure report to `docs/reports/failures/`
+**Reset**: Retry counters auto-reset on phase transition (tdd → review)
 
-```
-IF any step fails (teammate):
-  1. Log to docs/reports/failures/{teammate-name}-{timestamp}.md
-  2. Retry SAME approach (1 attempt)
-  3. Retry DIFFERENT approach (1 attempt)
-  4. After 3 failures:
-     → Message lead: "Blocked on [issue]. Attempted [approaches]."
-     → Pick up next available task
-     → DO NOT STOP
-```
+### Sequential Mode
+Agent stop blocked while Green phase incomplete. Up to 20 retries with increasing context about what to fix. On success (✨ feat: commit detected), stop is immediately allowed regardless of retry count.
+
+### Team Mode
+Each teammate's retries tracked independently per session. When max retries reached, teammate stops → TeammateIdle hook notifies lead. Failure report written to `docs/reports/failures/{teammate-name}-{timestamp}.md`.
 
 ---
 

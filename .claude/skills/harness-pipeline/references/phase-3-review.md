@@ -19,7 +19,8 @@
 | Step | Action | Sub-Agent |
 |------|--------|-----------|
 | 10 | Run `code-reviewer` sub-agent (unified: quality + security + performance) | `Agent(subagent_type="code-reviewer")` |
-| 11 | Read report in `/docs/reports/code-review/` → fix ALL issues where status ≠ "complete" | — (main agent) |
+| 10-ui | **Design Review** (if `ui_involved`): Read `ui_involved` from `pipeline-state.json`. If `true`, ensure report directory exists (`mkdir -p docs/reports/design-review`), then spawn `ux-design-lead` sub-agent for design review. Agent runs 8-point design review checklist against all changed Presentation layer files. Produces report at `docs/reports/design-review/{commit_hash}_{YYYYMMDD}.md`. | `Agent(subagent_type="ux-design-lead")` |
+| 11 | Read reports in `/docs/reports/code-review/` **and** `/docs/reports/design-review/` (if exists) → fix ALL issues, then **update both reports** (see Report Update Protocol below) | — (main agent) |
 
 ## Team Mode
 
@@ -27,10 +28,34 @@
 |------|--------|-----------|
 | 11 | Run the project's test command to verify integration | — (lead) |
 | 12 | Run `code-reviewer` sub-agent on all changed files | `Agent(subagent_type="code-reviewer")` |
+| 12-ui | **Design Review** (if `ui_involved`): Same as Sequential Step 10-ui — ensure `mkdir -p docs/reports/design-review`, spawn `ux-design-lead` for design review of all changed Presentation layer files. | `Agent(subagent_type="ux-design-lead")` |
 | 13 | Run `e2e-tester` sub-agent to validate user flows | `Agent(subagent_type="e2e-tester")` |
-| 14 | Read report in `/docs/reports/code-review/` → fix ALL issues where status ≠ "complete" | — (lead) |
+| 14 | Read reports in `/docs/reports/code-review/` **and** `/docs/reports/design-review/` (if exists) → fix ALL issues, then **update both reports** (see Report Update Protocol below) | — (lead) |
 
 > **Why lead calls directly**: Lead is the integration reviewer across multiple teammates' work. Direct invocation gives better control over the review scope.
+
+## Report Update Protocol [CRITICAL]
+
+After fixing each issue in the code-review report, you **MUST** update the report file:
+
+1. **Check off each resolved issue**: Change `- [ ]` to `- [x]` for the fixed item
+2. **After ALL issues are resolved**: Change the report header `**Status**: Pending` to `**Status**: Complete`
+3. **The `pipeline-guardian` hook will BLOCK Phase 4 entry** if:
+   - Any `- [ ]` unchecked items remain in the report
+   - Report `Status` is not `Complete`
+
+> **Design Review Report**: If `ui_involved` is `true`, the design-review report in `/docs/reports/design-review/` follows the same protocol. The `pipeline-guardian` hook blocks Phase 4 if **either** code-review or design-review report has unchecked items or incomplete status.
+
+**Example**:
+```markdown
+# Before fix
+**Status**: Pending
+- [ ] #1 [Critical] Remove vitest import
+
+# After fix
+**Status**: Complete
+- [x] #1 [Critical] Remove vitest import
+```
 
 **Commit**: Per [workflow-commits.md](../../git/references/workflow-commits.md) — Review phase
 
