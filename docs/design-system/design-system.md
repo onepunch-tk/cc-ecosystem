@@ -57,7 +57,7 @@ Stitch (exported)
 |----------------|--------|-------|
 | Buttons | rounded-lg (12px) | lg |
 | Cards | rounded-lg (12px) | lg |
-| Inputs/Textarea | rounded-md (8px) | md |
+| Inputs/Textarea | rounded-lg (12px) | lg |
 | Pills/Badges | rounded-full | full |
 | Focus rings | rounded-sm (4px) | sm |
 

@@ -3,6 +3,6 @@ import type { ContactSubmission } from "~/domain/contact/contact-submission.enti
 
 export class ConsoleContactRepository implements ContactRepositoryPort {
 	async save(submission: ContactSubmission): Promise<void> {
-		console.log(submission);
+		console.log("[ContactRepository] Saved:", submission.id);
 	}
 }

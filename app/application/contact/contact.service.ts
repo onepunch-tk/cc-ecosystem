@@ -14,7 +14,7 @@ export class ContactService {
 		if (!result.success) {
 			const fieldErrors: Record<string, string[]> = {};
 			for (const issue of result.error.issues) {
-				const field = issue.path[0] as string;
+				const field = String(issue.path[0]);
 				if (!fieldErrors[field]) {
 					fieldErrors[field] = [];
 				}

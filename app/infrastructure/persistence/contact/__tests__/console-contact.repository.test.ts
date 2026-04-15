@@ -11,7 +11,7 @@ describe("ConsoleContactRepository", () => {
 	});
 
 	describe("save()", () => {
-		it("제출 데이터를 console.log로 출력해야 한다", async () => {
+		it("제출 데이터의 ID를 console.log로 출력해야 한다", async () => {
 			// Arrange
 			const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 			const submission: ContactSubmission = {
@@ -27,10 +27,10 @@ describe("ConsoleContactRepository", () => {
 
 			// Assert
 			expect(consoleSpy).toHaveBeenCalledOnce();
-			expect(consoleSpy).toHaveBeenCalledWith(submission);
+			expect(consoleSpy).toHaveBeenCalledWith("[ContactRepository] Saved:", "test-id-001");
 		});
 
-		it("선택 필드(company, phone)가 포함된 제출 데이터를 console.log로 출력해야 한다", async () => {
+		it("선택 필드(company, phone)가 포함된 제출 데이터의 ID를 console.log로 출력해야 한다", async () => {
 			// Arrange
 			const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 			const submission: ContactSubmission = {
@@ -48,7 +48,7 @@ describe("ConsoleContactRepository", () => {
 
 			// Assert
 			expect(consoleSpy).toHaveBeenCalledOnce();
-			expect(consoleSpy).toHaveBeenCalledWith(submission);
+			expect(consoleSpy).toHaveBeenCalledWith("[ContactRepository] Saved:", "test-id-002");
 		});
 
 		it("Promise<void>를 반환해야 한다", async () => {

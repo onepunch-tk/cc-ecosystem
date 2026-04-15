@@ -1,6 +1,7 @@
 import { Form, useActionData, useNavigation } from "react-router";
 import type { ActionResponse } from "~/domain/contact/types";
 import { Button, Input, Textarea } from "~/presentation/components/common";
+import SectionWrapper from "~/presentation/components/common/SectionWrapper";
 
 const contactInfo = [
 	{ icon: "call", label: "Phone", value: "02-1234-5678" },
@@ -15,10 +16,9 @@ export default function ContactSection() {
 	const isSubmitting = navigation.state === "submitting";
 
 	return (
-		<section id="contact" className="bg-background py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-8 lg:px-12">
-			<div className="max-w-7xl mx-auto">
+		<SectionWrapper id="contact" variant="light" ariaLabel="Contact Us">
 				{/* Section header */}
-				<div className="text-center mb-12 md:mb-20">
+				<div className="text-center mb-12 sm:mb-16 md:mb-20">
 					<h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-on-surface mb-6 tracking-tight">
 						Contact Us
 					</h2>
@@ -62,9 +62,9 @@ export default function ContactSection() {
 					</div>
 
 					{/* Right column: Contact form */}
-					<div className="bg-background p-2 md:p-8">
+					<div className="bg-background p-0 md:p-8">
 						{actionData?.success ? (
-							<div className="text-center py-16 space-y-6 animate-in">
+							<div className="text-center py-16 space-y-6 animate-in" aria-live="polite">
 								{/* Success icon with subtle background circle */}
 								<div className="mx-auto w-20 h-20 rounded-full bg-success/10 flex items-center justify-center">
 									<span className="material-symbols-outlined text-success text-[40px]" aria-hidden="true">check_circle</span>
@@ -135,7 +135,6 @@ export default function ContactSection() {
 						)}
 					</div>
 				</div>
-			</div>
-		</section>
+		</SectionWrapper>
 	);
 }

@@ -1,6 +1,6 @@
+import { data } from "react-router";
 import type { Route } from "./+types/home";
-import { ContactService } from "~/application/contact/contact.service";
-import { ConsoleContactRepository } from "~/infrastructure/persistence/contact/console-contact.repository";
+import { contactService } from "~/infrastructure/config/container";
 import Footer from "~/presentation/components/layout/Footer";
 import Header from "~/presentation/components/layout/Header";
 import AboutSection from "~/presentation/components/sections/AboutSection";
@@ -10,10 +10,17 @@ import ServicesSection from "~/presentation/components/sections/ServicesSection"
 
 export async function action({ request }: Route.ActionArgs) {
 	const formData = await request.formData();
-	const input = Object.fromEntries(formData);
-	const repository = new ConsoleContactRepository();
-	const service = new ContactService(repository);
-	return service.submitContact(input);
+	const input: Record<string, string> = {};
+	for (const [key, value] of formData.entries()) {
+		if (typeof value === "string") {
+			input[key] = value;
+		}
+	}
+	const result = await contactService.submitContact(input);
+	if (!result.success) {
+		return data(result, { status: 400 });
+	}
+	return result;
 }
 
 export default function Home() {
