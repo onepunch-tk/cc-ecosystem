@@ -8,8 +8,9 @@ TechFlow Landing Page -- an IT consulting company landing page built with React 
 **Framework**: React Router Framework v7+ (SSR enabled)
 **Key Characteristics**:
 - Server-side rendering enabled by default via `react-router.config.ts`
-- Strict dependency flow: Presentation → Application → Domain
+- Strict dependency flow: Presentation -> Application -> Domain
 - Infrastructure isolated via Dependency Injection
+- DI composition root wires services with concrete implementations at startup
 - Design tokens defined in `app.css` using TailwindCSS v4 `@theme` directive
 - Unit tests co-located with source code using `__tests__/` subdirectories
 
@@ -22,7 +23,7 @@ cc-ecosystem/
 ├── app/                    # Core application (Clean Architecture layers)
 │   ├── domain/             # Business rules and entity definitions
 │   ├── application/        # Business logic and use cases
-│   ├── infrastructure/     # External system implementations and dummy data
+│   ├── infrastructure/     # External system implementations, DI wiring, and dummy data
 │   ├── presentation/       # UI, routing, components, hooks, utils
 │   ├── root.tsx            # React Router root component and Layout
 │   ├── routes.ts           # Route definitions
@@ -85,7 +86,7 @@ app/domain/
 ```
 
 **Domain modules**:
-- `contact/` - Contact form entity, Zod validation schema, and related types
+- `contact/` - Contact form entity, Zod validation schema, and related types (including `ActionResponse<T>` discriminated union for success/error results)
 - `landing/` - Landing page data interfaces (HeroData, AboutData, ServicesData, NavItem, FooterLink) and the `SECTION_IDS` constant that maps section names to HTML element IDs
 
 ---
@@ -106,14 +107,17 @@ app/domain/
 ```
 app/application/
 └── contact/
-    └── contact.port.ts
+    ├── contact.port.ts
+    ├── contact.service.ts
+    └── __tests__/
+        └── contact.service.test.ts
 ```
 
 **Port and Service relationship**:
 - `*.port.ts` - Interface definition (what can be done)
 - `*.service.ts` - Business logic (how to do it)
 
-**Current state**: `ContactRepositoryPort` interface defined; service implementation pending.
+**Current state**: `ContactRepositoryPort` interface defined; `ContactService` implemented with Zod-based input validation, `ContactSubmission` entity creation, and repository delegation. Returns `ActionResponse<void>` discriminated union with field-level validation errors on invalid input.
 
 ---
 
@@ -127,22 +131,26 @@ app/application/
 - **Dummy data providers**: Functions that return static data conforming to domain interfaces
 
 **When to use**:
-- Creating new repository implementations → `persistence/`
-- Registering new services to DI container → `config/container.ts`
-- Providing dummy/seed data for sections → `dummy-data.ts`
+- Creating new repository implementations -> `persistence/`
+- Registering new services to DI container -> `config/container.ts`
+- Providing dummy/seed data for sections -> `dummy-data.ts`
 
 **Structure**:
 ```
 app/infrastructure/
-├── config/                 # (scaffolded, awaiting DI container)
+├── config/
+│   └── container.ts        # DI composition root (wires ContactService with ConsoleContactRepository)
 ├── persistence/
-│   └── contact/            # (scaffolded, awaiting repository implementation)
+│   └── contact/
+│       ├── console-contact.repository.ts
+│       └── __tests__/
+│           └── console-contact.repository.test.ts
 ├── dummy-data.ts           # Dummy data functions for all landing page sections
 └── __tests__/
     └── dummy-data.test.ts
 ```
 
-**Current state**: `dummy-data.ts` provides factory functions returning static data (hero, about, services, navigation, footer links) typed against domain interfaces. Config and persistence directories remain scaffolded for future DI container and repository implementations.
+**Current state**: `dummy-data.ts` provides factory functions returning static data (hero, about, services, navigation, footer links) typed against domain interfaces. `config/container.ts` serves as the DI composition root, instantiating `ConsoleContactRepository` and wiring it into `ContactService` -- exported as a ready-to-use singleton. `ConsoleContactRepository` implements `ContactRepositoryPort` by logging submission IDs to console (placeholder for future persistent storage).
 
 ---
 
@@ -160,12 +168,12 @@ app/infrastructure/
 - **routes/**: Pages (React Router v7 route modules)
 
 **When to use**:
-- Adding new pages → `routes/`
-- Creating reusable UI primitives → `components/common/`
-- Creating page sections → `components/sections/`
-- Creating layout components → `components/layout/`
-- When custom hooks are needed → `hooks/`
-- Adding shared presentation helpers → `utils/`
+- Adding new pages -> `routes/`
+- Creating reusable UI primitives -> `components/common/`
+- Creating page sections -> `components/sections/`
+- Creating layout components -> `components/layout/`
+- When custom hooks are needed -> `hooks/`
+- Adding shared presentation helpers -> `utils/`
 
 **Structure**:
 ```
@@ -182,10 +190,10 @@ app/presentation/
 │   └── __tests__/
 ├── utils/                  # Shared presentation utilities (label-to-id conversion)
 └── routes/
-    └── home.tsx            # Landing page index route
+    └── home.tsx            # Landing page index route (loader + action)
 ```
 
-**Current state**: Section and layout components are fully implemented with real UI rendering, consuming dummy data from the infrastructure layer. Common components (Button, Card, Input, Textarea, SectionWrapper) are implemented and exported via barrel file. The hooks directory contains a smooth-scroll utility (`scrollToSection`). The utils directory provides shared helpers such as `toId` for converting labels to HTML-safe IDs. All component directories include co-located `__tests__/` with unit tests.
+**Current state**: Section and layout components are fully implemented with real UI rendering, consuming dummy data from the infrastructure layer. Common components (Button, Card, Input, Textarea, SectionWrapper) are implemented and exported via barrel file. The hooks directory contains a smooth-scroll utility (`scrollToSection`). The utils directory provides shared helpers such as `toId` for converting labels to HTML-safe IDs. ContactSection uses React Router `Form` with `useActionData` and `useNavigation` hooks for server-side form processing and optimistic UI feedback. All component directories include co-located `__tests__/` with unit tests.
 
 **Route file conventions (React Router v7)**:
 - `_layout.tsx` - Layout wrapper
@@ -194,7 +202,7 @@ app/presentation/
 - `route.tsx` - Route component
 
 **Example routes**:
-- `home.tsx` - Landing page composing Header, all sections (Hero, About, Services, Contact), and Footer
+- `home.tsx` - Landing page composing Header, all sections (Hero, About, Services, Contact), and Footer. Exports an `action` function that parses `FormData`, delegates to `ContactService` via the DI container, and returns `ActionResponse` (with 400 status on validation failure).
 
 ---
 
@@ -237,13 +245,15 @@ app/presentation/
 
 ```typescript
 // Defined in tsconfig.json
-"~/*" → "./app/*"
+"~/*" -> "./app/*"
 ```
 
 **Usage example**:
 ```typescript
 import { ContactSubmission } from "~/domain/contact/contact-submission.entity";
 import { ContactRepositoryPort } from "~/application/contact/contact.port";
+import { ContactService } from "~/application/contact/contact.service";
+import { contactService } from "~/infrastructure/config/container";
 import type { HeroData } from "~/domain/landing/types";
 import { getDummyHeroData } from "~/infrastructure/dummy-data";
 import { Button, Card } from "~/presentation/components/common";

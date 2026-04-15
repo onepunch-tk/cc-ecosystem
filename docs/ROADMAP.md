@@ -101,21 +101,23 @@ TechFlow Landing Page provides the following features as a conversion-focused si
   - ✅ Implement About section with vision/mission text and 3 core value cards
   - ✅ Write unit tests for both section components with responsive layout
 
-### Phase 3: Core Feature Implementation
+### Phase 3: Core Feature Implementation ✅
 
-- **Task 006: Services and Contact Section UI**
+- ✅ **Task 006: Services and Contact Section UI** - Completed
   - blockedBy: Task 002, Task 003, Task 004
   - blocks: Task 007, Task 008
-  - Implement Services section with 4 service cards in responsive grid
-  - Implement Contact section form UI with Input, Textarea, and submit Button
-  - Write unit tests for both section components
+  - **Must** Read: [006-services-and-contact-section-ui.md](/tasks/006-services-and-contact-section-ui.md)
+  - ✅ Implement Services section with 4 service cards in responsive grid
+  - ✅ Implement Contact section form UI with Input, Textarea, and submit Button
+  - ✅ Write unit tests for both section components (ServicesSection 6 tests, ContactSection 14 tests)
 
-- **Task 007: Contact Form Validation and Server Action**
+- ✅ **Task 007: Contact Form Validation and Server Action** - Completed
   - blockedBy: Task 002, Task 006
   - blocks: Task 008
-  - Implement contact service and console repository (infrastructure layer)
-  - Add React Router server action with Zod validation and console logging
-  - Wire client-side form with useActionData, error display, success feedback, and loading state
+  - **Must** Read: [007-contact-form-validation-and-server-action.md](/tasks/007-contact-form-validation-and-server-action.md)
+  - ✅ Implement contact service and console repository (infrastructure layer)
+  - ✅ Add React Router server action with Zod validation and console logging
+  - ✅ Wire client-side form with useActionData, error display, success feedback, and loading state
 
 ### Phase 4: Quality Assurance and Polish
 
