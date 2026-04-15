@@ -35,3 +35,7 @@ html,
 body {
   @apply bg-white text-on-surface;
 }
+
+[id] {
+  scroll-margin-top: 5rem;
+}
