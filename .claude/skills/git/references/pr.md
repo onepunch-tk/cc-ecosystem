@@ -42,7 +42,7 @@ Related: #{issue_number}
 ## Execution (delegate to script)
 
 ```bash
-"$CLAUDE_PROJECT_DIR"/.claude/hooks/git-pr.sh \
+.claude/hooks/git-pr.sh \
   --title "<emoji> <type>: <description in user's language>" \
   --body "<body following template above>" \
   --issue <issue_number>

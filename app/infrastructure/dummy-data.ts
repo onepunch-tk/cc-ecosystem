@@ -1,51 +1,20 @@
-export interface HeroData {
-	headline: string;
-	subHeadline: string;
-	ctaText: string;
-	ctaTargetId: string;
-}
+import type {
+	AboutData,
+	FooterLink,
+	HeroData,
+	NavItem,
+	ServicesData,
+} from "~/domain/landing/types";
+import { SECTION_IDS } from "~/domain/landing/types";
 
-export interface AboutData {
-	tagline: string;
-	heading: string;
-	vision: string;
-	mission: string;
-	coreValues: Array<{
-		icon: string;
-		title: string;
-		description: string;
-	}>;
-}
-
-export interface ServiceItem {
-	icon: string;
-	title: string;
-	description: string;
-}
-
-export interface ServicesData {
-	tagline: string;
-	heading: string;
-	description: string;
-	services: ServiceItem[];
-}
-
-export interface NavItem {
-	label: string;
-	targetId: string;
-}
-
-export interface FooterLink {
-	label: string;
-	href: string;
-}
+export type { HeroData, AboutData, ServicesData, NavItem, FooterLink };
 
 export const getHeroData = (): HeroData => ({
 	headline: "비즈니스의 디지털 전환, TechFlow와 함께",
 	subHeadline:
 		"IT 컨설팅 전문 기업 TechFlow는 기업의 디지털 혁신을 위한 최적의 솔루션을 제공합니다.",
 	ctaText: "문의하기",
-	ctaTargetId: "contact",
+	ctaTargetId: SECTION_IDS.contact,
 });
 
 export const getAboutData = (): AboutData => ({
@@ -108,9 +77,9 @@ export const getServicesData = (): ServicesData => ({
 });
 
 export const getNavItems = (): NavItem[] => [
-	{ label: "소개", targetId: "about" },
-	{ label: "서비스", targetId: "services" },
-	{ label: "문의", targetId: "contact" },
+	{ label: "소개", targetId: SECTION_IDS.about },
+	{ label: "서비스", targetId: SECTION_IDS.services },
+	{ label: "문의", targetId: SECTION_IDS.contact },
 ];
 
 export const getFooterLinks = (): FooterLink[] => [

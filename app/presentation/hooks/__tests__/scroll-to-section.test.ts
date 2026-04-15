@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { cleanup } from "@testing-library/react";
-import { scrollToSection } from "~/presentation/hooks/use-scroll-to-section";
+import { scrollToSection } from "~/presentation/hooks/scroll-to-section";
 
 // Vitest는 자동 cleanup을 지원하지 않으므로 각 테스트 후 DOM 초기화
 afterEach(() => {

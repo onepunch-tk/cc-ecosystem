@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { getNavItems } from "~/infrastructure/dummy-data";
-import { scrollToSection } from "~/presentation/hooks/use-scroll-to-section";
+import { scrollToSection } from "~/presentation/hooks/scroll-to-section";
 import MobileMenu from "./MobileMenu";
+
+const navItems = getNavItems();
 
 export default function Header() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-	const navItems = getNavItems();
 
 	return (
 		<header className="fixed top-0 w-full z-50 bg-background/90 backdrop-blur-md border-b border-border shadow-card transition-shadow duration-200">
@@ -27,7 +28,7 @@ export default function Header() {
 				</nav>
 				<button
 					type="button"
-					aria-label="메뉴 열기"
+					aria-label={isMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
 					aria-expanded={isMenuOpen}
 					onClick={() => setIsMenuOpen(!isMenuOpen)}
 					className="md:hidden p-2 text-on-surface hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md transition-colors duration-200"

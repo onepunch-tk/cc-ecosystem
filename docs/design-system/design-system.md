@@ -52,6 +52,15 @@ Stitch (exported)
 ## Border Radius (ROUND_EIGHT)
 - sm: 4px, md: 8px, lg: 12px, xl: 16px
 
+### Radius Mapping by Component
+| Component Type | Radius | Token |
+|----------------|--------|-------|
+| Buttons | rounded-lg (12px) | lg |
+| Cards | rounded-lg (12px) | lg |
+| Inputs/Textarea | rounded-md (8px) | md |
+| Pills/Badges | rounded-full | full |
+| Focus rings | rounded-sm (4px) | sm |
+
 ## Responsive Breakpoints
 ### Web
 - sm: 640px, md: 768px, lg: 1024px, xl: 1280px

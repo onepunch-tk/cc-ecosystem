@@ -39,7 +39,7 @@ Agent composes title/body and delegates to script:
 ISSUE_NUMBER=$(jq -r '.issue_number // empty' .claude/pipeline-state.json)
 
 # Agent composes PR title/body, then calls script (single Bash call)
-"$CLAUDE_PROJECT_DIR"/.claude/hooks/git-pr.sh \
+.claude/hooks/git-pr.sh \
   --title "<emoji> <type>: <description>" \
   --body "## Summary
 <change summary>

@@ -1,0 +1,1 @@
+- [Vitest cleanup workaround](project_vitest_cleanup.md) — vitest.setup.ts lacks cleanup; add afterEach(cleanup) in each component test file

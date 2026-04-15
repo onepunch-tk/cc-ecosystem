@@ -1,4 +1,4 @@
-type ButtonVariant = "solid" | "ghost";
+type ButtonVariant = "solid" | "ghost" | "accent";
 type ButtonSize = "sm" | "md" | "lg";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -6,11 +6,21 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	size?: ButtonSize;
 }
 
+const baseClasses = [
+	"inline-flex items-center justify-center",
+	"rounded-lg font-semibold select-none",
+	"transition-all duration-200 ease-in-out",
+	"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+	"disabled:opacity-50 disabled:cursor-not-allowed",
+].join(" ");
+
 const variantClasses: Record<ButtonVariant, string> = {
 	solid:
-		"bg-primary text-on-primary hover:bg-primary-light active:bg-primary-light/90 focus-visible:ring-accent focus-visible:ring-offset-2",
+		"bg-primary text-on-primary hover:bg-primary-light active:bg-primary-light/90 focus-visible:ring-accent",
 	ghost:
-		"bg-transparent text-primary border border-primary hover:bg-primary/5 active:bg-primary/10 focus-visible:ring-accent focus-visible:ring-offset-2",
+		"bg-transparent text-primary border border-primary hover:bg-primary/5 active:bg-primary/10 focus-visible:ring-accent",
+	accent:
+		"bg-accent text-on-primary hover:bg-accent-hover active:bg-accent-hover/90 focus-visible:ring-accent shadow-card hover:shadow-card-hover",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -28,7 +38,7 @@ export default function Button({
 }: ButtonProps) {
 	return (
 		<button
-			className={`inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none select-none ${variantClasses[variant]} ${sizeClasses[size]} ${className ?? ""}`.trim()}
+			className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className ?? ""}`.trim()}
 			{...props}
 		>
 			{children}

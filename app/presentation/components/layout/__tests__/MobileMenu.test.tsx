@@ -4,7 +4,7 @@ import MobileMenu from "~/presentation/components/layout/MobileMenu";
 
 // use-scroll-to-section 모듈을 mock 처리
 const mockScrollToSection = vi.fn();
-vi.mock("~/presentation/hooks/use-scroll-to-section", () => ({
+vi.mock("~/presentation/hooks/scroll-to-section", () => ({
 	scrollToSection: (id: string) => mockScrollToSection(id),
 }));
 

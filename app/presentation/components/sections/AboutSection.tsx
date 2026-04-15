@@ -5,15 +5,15 @@ export default function AboutSection() {
 	const { tagline, heading, vision, mission, coreValues } = getAboutData();
 
 	return (
-		<SectionWrapper id="about">
+		<SectionWrapper id="about" ariaLabel="회사 소개">
 			<div className="mb-12 md:mb-20">
 				<div className="flex items-center gap-4 mb-4">
 					<div className="h-0.5 w-12 bg-accent" aria-hidden="true" />
-					<span className="text-xs font-bold tracking-widest uppercase text-accent">
+					<span className="text-sm font-bold tracking-wider uppercase text-accent">
 						{tagline}
 					</span>
 				</div>
-				<h2 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-black tracking-tight text-on-surface">
+				<h2 className="text-3xl sm:text-4xl md:text-[2.5rem] lg:text-5xl font-black tracking-tight text-on-surface">
 					{heading}
 				</h2>
 			</div>
