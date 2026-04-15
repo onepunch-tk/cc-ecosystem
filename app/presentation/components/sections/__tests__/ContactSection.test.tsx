@@ -117,9 +117,10 @@ describe("ContactSection - actionData 에러 표시", () => {
 		]);
 		render(<Stub initialEntries={["/"]} />);
 
-		// Act: 폼 제출
-		const submitButton = await screen.findByRole("button", { name: "문의하기" });
-		fireEvent.click(submitButton);
+		// Act: form submit 이벤트 직접 dispatch (constraint validation bypass)
+		await screen.findByRole("button", { name: "문의하기" });
+		const form = document.querySelector("form")!;
+		fireEvent.submit(form);
 
 		// Assert: 에러 메시지가 표시되어야 함
 		await waitFor(() => {
@@ -146,8 +147,9 @@ describe("ContactSection - actionData 에러 표시", () => {
 		render(<Stub initialEntries={["/"]} />);
 
 		// Act
-		const submitButton = await screen.findByRole("button", { name: "문의하기" });
-		fireEvent.click(submitButton);
+		await screen.findByRole("button", { name: "문의하기" });
+		const form = document.querySelector("form")!;
+		fireEvent.submit(form);
 
 		// Assert
 		await waitFor(() => {
@@ -174,8 +176,9 @@ describe("ContactSection - actionData 에러 표시", () => {
 		render(<Stub initialEntries={["/"]} />);
 
 		// Act
-		const submitButton = await screen.findByRole("button", { name: "문의하기" });
-		fireEvent.click(submitButton);
+		await screen.findByRole("button", { name: "문의하기" });
+		const form = document.querySelector("form")!;
+		fireEvent.submit(form);
 
 		// Assert
 		await waitFor(() => {
@@ -201,8 +204,9 @@ describe("ContactSection - actionData 에러 표시", () => {
 		render(<Stub initialEntries={["/"]} />);
 
 		// Act
-		const submitButton = await screen.findByRole("button", { name: "문의하기" });
-		fireEvent.click(submitButton);
+		await screen.findByRole("button", { name: "문의하기" });
+		const form = document.querySelector("form")!;
+		fireEvent.submit(form);
 
 		// Assert
 		await waitFor(() => {
@@ -230,9 +234,10 @@ describe("ContactSection - actionData 성공 표시", () => {
 		]);
 		render(<Stub initialEntries={["/"]} />);
 
-		// Act: 폼 제출
-		const submitButton = await screen.findByRole("button", { name: "문의하기" });
-		fireEvent.click(submitButton);
+		// Act: form submit 이벤트 직접 dispatch
+		await screen.findByRole("button", { name: "문의하기" });
+		const form = document.querySelector("form")!;
+		fireEvent.submit(form);
 
 		// Assert: 성공 메시지가 렌더링되어야 함
 		await waitFor(() => {
@@ -257,14 +262,15 @@ describe("ContactSection - actionData 성공 표시", () => {
 		render(<Stub initialEntries={["/"]} />);
 
 		// Act
-		const submitButton = await screen.findByRole("button", { name: "문의하기" });
-		fireEvent.click(submitButton);
+		await screen.findByRole("button", { name: "문의하기" });
+		const form = document.querySelector("form")!;
+		fireEvent.submit(form);
 
-		// Assert: 성공 상태에서는 submit 버튼이 사라지거나 성공 UI가 표시됨
+		// Assert: 성공 상태에서는 submit 버튼이 사라지고 성공 UI가 표시됨
 		await waitFor(() => {
-			// 성공 메시지가 있거나, 폼이 숨겨지는 방식 중 하나여야 함
-			const successMessage = screen.queryByText(/문의가 접수되었습니다|성공적으로 제출/i);
-			expect(successMessage).toBeInTheDocument();
+			expect(
+				screen.getByText(/문의가 접수되었습니다|성공적으로 제출/i),
+			).toBeInTheDocument();
 		});
 	});
 });

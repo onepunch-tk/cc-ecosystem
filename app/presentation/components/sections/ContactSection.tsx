@@ -1,3 +1,5 @@
+import { Form, useActionData, useNavigation } from "react-router";
+import type { ActionResponse } from "~/domain/contact/types";
 import { Button, Input, Textarea } from "~/presentation/components/common";
 
 const contactInfo = [
@@ -8,6 +10,10 @@ const contactInfo = [
 ];
 
 export default function ContactSection() {
+	const actionData = useActionData<ActionResponse>();
+	const navigation = useNavigation();
+	const isSubmitting = navigation.state === "submitting";
+
 	return (
 		<section id="contact" className="bg-white py-16 md:py-24 px-6">
 			<div className="max-w-7xl mx-auto">
@@ -57,41 +63,64 @@ export default function ContactSection() {
 
 					{/* Right column: Contact form */}
 					<div className="bg-white p-2 md:p-8">
-						<form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<Input
-									label="이름"
-									placeholder="성함을 입력해주세요"
-									required
-								/>
-								<Input
-									label="이메일"
-									type="email"
-									placeholder="example@techflow.co.kr"
-									required
-								/>
+						{actionData?.success ? (
+							<div className="text-center py-12 space-y-4">
+								<span className="material-symbols-outlined text-primary text-[48px]" aria-hidden="true">check_circle</span>
+								<h3 className="text-2xl font-bold text-on-surface">문의가 접수되었습니다</h3>
+								<p className="text-on-surface-muted">영업일 기준 24시간 이내 답변드립니다.</p>
 							</div>
-							<Textarea
-								label="문의 내용"
-								placeholder="프로젝트에 대한 상세한 내용을 남겨주세요."
-								rows={6}
-								required
-							/>
-							<div className="space-y-4">
-								<Button
-									type="submit"
-									variant="solid"
-									size="lg"
-									className="w-full"
-								>
-									문의하기
-								</Button>
-								<p className="text-center text-sm text-on-surface-muted flex items-center justify-center gap-2">
-									<span className="material-symbols-outlined text-sm" aria-hidden="true">verified_user</span>
-									영업일 기준 24시간 이내 답변드립니다
-								</p>
-							</div>
-						</form>
+						) : (
+							<Form method="post" className="space-y-6">
+								{actionData && !actionData.success && !actionData.fieldErrors && (
+									<div className="p-4 rounded-lg bg-error/10 border border-error/20" role="alert">
+										<p className="text-error text-sm">{actionData.error}</p>
+									</div>
+								)}
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+									<Input
+										label="이름"
+										name="name"
+										placeholder="성함을 입력해주세요"
+										required
+										disabled={isSubmitting}
+										error={actionData && !actionData.success ? actionData.fieldErrors?.name?.[0] : undefined}
+									/>
+									<Input
+										label="이메일"
+										name="email"
+										type="email"
+										placeholder="example@techflow.co.kr"
+										required
+										disabled={isSubmitting}
+										error={actionData && !actionData.success ? actionData.fieldErrors?.email?.[0] : undefined}
+									/>
+								</div>
+								<Textarea
+									label="문의 내용"
+									name="message"
+									placeholder="프로젝트에 대한 상세한 내용을 남겨주세요."
+									rows={6}
+									required
+									disabled={isSubmitting}
+									error={actionData && !actionData.success ? actionData.fieldErrors?.message?.[0] : undefined}
+								/>
+								<div className="space-y-4">
+									<Button
+										type="submit"
+										variant="solid"
+										size="lg"
+										className="w-full"
+										disabled={isSubmitting}
+									>
+										{isSubmitting ? "제출 중..." : "문의하기"}
+									</Button>
+									<p className="text-center text-sm text-on-surface-muted flex items-center justify-center gap-2">
+										<span className="material-symbols-outlined text-sm" aria-hidden="true">verified_user</span>
+										영업일 기준 24시간 이내 답변드립니다
+									</p>
+								</div>
+							</Form>
+						)}
 					</div>
 				</div>
 			</div>
