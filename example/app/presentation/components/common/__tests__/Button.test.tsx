@@ -91,12 +91,12 @@ describe("Button", () => {
 	});
 
 	describe("variant prop", () => {
-		it("기본 variant는 'primary'이며 bg-primary 클래스를 갖는다", () => {
+		it("기본 variant는 'primary'이며 bg-accent 클래스를 갖는다", () => {
 			// Arrange & Act
 			render(<Button>클릭</Button>);
 
 			// Assert
-			expect(screen.getByRole("button")).toHaveClass("bg-primary");
+			expect(screen.getByRole("button")).toHaveClass("bg-accent");
 		});
 
 		it("variant='secondary'이면 bg-surface 클래스를 적용한다", () => {

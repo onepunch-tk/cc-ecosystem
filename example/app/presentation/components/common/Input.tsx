@@ -1,3 +1,6 @@
+const fieldClasses =
+	"w-full rounded-lg border bg-background px-4 py-2.5 text-on-surface placeholder:text-on-surface-muted/50 motion-safe:transition-colors motion-safe:duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50";
+
 interface InputProps
 	extends Omit<
 		React.InputHTMLAttributes<HTMLInputElement>,
@@ -35,7 +38,7 @@ export default function Input({
 				disabled={disabled}
 				aria-invalid={error ? true : undefined}
 				aria-describedby={errorId}
-				className={`w-full rounded-lg border bg-background px-4 py-2.5 text-on-surface placeholder:text-on-surface-muted/50 motion-safe:transition-colors motion-safe:duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 ${error ? "border-error" : "border-on-surface-muted/30 hover:border-on-surface-muted/50"}`}
+				className={`${fieldClasses} ${error ? "border-error" : "border-on-surface-muted/30 hover:border-on-surface-muted/50"}`}
 				{...rest}
 			/>
 			{error && (

@@ -4,7 +4,13 @@ interface SectionWrapperProps {
 	title?: string;
 	subtitle?: string;
 	children: React.ReactNode;
+	variant?: "default" | "surface";
 }
+
+const bgClasses = {
+	default: "bg-background",
+	surface: "bg-surface",
+} as const;
 
 export default function SectionWrapper({
 	id,
@@ -12,12 +18,13 @@ export default function SectionWrapper({
 	title,
 	subtitle,
 	children,
+	variant = "default",
 }: SectionWrapperProps) {
 	return (
 		<section
 			id={id}
 			aria-label={ariaLabel}
-			className="bg-background px-4 py-16 md:px-6 md:py-20 lg:px-8 lg:py-24"
+			className={`${bgClasses[variant]} px-4 py-16 md:px-6 md:py-20 lg:px-8 lg:py-24`}
 		>
 			<div className="mx-auto max-w-7xl">
 				{title && (

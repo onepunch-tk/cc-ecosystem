@@ -1,4 +1,37 @@
-export const heroData = {
+interface HeroData {
+	title: string;
+	subtitle: string;
+	ctaText: string;
+	ctaLink: string;
+}
+
+interface CoreValue {
+	id: string;
+	title: string;
+	description: string;
+	icon: string;
+}
+
+interface AboutData {
+	title: string;
+	description: string;
+	coreValues: CoreValue[];
+}
+
+interface ServiceItem {
+	id: string;
+	title: string;
+	description: string;
+	icon: string;
+}
+
+interface ServicesData {
+	title: string;
+	subtitle: string;
+	services: ServiceItem[];
+}
+
+export const heroData: HeroData = {
 	title: "디지털 혁신을 이끄는 파트너",
 	subtitle:
 		"TechFlow는 IT 컨설팅 전문 기업입니다. 최신 기술과 풍부한 경험으로 비즈니스의 디지털 전환을 함께합니다.",
@@ -6,7 +39,7 @@ export const heroData = {
 	ctaLink: "#contact",
 };
 
-export const aboutData = {
+export const aboutData: AboutData = {
 	title: "About Us",
 	description:
 		"TechFlow의 비전은 기술을 통해 모든 기업이 디지털 시대에서 성공할 수 있도록 돕는 것입니다. 우리의 미션은 혁신적인 IT 컨설팅 서비스를 통해 고객의 비즈니스 가치를 극대화하는 것입니다.",
@@ -35,7 +68,7 @@ export const aboutData = {
 	],
 };
 
-export const servicesData = {
+export const servicesData: ServicesData = {
 	title: "Our Services",
 	subtitle:
 		"TechFlow는 다양한 IT 컨설팅 서비스를 통해 비즈니스의 성공을 지원합니다.",
