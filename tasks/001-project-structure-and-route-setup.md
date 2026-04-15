@@ -24,31 +24,30 @@ Establish the Clean Architecture directory structure and React Router route conf
 - `app/presentation/` (new directory)
 
 ## Acceptance Criteria
-- [ ] Clean Architecture 4-layer directories exist under `app/`
-- [ ] `app/routes.ts` has the landing page index route configured
-- [ ] Empty shell components exist for Header, Footer, Hero, About, Services, Contact sections
-- [ ] `app/root.tsx` renders the basic layout structure
-- [ ] `bun run typecheck` passes with no errors
+- [x] Clean Architecture 4-layer directories exist under `app/`
+- [x] `app/routes.ts` has the landing page index route configured
+- [x] Empty shell components exist for Header, Footer, Hero, About, Services, Contact sections
+- [x] `app/root.tsx` renders the basic layout structure
+- [x] `bun run typecheck` passes with no errors
 
 ## Implementation Steps
 
 ### Step 1: Create Clean Architecture Directory Structure
-- [ ] Create `app/domain/entities/`, `app/domain/schemas/`
-- [ ] Create `app/application/services/`, `app/application/ports/`
-- [ ] Create `app/infrastructure/`
-- [ ] Create `app/presentation/components/common/`, `app/presentation/components/sections/`, `app/presentation/components/layout/`
+- [x] Create `app/domain/contact/`, `app/domain/contact/__tests__/`
+- [x] Create `app/application/contact/`
+- [x] Create `app/infrastructure/config/`, `app/infrastructure/persistence/contact/`
+- [x] Create `app/presentation/components/common/`, `app/presentation/components/sections/`, `app/presentation/components/layout/`
 
 ### Step 2: Create Shell Components for All Sections
-- [ ] Create `Header.tsx`, `Footer.tsx` in layout/
-- [ ] Create `HeroSection.tsx`, `AboutSection.tsx`, `ServicesSection.tsx`, `ContactSection.tsx` in sections/
+- [x] Create `Header.tsx`, `Footer.tsx` in layout/
+- [x] Create `HeroSection.tsx`, `AboutSection.tsx`, `ServicesSection.tsx`, `ContactSection.tsx` in sections/
 
 ### Step 3: Configure Routes and Root Layout
-- [ ] Update `app/routes.ts` to define the index route
-- [ ] Update `app/root.tsx` to include Header and Footer
-- [ ] Create `app/routes/home.tsx` composing all section shells
-- [ ] Remove default welcome page references
+- [x] Configure `app/routes.ts` to define the index route pointing to `presentation/routes/home.tsx`
+- [x] Create `app/root.tsx` with Layout, ErrorBoundary, Google Fonts
+- [x] Create `app/presentation/routes/home.tsx` composing Header + all sections + Footer
 
 ## Change History
 | Date | Changes |
 |------|---------|
-| | |
+| 2026-04-15 | Completed: project scaffolded with React Router v7, CA directories, shell components, route config, design tokens reconciled with tokens.json |
