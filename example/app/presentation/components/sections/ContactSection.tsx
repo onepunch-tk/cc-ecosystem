@@ -1,3 +1,5 @@
 export default function ContactSection() {
-	return <section id="contact">Contact Section</section>;
+	return (
+		<section id="contact">{/* Contact placeholder */}</section>
+	);
 }
