@@ -32,7 +32,7 @@ TechFlow Landing Page provides the following features as a lead-generation landi
 
 ### Phase 2: UI/UX Completion (Using Dummy Data)
 
-- **Task 003: Design Tokens and Common Component Library**
+- ✅ **Task 003: Design Tokens and Common Component Library**
   - blockedBy: Task 001
   - blocks: Task 004, Task 005, Task 006
   - Define TailwindCSS design tokens

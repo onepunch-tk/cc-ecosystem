@@ -50,12 +50,13 @@ app/application/
 
 ## app/infrastructure/
 
-External system integration and implementations.
+External system integration, data sources, and implementations.
 
 ```
 app/infrastructure/
+├── __tests__/          # Infrastructure layer tests
 ├── config/             # DI container
-└── (repository implementations)
+└── dummy-data.ts       # Static/mock data for sections (company info, services, etc.)
 ```
 
 ## app/presentation/
@@ -65,11 +66,25 @@ UI, routing, user interface related.
 ```
 app/presentation/
 ├── components/
-│   ├── common/         # Reusable UI primitives (Button, Card, Input, etc.)
+│   ├── common/         # Reusable UI primitives
+│   │   ├── __tests__/  # Unit tests for common components
+│   │   └── index.ts    # Barrel export
 │   ├── sections/       # Page sections (Hero, About, Services, Contact)
+│   │   └── __tests__/  # Unit tests for section components
 │   └── layout/         # Layout components (Header, Footer)
 └── hooks/              # Custom React hooks
 ```
+
+### app/presentation/components/common/
+
+Design system primitives. Reusable, presentation-only components with no business logic.
+
+- **Button** - Standard button component
+- **Card** - Content card container
+- **Input** - Form text input
+- **Textarea** - Form multiline input
+- **SectionWrapper** - Consistent section layout wrapper (padding, max-width, etc.)
+- **index.ts** - Barrel file for clean imports
 
 ## app/routes/
 
@@ -88,10 +103,12 @@ React Router v7 route entry points.
 | Task | Location |
 |------|----------|
 | UI 컴포넌트 | `app/presentation/components/` |
+| 공통 UI 프리미티브 | `app/presentation/components/common/` |
 | 비즈니스 로직 | `app/application/services/` |
 | 인터페이스 정의 | `app/application/ports/` |
 | 엔터티/타입 | `app/domain/entities/` |
 | 검증 스키마 | `app/domain/schemas/` |
 | 인프라 구현체 | `app/infrastructure/` |
+| 더미/목 데이터 | `app/infrastructure/dummy-data.ts` |
 | 라우트 | `app/routes/` |
-| 테스트 | `app/**/*.test.{ts,tsx}` |
+| 테스트 | `app/**/__tests__/*.test.{ts,tsx}` |
