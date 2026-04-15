@@ -216,11 +216,14 @@ Mode-specific additional Pre-Work:
 **Context**: Components already implemented with passing tests. Apply visual design only.
 
 1. Read changed Presentation layer files
-2. Apply design tokens (colors, typography, spacing, border-radius) — replace hardcoded values
-3. Implement responsive behavior per breakpoint strategy
-4. Add interaction states (hover, focus, active, disabled) where missing
-5. Ensure accessibility (contrast, focus indicators, ARIA attributes)
-6. **CRITICAL**: Do NOT change component behavior or break existing tests
+2. **Check if `docs/design-system/source-html/` exists and contains HTML files**
+   - **If YES (Stitch HTML available)**: Read all `source-html/*.html` files. For each changed component, find the matching HTML section and use it as **1:1 visual reference** for styling — colors, spacing, typography, layout structure, shadows, gradients, and animations. Convert HTML-specific patterns (inline Tailwind config, Material Symbols, etc.) to the project's token system (`tokens.json` + `app.css @theme`). The HTML is the design spec — follow it as closely as possible within the component's existing structure.
+   - **If NO**: Apply design tokens from `tokens.json` + `design-system.md` only.
+3. Apply design tokens (colors, typography, spacing, border-radius) — replace hardcoded values
+4. Implement responsive behavior per breakpoint strategy
+5. Add interaction states (hover, focus, active, disabled) where missing
+6. Ensure accessibility (contrast, focus indicators, ARIA attributes)
+7. **CRITICAL**: Do NOT change component behavior or break existing tests
 
 **Output**: Component files with design system applied
 

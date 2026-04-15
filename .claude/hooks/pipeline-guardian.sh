@@ -65,8 +65,7 @@ if [[ "$PHASE" == "tdd" ]]; then
 
             jq -n --arg ctx "$CTX" '{
                 decision: "block",
-                reason: "Failure Recovery: Green phase incomplete",
-                hookSpecificOutput: { hookEventName: "Stop", additionalContext: $ctx }
+                reason: ("Failure Recovery: Green phase incomplete\n\n" + $ctx)
             }'
             exit 0
         fi
@@ -292,11 +291,7 @@ if [[ ${#REMINDERS[@]} -gt 0 ]]; then
     # Output JSON — decision:block prevents Claude from stopping
     jq -n --arg ctx "$CONTEXT" '{
         decision: "block",
-        reason: "Pipeline guardian detected pending actions",
-        hookSpecificOutput: {
-            hookEventName: "Stop",
-            additionalContext: $ctx
-        }
+        reason: ("Pipeline guardian detected pending actions\n\n" + $ctx)
     }'
     exit 0
 fi
