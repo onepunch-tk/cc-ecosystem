@@ -301,6 +301,100 @@ UnistylesRuntime.setTheme('dark')
 
 ---
 
+## Token Bridge: tokens.json → Runtime Files
+
+Generate platform-specific token files so that `docs/design-system/tokens.json` values can be consumed at runtime.
+
+### NativeWind
+
+Map token values directly into the `@theme` block in `global.css` (same approach as web Tailwind v4):
+
+```css
+/* global.css — tokens.json의 값을 @theme으로 매핑 */
+@theme {
+  --color-primary: #007AFF;      /* tokens.json → color.primary.$value */
+  --color-secondary: #5856D6;    /* tokens.json → color.secondary.$value */
+  --spacing-sm: 4px;             /* tokens.json → spacing.sm.$value */
+  --spacing-md: 8px;
+  --radius-sm: 4px;              /* tokens.json → borderRadius.sm.$value */
+}
+```
+
+No separate token file needed — CSS variables serve as the token layer.
+
+### Unistyles / StyleSheet
+
+Separate concerns with a 2-file structure: `tokens.ts` (raw values) → `theme.ts` (theme objects) → imported by config
+
+```typescript
+// tokens.ts — design token constants mapped from tokens.json (platform-agnostic)
+export const colors = {
+  primary: '#007AFF',
+  secondary: '#5856D6',
+  background: '#FFFFFF',
+  surface: '#F2F2F7',
+  error: '#FF3B30',
+  success: '#34C759',
+} as const
+
+export const spacing = {
+  xs: 2, sm: 4, md: 8, lg: 16, xl: 24, '2xl': 32,
+} as const
+
+export const borderRadius = {
+  sm: 4, md: 8, lg: 12, xl: 16, full: 9999,
+} as const
+
+export const typography = {
+  fontSize: { xs: 12, sm: 14, md: 16, lg: 18, xl: 20, '2xl': 24 },
+  lineHeight: { tight: 1.25, normal: 1.5, relaxed: 1.75 },
+} as const
+```
+
+```typescript
+// theme.ts — imports tokens.ts to compose light/dark themes
+import { colors, spacing, borderRadius, typography } from './tokens'
+
+export const lightTheme = {
+  colors,
+  spacing: (n: number) => n * spacing.md,
+  margins: spacing,
+  borderRadius,
+  typography,
+}
+
+export const darkTheme = {
+  colors: { ...colors, primary: '#0A84FF', background: '#000000', surface: '#1C1C1E' },
+  spacing: lightTheme.spacing,
+  margins: spacing,
+  borderRadius,
+  typography,
+}
+
+export type AppTheme = typeof lightTheme
+```
+
+```typescript
+// unistyles.config.ts — wire-up only, imports from theme.ts
+import { StyleSheet } from 'react-native-unistyles'
+import { lightTheme, darkTheme } from './theme'
+
+StyleSheet.configure({
+  settings: { adaptiveThemes: true, initialTheme: 'light' },
+  themes: { light: lightTheme, dark: darkTheme },
+  breakpoints: { compact: 0, regular: 390, expanded: 430 },
+})
+```
+
+**File responsibilities**:
+- `tokens.ts` — TypeScript mirror of `tokens.json`. Update this file only when token values change
+- `theme.ts` — Composes tokens into theme objects. Handles light/dark branching, exports types
+- `unistyles.config.ts` — Library initialization only. No logic
+
+**For StyleSheet (vanilla RN)**: import directly from `tokens.ts`. `theme.ts` is Unistyles-specific.
+
+---
+
 ## Reanimated
 
 No configuration file needed. Verify only:

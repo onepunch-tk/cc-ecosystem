@@ -27,17 +27,19 @@ cc-ecosystem/
     │   │   ├── development-planner.md
     │   │   ├── roadmap-validator.md
     │   │   └── project-structure-analyzer.md
-    │   └── dev/                       # Development agents (4)
+    │   └── dev/                       # Development agents (5)
     │       ├── unit-test-writer.md
     │       ├── e2e-tester.md
     │       ├── code-reviewer.md
-    │       └── starter-cleaner.md
-    ├── skills/                        # Skills (6)
+    │       ├── starter-cleaner.md
+    │       └── ux-design-lead.md
+    ├── skills/                        # Skills (7)
     │   ├── prd/
     │   ├── git/
     │   ├── tdd/
     │   ├── project-structure/
     │   ├── review-report/
+    │   ├── design-system/
     │   └── harness-pipeline/
     │       ├── SKILL.md               # Main pipeline (lean — phases in references/)
     │       └── references/            # Phase-specific instructions (loaded on-demand)
@@ -99,16 +101,17 @@ Loaded only when editing files that match the `paths` frontmatter pattern. Reduc
 | `roadmap-validator` | Validates completeness and consistency of ROADMAP.md and task files |
 | `project-structure-analyzer` | Analyzes project structure and writes/updates PROJECT-STRUCTURE.md |
 
-#### Development Agents (4)
+#### Development Agents (5)
 
 | Agent | Description |
 |-------|-------------|
 | `unit-test-writer` | Test engineer that writes unit tests following TDD principles (uses tdd skill) |
-| `e2e-tester` | Validates full user flows in web applications via E2E testing |
+| `e2e-tester` | Validates full user flows via E2E testing — agent-browser (Web), Maestro (Expo/RN), supertest (NestJS) |
 | `code-reviewer` | Unified review covering code quality, security (OWASP Top 10), and performance |
 | `starter-cleaner` | Removes demo code and boilerplate from starter kits for production readiness |
+| `ux-design-lead` | Applies design system tokens, reviews UI consistency, bootstraps design systems (uses design-system skill) |
 
-### Skills (6)
+### Skills (7)
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -117,6 +120,7 @@ Loaded only when editing files that match the `paths` frontmatter pattern. Reduc
 | `tdd` | `/tdd` | TDD rules and patterns -- Red-Green-Refactor cycle guide |
 | `project-structure` | `/project-structure` | Auto-generate PROJECT-STRUCTURE.md from Clean Architecture templates |
 | `review-report` | `/review-report` | Generate standardized code review reports |
+| `design-system` | `/design-system` | Design token bootstrap, platform library setup (Tailwind/NativeWind/Unistyles). Sub-commands: `token` (Stitch import), `html` (screen HTML export), `update` (refresh setup references) |
 | `harness-pipeline` | `/harness-pipeline` | Unified dev pipeline -- phases loaded on-demand from references/, auto-detects Sequential or Team mode |
 
 ### Hooks (11) + Utility Scripts (3)
@@ -162,13 +166,14 @@ Called by the agent via Bash (not event-driven hooks). Handle mechanical git ope
 | `rebac-ownership.sh` | PreToolUse (Edit/Write) | File ownership check for subagent-spawned agents (Team mode) |
 | `rebac-teammate-idle.sh` | TeammateIdle | Post-hoc ownership violation detection when teammates go idle |
 
-### MCP Servers (3)
+### MCP Servers (4)
 
 | Server | Type | Description |
 |--------|------|-------------|
 | `context7` | HTTP | Real-time lookup of latest library documentation and code examples |
 | `sequential-thinking` | stdio | Step-by-step analysis tool for complex problems |
 | `shadcn` | stdio | Search, install, and browse shadcn/ui component examples |
+| `stitch` | HTTP | Design system management and screen HTML export for 1:1 design implementation |
 
 ### Settings
 
@@ -344,14 +349,23 @@ PROJECT_NAME="your-project-name"
 
 ### MCP Server API Keys (`.mcp.json`)
 
-Set the API key to use the Context7 server.
+Set API keys for MCP servers that require authentication.
 
 ```json
 {
   "mcpServers": {
     "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
       "headers": {
-        "CONTEXT7_API_KEY": "your-actual-api-key"
+        "CONTEXT7_API_KEY": "your-context7-api-key"
+      }
+    },
+    "stitch": {
+      "type": "http",
+      "url": "https://stitch.googleapis.com/mcp",
+      "headers": {
+        "X-Goog-Api-Key": "your-stitch-api-key"
       }
     }
   }
@@ -366,6 +380,31 @@ Modify `CLAUDE.md` if your project uses a different tech stack or conventions.
 - **Code Conventions**: Add/modify rules in `.claude/rules/` for project-specific conventions
 - **Commands**: Update with your project's actual script commands
 - **Critical Documents**: Modify if document paths differ
+
+### Design System Setup (Optional)
+
+The `design-system` skill + `ux-design-lead` agent provide end-to-end design system management.
+
+**Bootstrap from scratch:**
+```bash
+# Agent reads PRD.md and creates docs/design-system/ (tokens.json + design-system.md)
+> Ask the ux-design-lead agent to bootstrap a design system
+```
+
+**Import from Stitch MCP:**
+```bash
+> /design-system token    # Download design tokens from a Stitch project
+> /design-system html     # Download screen HTML for 1:1 implementation reference
+```
+
+**Pipeline integration** (automatic when `ui_involved: true`):
+- Phase 2 (TDD): `ux-design-lead` applies tokens to implemented Presentation layer components
+- Phase 3 (Review): `ux-design-lead` runs 8-point design review + generates report at `docs/reports/design-review/`
+
+**Refresh after library upgrades:**
+```bash
+> /design-system update   # Re-fetches docs via Context7 MCP, updates setup references
+```
 
 ### Selective Hook Disabling
 

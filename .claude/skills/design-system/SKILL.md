@@ -1,7 +1,7 @@
 ---
 name: design-system
 description: "Design system bootstrap, token schema definition, and platform-specific library setup procedures. Loaded by the ux-design-lead agent to create design-system.md, tokens.json, and configure UI library settings. Use `/design-system update` to refresh web-setup.md and mobile-setup.md to match installed library versions."
-allowed-tools: Read, Write, Glob, Grep, Bash
+allowed-tools: Read, Write, Glob, Grep, Bash, WebFetch, WebSearch, mcp__context7__resolve-library-id, mcp__context7__query-docs
 argument-hint: "[token | html | update]"
 ---
 

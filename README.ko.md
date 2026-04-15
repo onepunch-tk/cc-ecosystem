@@ -27,17 +27,19 @@ cc-ecosystem/
     │   │   ├── development-planner.md
     │   │   ├── roadmap-validator.md
     │   │   └── project-structure-analyzer.md
-    │   └── dev/                       # 개발 에이전트 (4개)
+    │   └── dev/                       # 개발 에이전트 (5개)
     │       ├── unit-test-writer.md
     │       ├── e2e-tester.md
     │       ├── code-reviewer.md
-    │       └── starter-cleaner.md
-    ├── skills/                        # 스킬 (6개)
+    │       ├── starter-cleaner.md
+    │       └── ux-design-lead.md
+    ├── skills/                        # 스킬 (7개)
     │   ├── prd/
     │   ├── git/
     │   ├── tdd/
     │   ├── project-structure/
     │   ├── review-report/
+    │   ├── design-system/
     │   └── harness-pipeline/
     │       ├── SKILL.md               # 메인 파이프라인 (경량화 — Phase는 references/에)
     │       └── references/            # Phase별 상세 지침 (필요 시에만 로드)
@@ -99,16 +101,17 @@ cc-ecosystem/
 | `roadmap-validator` | ROADMAP.md와 작업 파일들의 완성도 및 일관성 검증 |
 | `project-structure-analyzer` | 프로젝트 구조를 분석하여 PROJECT-STRUCTURE.md 작성/업데이트 |
 
-#### 개발 에이전트 (4개)
+#### 개발 에이전트 (5개)
 
 | 에이전트 | 설명 |
 |----------|------|
 | `unit-test-writer` | TDD 원칙에 따라 단위 테스트를 작성하는 테스트 엔지니어 (tdd 스킬 활용) |
-| `e2e-tester` | 웹 애플리케이션의 전체 사용자 흐름을 검증하는 E2E 테스팅 |
+| `e2e-tester` | 플랫폼별 E2E 테스팅 — agent-browser (Web), Maestro (Expo/RN), supertest (NestJS) |
 | `code-reviewer` | 코드 품질, 보안(OWASP Top 10), 성능을 종합 검토 |
 | `starter-cleaner` | 스타터 킷에서 데모 코드와 보일러플레이트를 제거하여 프로덕션 준비 |
+| `ux-design-lead` | 디자인 시스템 토큰 적용, UI 일관성 리뷰, 디자인 시스템 부트스트랩 (design-system 스킬 활용) |
 
-### 스킬 (6개)
+### 스킬 (7개)
 
 | 스킬 | 명령어 | 설명 |
 |------|--------|------|
@@ -117,6 +120,7 @@ cc-ecosystem/
 | `tdd` | `/tdd` | TDD 규칙과 패턴 정의, Red-Green-Refactor 사이클 가이드 |
 | `project-structure` | `/project-structure` | 클린 아키텍처 템플릿으로 PROJECT-STRUCTURE.md 자동 생성 |
 | `review-report` | `/review-report` | 코드 리뷰 결과를 표준화된 보고서 형식으로 생성 |
+| `design-system` | `/design-system` | 디자인 토큰 부트스트랩, 플랫폼별 라이브러리 설정 (Tailwind/NativeWind/Unistyles). 하위 명령: `token` (Stitch 가져오기), `html` (스크린 HTML 내보내기), `update` (설정 레퍼런스 갱신) |
 | `harness-pipeline` | `/harness-pipeline` | 통합 개발 파이프라인 -- Phase별 지침을 references/에서 필요 시 로드, Sequential 또는 Team 모드 자동 감지 |
 
 ### 훅 (11개) + 유틸리티 스크립트 (3개)
@@ -162,13 +166,14 @@ cc-ecosystem/
 | `rebac-ownership.sh` | PreToolUse (Edit/Write) | subagent_type으로 생성된 에이전트의 파일 소유권 검사 (Team 모드) |
 | `rebac-teammate-idle.sh` | TeammateIdle | teammate가 유휴 전환 시 소유권 위반을 사후 감지 |
 
-### MCP 서버 (3개)
+### MCP 서버 (4개)
 
 | 서버 | 타입 | 설명 |
 |------|------|------|
 | `context7` | HTTP | 라이브러리의 최신 문서와 코드 예제를 실시간으로 조회 |
 | `sequential-thinking` | stdio | 복잡한 문제를 단계적으로 분석하는 사고 도구 |
 | `shadcn` | stdio | shadcn/ui 컴포넌트 검색, 설치, 예제 조회 |
+| `stitch` | HTTP | 디자인 시스템 관리 및 스크린 HTML 내보내기 — 1:1 디자인 구현용 |
 
 ### 설정
 
@@ -342,14 +347,23 @@ PROJECT_NAME="your-project-name"
 
 ### MCP 서버 API 키 (`.mcp.json`)
 
-Context7 서버를 사용하려면 API 키를 설정합니다.
+인증이 필요한 MCP 서버의 API 키를 설정합니다.
 
 ```json
 {
   "mcpServers": {
     "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
       "headers": {
-        "CONTEXT7_API_KEY": "your-actual-api-key"
+        "CONTEXT7_API_KEY": "your-context7-api-key"
+      }
+    },
+    "stitch": {
+      "type": "http",
+      "url": "https://stitch.googleapis.com/mcp",
+      "headers": {
+        "X-Goog-Api-Key": "your-stitch-api-key"
       }
     }
   }
@@ -364,6 +378,31 @@ Context7 서버를 사용하려면 API 키를 설정합니다.
 - **Code Conventions**: `.claude/rules/`에 프로젝트 고유의 코딩 컨벤션 추가/수정
 - **Commands**: 프로젝트의 실제 스크립트 명령어로 업데이트
 - **Critical Documents**: 문서 경로가 다른 경우 수정
+
+### 디자인 시스템 설정 (선택)
+
+`design-system` 스킬 + `ux-design-lead` 에이전트가 디자인 시스템 전체 수명주기를 관리합니다.
+
+**처음부터 생성:**
+```bash
+# PRD.md를 읽고 docs/design-system/ 생성 (tokens.json + design-system.md)
+> ux-design-lead 에이전트에게 디자인 시스템 부트스트랩 요청
+```
+
+**Stitch MCP에서 가져오기:**
+```bash
+> /design-system token    # Stitch 프로젝트에서 디자인 토큰 다운로드
+> /design-system html     # 1:1 구현 레퍼런스용 스크린 HTML 다운로드
+```
+
+**파이프라인 자동 연동** (`ui_involved: true` 시 자동):
+- Phase 2 (TDD): `ux-design-lead`가 구현된 Presentation 레이어 컴포넌트에 토큰 적용
+- Phase 3 (Review): `ux-design-lead`가 8-point 디자인 리뷰 + `docs/reports/design-review/`에 리포트 생성
+
+**라이브러리 업그레이드 후 갱신:**
+```bash
+> /design-system update   # Context7 MCP로 최신 문서 조회, 설정 레퍼런스 업데이트
+```
 
 ### 훅 선택적 비활성화
 
