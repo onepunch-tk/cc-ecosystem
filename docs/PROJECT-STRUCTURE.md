@@ -22,8 +22,8 @@ cc-ecosystem/
 ├── app/                    # Core application (Clean Architecture layers)
 │   ├── domain/             # Business rules and entity definitions
 │   ├── application/        # Business logic and use cases
-│   ├── infrastructure/     # External system implementations (scaffolded, not yet populated)
-│   ├── presentation/       # UI, routing, components, hooks
+│   ├── infrastructure/     # External system implementations and dummy data
+│   ├── presentation/       # UI, routing, components, hooks, utils
 │   ├── root.tsx            # React Router root component and Layout
 │   ├── routes.ts           # Route definitions
 │   └── app.css             # Global styles and TailwindCSS design tokens
@@ -60,29 +60,33 @@ Follows Clean Architecture 4-layer structure.
 
 **Contains**:
 - Entity - Core business objects (e.g., ContactSubmission)
-- Types - Domain-related TypeScript types
+- Types - Domain-related TypeScript types and interfaces
 - Schemas - Zod validation schemas (e.g., contact form validation)
+- Constants - Domain constants (e.g., section ID mappings)
 - Errors - Domain-specific error classes
 
 **When to use**:
 - Adding new business concepts (e.g., contact form data model)
+- Defining data shape interfaces for page sections
 - When form validation schemas are needed
 - Defining custom business errors
 
 **Structure**:
 ```
 app/domain/
-└── contact/
-    ├── contact-submission.entity.ts
-    ├── contact-submission.schema.ts
-    ├── types.ts
-    └── __tests__/
-        └── contact-submission.schema.test.ts
+├── contact/
+│   ├── contact-submission.entity.ts
+│   ├── contact-submission.schema.ts
+│   ├── types.ts
+│   └── __tests__/
+│       └── contact-submission.schema.test.ts
+└── landing/
+    └── types.ts            # HeroData, AboutData, ServicesData, NavItem, FooterLink, SECTION_IDS
 ```
 
-**Example entities/schemas**:
-- `ContactSubmission` entity with name, email, company, phone, message fields
-- Zod schema for contact form validation (required fields, email format, length constraints)
+**Domain modules**:
+- `contact/` - Contact form entity, Zod validation schema, and related types
+- `landing/` - Landing page data interfaces (HeroData, AboutData, ServicesData, NavItem, FooterLink) and the `SECTION_IDS` constant that maps section names to HTML element IDs
 
 ---
 
@@ -115,25 +119,30 @@ app/application/
 
 ### app/infrastructure/
 
-**Role**: External system integration and implementations
+**Role**: External system integration, implementations, and data providers
 
 **Contains**:
 - **config/**: DI container (Composition Root)
 - **persistence/**: Repository implementations
+- **Dummy data providers**: Functions that return static data conforming to domain interfaces
 
 **When to use**:
 - Creating new repository implementations → `persistence/`
 - Registering new services to DI container → `config/container.ts`
+- Providing dummy/seed data for sections → `dummy-data.ts`
 
 **Structure**:
 ```
 app/infrastructure/
 ├── config/                 # (scaffolded, awaiting DI container)
-└── persistence/
-    └── contact/            # (scaffolded, awaiting repository implementation)
+├── persistence/
+│   └── contact/            # (scaffolded, awaiting repository implementation)
+├── dummy-data.ts           # Dummy data functions for all landing page sections
+└── __tests__/
+    └── dummy-data.test.ts
 ```
 
-**Current state**: Directory structure scaffolded but not yet populated. Will house concrete implementations of application-layer ports.
+**Current state**: `dummy-data.ts` provides factory functions returning static data (hero, about, services, navigation, footer links) typed against domain interfaces. Config and persistence directories remain scaffolded for future DI container and repository implementations.
 
 ---
 
@@ -143,10 +152,11 @@ app/infrastructure/
 
 **Contains**:
 - **components/**: UI components organized by concern
-  - **common/**: Reusable UI primitives (Button, Card, Input, etc.) -- scaffolded, awaiting implementation
+  - **common/**: Reusable UI primitives (Button, Card, Input, Textarea, SectionWrapper) with barrel export
   - **sections/**: Page section components (Hero, About, Services, Contact)
-  - **layout/**: Persistent structural components (Header, Footer)
-- **hooks/**: Custom React hooks -- scaffolded, awaiting implementation
+  - **layout/**: Persistent structural components (Header, Footer, MobileMenu)
+- **hooks/**: Custom React hooks and scroll utilities
+- **utils/**: Shared presentation-layer utility functions
 - **routes/**: Pages (React Router v7 route modules)
 
 **When to use**:
@@ -155,20 +165,27 @@ app/infrastructure/
 - Creating page sections → `components/sections/`
 - Creating layout components → `components/layout/`
 - When custom hooks are needed → `hooks/`
+- Adding shared presentation helpers → `utils/`
 
 **Structure**:
 ```
 app/presentation/
 ├── components/
-│   ├── common/          # Reusable UI primitives (scaffolded)
-│   ├── sections/        # Page section components (Hero, About, Services, Contact)
-│   └── layout/          # Structural layout components (Header, Footer)
-├── hooks/               # Custom React hooks (scaffolded)
+│   ├── common/             # Reusable UI primitives (Button, Card, Input, Textarea, SectionWrapper)
+│   │   ├── index.ts        # Barrel export
+│   │   └── __tests__/
+│   ├── sections/           # Page section components (Hero, About, Services, Contact)
+│   │   └── __tests__/
+│   └── layout/             # Structural layout components (Header, Footer, MobileMenu)
+│       └── __tests__/
+├── hooks/                  # Custom React hooks (smooth scroll utility)
+│   └── __tests__/
+├── utils/                  # Shared presentation utilities (label-to-id conversion)
 └── routes/
-    └── home.tsx         # Landing page index route
+    └── home.tsx            # Landing page index route
 ```
 
-**Current state**: Section and layout components exist as shell implementations with placeholder content and TailwindCSS styling. Common components and hooks directories are scaffolded for future use.
+**Current state**: Section and layout components are fully implemented with real UI rendering, consuming dummy data from the infrastructure layer. Common components (Button, Card, Input, Textarea, SectionWrapper) are implemented and exported via barrel file. The hooks directory contains a smooth-scroll utility (`scrollToSection`). The utils directory provides shared helpers such as `toId` for converting labels to HTML-safe IDs. All component directories include co-located `__tests__/` with unit tests.
 
 **Route file conventions (React Router v7)**:
 - `_layout.tsx` - Layout wrapper
@@ -227,6 +244,9 @@ app/presentation/
 ```typescript
 import { ContactSubmission } from "~/domain/contact/contact-submission.entity";
 import { ContactRepositoryPort } from "~/application/contact/contact.port";
+import type { HeroData } from "~/domain/landing/types";
+import { getDummyHeroData } from "~/infrastructure/dummy-data";
+import { Button, Card } from "~/presentation/components/common";
 ```
 
 ---
@@ -239,10 +259,14 @@ import { ContactRepositoryPort } from "~/application/contact/contact.port";
 | Add UI component | `app/presentation/components/` |
 | Add layout component | `app/presentation/components/layout/` |
 | Add section component | `app/presentation/components/sections/` |
+| Add reusable primitive | `app/presentation/components/common/` |
+| Add presentation utility | `app/presentation/utils/` |
+| Add custom hook | `app/presentation/hooks/` |
 | Add business logic | `app/application/{domain}/` |
 | Define types/entities | `app/domain/{domain}/` |
 | Add repository implementation | `app/infrastructure/persistence/` |
 | Add DI wiring | `app/infrastructure/config/` |
+| Add dummy/seed data | `app/infrastructure/dummy-data.ts` |
 | Write test files | Co-located `__tests__/` directories (e.g., `app/{layer}/{domain}/__tests__/`) |
 | Add static files | `public/` |
 | Modify design tokens | `app/app.css` (`@theme` block) |

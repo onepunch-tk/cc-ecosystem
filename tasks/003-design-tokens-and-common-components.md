@@ -19,31 +19,33 @@ Establish design system with TailwindCSS tokens and build reusable UI primitives
 - `app/presentation/components/common/SectionWrapper.tsx` (new)
 - `app/presentation/components/common/index.ts` (new barrel)
 - `app/infrastructure/dummy-data.ts` (new)
+- `app/domain/landing/types.ts` (new - types moved from infrastructure)
+- `app/presentation/utils/to-id.ts` (new - shared utility)
 
 ## Acceptance Criteria
-- [ ] TailwindCSS design tokens defined
-- [ ] Button, Card, Input, Textarea, SectionWrapper components implemented
-- [ ] Barrel export index file created
-- [ ] Dummy data for sections available
-- [ ] Unit tests exist for all common components
-- [ ] `bun run typecheck` passes
+- [x] TailwindCSS design tokens defined
+- [x] Button, Card, Input, Textarea, SectionWrapper components implemented
+- [x] Barrel export index file created
+- [x] Dummy data for sections available
+- [x] Unit tests exist for all common components
+- [x] `bun run typecheck` passes
 
 ## Implementation Steps
 
 ### Step 1: Define Design Tokens
-- [ ] Update `app/app.css` with CSS custom properties for colors, typography, spacing
+- [x] Update `app/app.css` with CSS custom properties for colors, typography, spacing
 
 ### Step 2: Implement Common UI Components
-- [ ] Create SectionWrapper, Button, Card, Input, Textarea
-- [ ] Create barrel index.ts
+- [x] Create SectionWrapper, Button, Card, Input, Textarea
+- [x] Create barrel index.ts
 
 ### Step 3: Write Component Unit Tests
-- [ ] Tests for all 5 common components
+- [x] Tests for all 5 common components
 
 ### Step 4: Create Dummy Data Utilities
-- [ ] Create `app/infrastructure/dummy-data.ts` with hero, about, services data
+- [x] Create `app/infrastructure/dummy-data.ts` with hero, about, services data
 
 ## Change History
 | Date | Changes |
 |------|---------|
-| | |
+| 2026-04-15 | Design tokens synced with tokens.json. Button (solid/ghost/accent), Card, Input, Textarea, SectionWrapper implemented with unit tests. Dummy data and barrel export created. Types moved to domain/landing/types.ts per code review. |
