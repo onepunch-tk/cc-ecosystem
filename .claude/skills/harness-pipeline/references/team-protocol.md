@@ -9,7 +9,7 @@
 |------|--------|-----------|
 | 1 | Read `CLAUDE.md`, `docs/PROJECT-STRUCTURE.md`, assigned task file. Load the CA template for the project's framework type from `.claude/skills/project-structure/references/` | — |
 | 2 | Run `unit-test-writer` sub-agent (Red Phase). **NEVER analyze patterns or write test code yourself — always delegate to the `unit-test-writer` subagent.** | `Agent(subagent_type="unit-test-writer")` |
-| 3 | Implement code to pass tests (Green Phase) → run the project's test command (see CLAUDE.md Commands). **Follow CA Inside-Out order**: Domain → Application → Infrastructure → Presentation | — |
+| 3 | Implement code to pass tests (Green Phase) → run the project's test command (see CLAUDE.md Commands). **Follow CA Inside-Out order**: Domain → Application → Infrastructure → Presentation. **If UI task**: implement component structure and behavior only — do NOT apply design tokens or visual styling. Lead handles design application via `ux-design-lead` after all teammates complete. | — |
 
 > **Library Documentation Lookup (Step 3)**: Before calling external library APIs, verify correctness via context7 MCP.
 > Use `resolve-library-id` → `query-docs` when: first use of external library API in this session, uncertain about installed version's API, or test failure suggesting wrong API usage.

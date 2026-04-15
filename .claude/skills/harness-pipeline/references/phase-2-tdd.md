@@ -25,6 +25,16 @@
 | 8 | Run `unit-test-writer` sub-agent → **verify tests FAIL** (Red Phase). **NEVER analyze patterns or write test code yourself — always delegate to the `unit-test-writer` subagent.** | `Agent(subagent_type="unit-test-writer")` |
 | 9 | Implement code to pass tests → run the project's test command (see CLAUDE.md Commands) → **verify ALL pass** (Green Phase) | — (main agent) |
 
+### Design Application (Conditional — after Green phase)
+
+| Step | Action | Sub-Agent |
+|------|--------|-----------|
+| 9-ui | **Design Application** (if `ui_involved`): Read `ui_involved` from `pipeline-state.json`. If `true`, spawn `ux-design-lead` sub-agent with prompt: "Apply design system to the implemented Presentation layer components on this branch. Bootstrap design system if `docs/design-system/` doesn't exist. Apply design tokens, responsive behavior, accessibility, and interaction states to all new/modified Presentation layer files. Do NOT change component behavior or break existing tests." | `Agent(subagent_type="ux-design-lead")` |
+| 9-ui-v | **Verify**: Run project test command — all existing tests must still pass after design application. If tests fail, the design changes broke behavior — fix or revert. | — (main agent) |
+| 9-ui-c | **Commit**: `🎨 style: apply design system to {component names}` | — (main agent) |
+
+> Skip Steps 9-ui through 9-ui-c entirely if `ui_involved` is `false`.
+
 **CA Implementation Order (Inside-Out)**: When implementing in Step 9, follow this layer order:
 
 ```
@@ -64,6 +74,11 @@ When implementing with external library APIs, verify correctness via context7 MC
 | 8b | **Write `.claude/ownership.json`**: Record each teammate's name → `{files}` mapping (see Pipeline State Management in SKILL.md) | — |
 | 9 | Use **Delegate Mode** (Shift+Tab) — do NOT implement yourself | — |
 | 10 | Monitor teammate progress, unblock as needed | — |
+| 10-ui | **Design Application** (if `ui_involved`): After all teammates complete, spawn `ux-design-lead` sub-agent to apply design system across all new Presentation layer files. Same rules as Sequential Step 9-ui — do NOT break existing tests. | `Agent(subagent_type="ux-design-lead")` |
+| 10-ui-v | **Verify**: Run project test command — all tests must pass after design application. | — (lead) |
+| 10-ui-c | **Commit**: `🎨 style: apply design system` | — (lead) |
+
+> Skip Steps 10-ui through 10-ui-c entirely if `ui_involved` is `false`.
 
 > All teammates work on the **same feature branch**.
 > Each teammate internally spawns `unit-test-writer` for Red phase.

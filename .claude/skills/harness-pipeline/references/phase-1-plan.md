@@ -15,7 +15,8 @@
 | 3 | Analyze current state and create detailed step-by-step plan in the plan file. **File placement MUST follow the CA template's layer structure**: Domain → Application → Infrastructure → Presentation |
 | 3a | **Stakeholder Consultation** (conditional — see Stakeholder Consultation section below) |
 | 4 | **Count files and features** → determine execution mode (Sequential / Team) |
-| 4z | **Pipeline State mode finalized**: Update `pipeline-state.json` with the mode determined in Step 4 (`"sequential"` \| `"team"`) |
+| 4-ui | **UI Detection**: Scan the plan's file list for Presentation layer patterns (`**/presentation/components/**`, `**/presentation/routes/**`, `**/presentation/layouts/**`, `**/presentation/pages/**`, `**/presentation/screens/**`, `app/routes/**`). Also check task description for UI keywords (`component`, `page`, `screen`, `layout`, `UI`, `design`, `디자인`, `화면`). If ANY match → set `ui_involved = true`, otherwise `false`. |
+| 4z | **Pipeline State mode finalized**: Update `pipeline-state.json` with the mode determined in Step 4 (`"sequential"` \| `"team"`) and `"ui_involved"` from Step 4-ui |
 | 5 | Plan review → approve via `ExitPlanMode` (user may upgrade to ultraplan at this point) |
 | 5z | **CRITICAL**: After plan approval, update `pipeline-state.json` with `"plan_approved": true`. The `pipeline-guardian` hook will **block Phase 2 entry** if this is `false`. |
 
@@ -173,7 +174,7 @@ Branch type MUST follow [commit-prefix-rules.md](../../git/references/commit-pre
 |------|--------|
 | 4a | Break work into tasks with **clear file ownership** (no overlapping files) |
 | 4b | Verify NO file overlap between tasks before spawning teammates |
-| 4c | Prepare teammate task prompts with file ownership lists |
+| 4c | Prepare teammate task prompts with file ownership lists. If `ui_involved` is true, include in each teammate's prompt: "After Green phase, do NOT apply design tokens or styling yourself — lead will handle design application via ux-design-lead after all teammates complete." |
 
 > **WARNING: File Ownership is CRITICAL**
 > Overlapping file assignments = merge conflicts = wasted work.
