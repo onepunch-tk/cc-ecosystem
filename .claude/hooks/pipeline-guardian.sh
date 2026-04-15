@@ -122,8 +122,8 @@ case "$PHASE" in
 
             # Review report Status must be "Complete" before validate
             if [[ -n "$HAS_REPORT" ]]; then
-                REPORT_STATUS=$(grep -m1 '^\\*\\*Status\\*\\*:' "$HAS_REPORT" 2>/dev/null | head -1 || echo "")
-                UNCHECKED=$(grep -c '^\- \[ \]' "$HAS_REPORT" 2>/dev/null || echo "0")
+                REPORT_STATUS=$(grep -m1 '^\*\*Status\*\*:' "$HAS_REPORT" 2>/dev/null | head -1 || echo "")
+                UNCHECKED=$(grep -c '^\- \[ \]' "$HAS_REPORT" 2>/dev/null || true)
                 if [[ "$UNCHECKED" -gt 0 ]]; then
                     REMINDERS+=("[WORKFLOW] REVIEW INCOMPLETE: Code-review report has $UNCHECKED unresolved issue(s). Fix each issue and check off its checkbox (- [x]) in the report. Update report Status to Complete when all issues are resolved.")
                 elif ! echo "$REPORT_STATUS" | grep -qi "complete"; then
@@ -145,7 +145,7 @@ case "$PHASE" in
                 if [[ -z "$HAS_DESIGN_REPORT" ]]; then
                     REMINDERS+=("[WORKFLOW] DESIGN REVIEW MISSING: UI-involved task but no design-review report found. Run the ux-design-lead subagent (Agent with subagent_type=\"ux-design-lead\") for design review before proceeding to validate phase.")
                 elif [[ -n "$HAS_DESIGN_REPORT" ]]; then
-                    DESIGN_UNCHECKED=$(grep -c '^\- \[ \]' "$HAS_DESIGN_REPORT" 2>/dev/null || echo "0")
+                    DESIGN_UNCHECKED=$(grep -c '^\- \[ \]' "$HAS_DESIGN_REPORT" 2>/dev/null || true)
                     if [[ "$DESIGN_UNCHECKED" -gt 0 ]]; then
                         REMINDERS+=("[WORKFLOW] DESIGN REVIEW INCOMPLETE: Design-review report has $DESIGN_UNCHECKED unresolved issue(s). Fix each issue and check off its checkbox (- [x]) in the report. Update report Status to Complete when all issues are resolved.")
                     elif ! grep -m1 '^\*\*Status\*\*:' "$HAS_DESIGN_REPORT" 2>/dev/null | grep -qi "complete"; then
