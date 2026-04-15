@@ -163,6 +163,29 @@ if [[ -f "$PROJECT_DIR/.claude/hook-state.json" ]]; then
     echo "      ✅ hook-state.json reset"
 fi
 
+# Reset ownership.json if exists (Team mode cleanup)
+if [[ -f "$PROJECT_DIR/.claude/ownership.json" ]]; then
+    cat > "$PROJECT_DIR/.claude/ownership.json" << OWNEREOF
+{
+  "mode": "none",
+  "branch": "development",
+  "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "teammates": {},
+  "shared": []
+}
+OWNEREOF
+    echo "      ✅ ownership.json reset"
+fi
+
+# Commit and push state resets to development
+STATE_CHANGES=$(git status --porcelain -- .claude/)
+if [[ -n "$STATE_CHANGES" ]]; then
+    git add .claude/
+    git commit -m "🔧 chore: reset pipeline state after merge" --no-verify 2>/dev/null || true
+    git push origin development 2>/dev/null || true
+    echo "      ✅ State reset committed to development"
+fi
+
 echo "      ✅ Checked out to development"
 
 echo ""
