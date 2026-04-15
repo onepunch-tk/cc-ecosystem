@@ -6,26 +6,29 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   /* Brand Colors — mapped from docs/design-system/tokens.json */
-  --color-primary: #0f172a;
-  --color-primary-light: #334155;
-  --color-accent: #2563eb;
-  --color-accent-hover: #1d4ed8;
-  --color-accent-focus: #3b82f6;
+  --color-primary: #1E3A5F;
+  --color-primary-light: #2c5282;
+  --color-secondary: #2563EB;
+  --color-accent: #0EA5E9;
+  --color-accent-hover: #0284C7;
+  --color-accent-focus: #38BDF8;
   --color-surface: #f8fafc;
-  --color-on-surface: #0f172a;
-  --color-on-surface-muted: #475569;
+  --color-on-surface: #1E3A5F;
+  --color-on-surface-muted: #64748B;
   --color-on-primary: #ffffff;
-  --color-on-primary-muted: #cbd5e1;
+  --color-on-primary-muted: #94a3b8;
   --color-background: #ffffff;
+  --color-border: #e2e8f0;
+  --color-border-muted: #f1f5f9;
 
   /* Semantic Colors */
-  --color-error: #dc2626;
-  --color-success: #16a34a;
-  --color-warning: #d97706;
+  --color-error: #FF3B30;
+  --color-success: #34C759;
+  --color-warning: #FF9500;
 
-  /* Shadows */
+  /* Shadows — mapped from tokens.json shadow scale */
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-card-hover: 0 10px 15px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.04);
 }
 
 html,
