@@ -18,31 +18,31 @@ Implement the Hero and About section components with full UI using dummy data.
 - `app/presentation/components/common/`
 
 ## Acceptance Criteria
-- [ ] Hero section displays company slogan, description text, and CTA button
-- [ ] CTA button scrolls to the Contact section when clicked
-- [ ] About section displays vision and mission text
-- [ ] About section shows 3 core value cards with icon, title, and description
-- [ ] Both sections are fully responsive
-- [ ] Unit tests for both section components
-- [ ] `bun run typecheck` passes
+- [x] Hero section displays company slogan, description text, and CTA button
+- [x] CTA button scrolls to the Contact section when clicked
+- [x] About section displays vision and mission text
+- [x] About section shows 3 core value cards with icon, title, and description
+- [x] Both sections are fully responsive
+- [x] Unit tests for both section components
+- [x] `bun run typecheck` passes
 
 ## Implementation Steps
 
 ### Step 1: Implement Hero Section
-- [ ] Update `HeroSection.tsx` with headline, description, CTA button
-- [ ] Style with full-viewport-height, centered content
-- [ ] Apply responsive typography
+- [x] Update `HeroSection.tsx` with headline, description, CTA button
+- [x] Style with full-viewport-height, centered content
+- [x] Apply responsive typography
 
 ### Step 2: Implement About Section
-- [ ] Update `AboutSection.tsx` with vision/mission text
-- [ ] Create grid of 3 core value Card components
-- [ ] Responsive grid: 1 col mobile, 3 cols desktop
+- [x] Update `AboutSection.tsx` with vision/mission text
+- [x] Create grid of 3 core value Card components
+- [x] Responsive grid: 1 col mobile, 2 col tablet, 3 cols desktop
 
 ### Step 3: Write Unit Tests
-- [ ] Test HeroSection renders slogan and CTA button
-- [ ] Test AboutSection renders vision/mission and 3 value cards
+- [x] Test HeroSection renders slogan and CTA button
+- [x] Test AboutSection renders vision/mission and 3 value cards
 
 ## Change History
 | Date | Changes |
 |------|---------|
-| | |
+| 2026-04-15 | HeroSection: headline, subHeadline, CTA Button (accent variant) with scrollToSection. AboutSection: SectionWrapper, vision/mission text, 3 core value Cards in responsive grid. All tests pass. |

@@ -75,28 +75,31 @@ TechFlow Landing Page provides the following features as a conversion-focused si
   - ✅ Create Zod validation schemas for contact form
   - ✅ Define shared component prop types, API response types, and port interface
 
-### Phase 2: UI/UX Completion (Using Dummy Data)
+### Phase 2: UI/UX Completion (Using Dummy Data) ✅
 
-- **Task 003: Design Tokens and Common Component Library**
+- ✅ **Task 003: Design Tokens and Common Component Library** - Completed
   - blockedBy: Task 001
   - blocks: Task 004, Task 005, Task 006
-  - Define TailwindCSS design tokens in `app/app.css`
-  - Implement Button, Card, Input, Textarea, SectionWrapper common components
-  - Write unit tests for all common components and create dummy data utilities
+  - **Must** Read: [003-design-tokens-and-common-components.md](/tasks/003-design-tokens-and-common-components.md)
+  - ✅ Define TailwindCSS design tokens in `app/app.css`
+  - ✅ Implement Button, Card, Input, Textarea, SectionWrapper common components
+  - ✅ Write unit tests for all common components and create dummy data utilities
 
-- **Task 004: Navigation and Layout Implementation**
+- ✅ **Task 004: Navigation and Layout Implementation** - Completed
   - blockedBy: Task 001, Task 003
   - blocks: Task 005, Task 006
-  - Implement fixed header with desktop inline menu and mobile hamburger menu
-  - Implement smooth scroll navigation between sections
-  - Implement Footer component and integrate layout in root
+  - **Must** Read: [004-navigation-and-layout.md](/tasks/004-navigation-and-layout.md)
+  - ✅ Implement fixed header with desktop inline menu and mobile hamburger menu
+  - ✅ Implement smooth scroll navigation between sections
+  - ✅ Implement Footer component and integrate layout in root
 
-- **Task 005: Hero and About Section UI**
+- ✅ **Task 005: Hero and About Section UI** - Completed
   - blockedBy: Task 002, Task 003, Task 004
   - blocks: Task 008
-  - Implement Hero section with company slogan, description, and CTA button
-  - Implement About section with vision/mission text and 3 core value cards
-  - Write unit tests for both section components with responsive layout
+  - **Must** Read: [005-hero-and-about-section-ui.md](/tasks/005-hero-and-about-section-ui.md)
+  - ✅ Implement Hero section with company slogan, description, and CTA button
+  - ✅ Implement About section with vision/mission text and 3 core value cards
+  - ✅ Write unit tests for both section components with responsive layout
 
 ### Phase 3: Core Feature Implementation
 
