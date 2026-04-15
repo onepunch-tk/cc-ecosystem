@@ -180,5 +180,6 @@ $RECYCLE.BIN/
 node_modules/
 .cursor/
 .react-router/
+.vite/
 build/
 bun.lock
