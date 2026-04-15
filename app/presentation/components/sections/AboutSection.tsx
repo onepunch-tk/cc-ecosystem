@@ -50,7 +50,7 @@ export default function AboutSection() {
 					<div className="relative rounded-xl overflow-hidden shadow-card-lg bg-surface h-[450px] flex items-center justify-center">
 						<div className="text-center space-y-4 p-8">
 							<div className="w-20 h-20 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center">
-								<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+								<span className="material-symbols-outlined text-primary text-[40px]">groups</span>
 							</div>
 							<p className="text-on-surface font-bold text-xl">TechFlow Consulting</p>
 							<p className="text-on-surface-muted text-sm max-w-xs mx-auto">10+ years of IT consulting expertise with proven methodologies</p>
@@ -64,7 +64,7 @@ export default function AboutSection() {
 				{coreValues.map((value) => (
 					<Card key={value.title}>
 						<div className="w-14 h-14 bg-primary/5 rounded-lg flex items-center justify-center mb-8 group-hover:bg-primary transition-colors duration-300">
-							<span className="text-3xl text-primary group-hover:text-white transition-colors duration-300" aria-hidden="true">
+							<span className="material-symbols-outlined text-3xl text-primary group-hover:text-white transition-colors duration-300" aria-hidden="true">
 								{value.icon}
 							</span>
 						</div>

@@ -62,6 +62,10 @@
   animation: animate-in 200ms ease-out;
 }
 
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
 html,
 body {
   @apply bg-white text-on-surface;

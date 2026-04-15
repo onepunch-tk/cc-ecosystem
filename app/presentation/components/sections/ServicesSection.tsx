@@ -1,15 +1,6 @@
 import { getServicesData } from "~/infrastructure/dummy-data";
 
-const serviceIcons = [
-	/* Cloud icon */
-	<svg key="cloud" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>,
-	/* Sync/Transform icon */
-	<svg key="sync" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>,
-	/* Security/Shield icon */
-	<svg key="shield" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>,
-	/* Data/Chart icon */
-	<svg key="chart" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
-];
+const serviceIcons = ["cloud", "sync_alt", "security", "monitoring"];
 
 export default function ServicesSection() {
 	const { tagline, heading, description, services } = getServicesData();
@@ -41,7 +32,7 @@ export default function ServicesSection() {
 						<div className="flex flex-col h-full relative">
 							{/* Icon container */}
 							<div className="w-14 h-14 mb-8 flex items-center justify-center rounded-xl bg-primary text-white shadow-card-hover">
-								{serviceIcons[index]}
+								<span className="material-symbols-outlined text-3xl" aria-hidden="true">{serviceIcons[index]}</span>
 							</div>
 							<h3 className="text-2xl font-bold mb-4">{service.title}</h3>
 							<p className="text-on-primary-muted leading-relaxed mb-6">
@@ -49,7 +40,7 @@ export default function ServicesSection() {
 							</p>
 							<div className="mt-auto flex items-center text-blue-300 font-medium text-sm group-hover:text-blue-400 transition-colors">
 								<span>자세히 보기</span>
-								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+								<span className="material-symbols-outlined ml-2 text-sm" aria-hidden="true">arrow_forward</span>
 							</div>
 						</div>
 					</div>

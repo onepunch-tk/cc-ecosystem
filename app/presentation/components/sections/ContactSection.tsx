@@ -1,34 +1,10 @@
 import { Button, Input, Textarea } from "~/presentation/components/common";
 
 const contactInfo = [
-	{
-		icon: (
-			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-		),
-		label: "Phone",
-		value: "02-1234-5678",
-	},
-	{
-		icon: (
-			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-		),
-		label: "Email",
-		value: "contact@techflow.co.kr",
-	},
-	{
-		icon: (
-			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-		),
-		label: "Address",
-		value: "서울특별시 강남구 테헤란로 123",
-	},
-	{
-		icon: (
-			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-		),
-		label: "Business hours",
-		value: "월-금 09:00 - 18:00",
-	},
+	{ icon: "call", label: "Phone", value: "02-1234-5678" },
+	{ icon: "mail", label: "Email", value: "contact@techflow.co.kr" },
+	{ icon: "location_on", label: "Address", value: "서울특별시 강남구 테헤란로 123" },
+	{ icon: "schedule", label: "Business hours", value: "월-금 09:00 - 18:00" },
 ];
 
 export default function ContactSection() {
@@ -55,7 +31,7 @@ export default function ContactSection() {
 								{contactInfo.map((info) => (
 									<div key={info.label} className="flex items-start gap-4">
 										<div className="bg-primary/10 text-primary p-3 rounded-lg flex-shrink-0">
-											{info.icon}
+											<span className="material-symbols-outlined" aria-hidden="true">{info.icon}</span>
 										</div>
 										<div>
 											<p className="text-sm font-semibold text-on-surface-muted uppercase tracking-wider mb-1">
@@ -73,7 +49,7 @@ export default function ContactSection() {
 						{/* Map placeholder */}
 						<div className="rounded-xl overflow-hidden h-64 bg-surface border border-border flex items-center justify-center" aria-hidden="true">
 							<div className="text-center space-y-2">
-								<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-on-surface-muted mx-auto"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+								<span className="material-symbols-outlined text-on-surface-muted text-[32px]">location_on</span>
 								<p className="text-on-surface-muted text-sm">Seoul, South Korea</p>
 							</div>
 						</div>
@@ -111,7 +87,7 @@ export default function ContactSection() {
 									문의하기
 								</Button>
 								<p className="text-center text-sm text-on-surface-muted flex items-center justify-center gap-2">
-									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+									<span className="material-symbols-outlined text-sm" aria-hidden="true">verified_user</span>
 									영업일 기준 24시간 이내 답변드립니다
 								</p>
 							</div>

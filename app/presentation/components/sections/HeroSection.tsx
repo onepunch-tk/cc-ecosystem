@@ -2,9 +2,9 @@ import { getHeroData } from "~/infrastructure/dummy-data";
 import { scrollToSection } from "~/presentation/hooks/scroll-to-section";
 
 const trustIndicators = [
-	{ value: "200+", label: "프로젝트 완료" },
-	{ value: "50+", label: "기업 파트너" },
-	{ value: "99%", label: "고객 만족도" },
+	{ value: "200+", label: "프로젝트 완료", icon: "task_alt" },
+	{ value: "50+", label: "기업 파트너", icon: "corporate_fare" },
+	{ value: "99%", label: "고객 만족도", icon: "sentiment_very_satisfied" },
 ];
 
 export default function HeroSection() {
@@ -87,16 +87,12 @@ export default function HeroSection() {
 							<div className="absolute inset-0 bg-gradient-to-t from-navy-950/80 to-transparent" />
 							{/* Floating glass cards */}
 							<div className="absolute top-10 right-10 p-4 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-card-hover">
-								<div className="text-blue-400 text-3xl mb-2" aria-hidden="true">
-									<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-								</div>
-								<div className="text-white font-bold text-sm">Data Analytics</div>
+								<span className="material-symbols-outlined text-blue-400 text-3xl" aria-hidden="true">insights</span>
+								<div className="mt-2 text-white font-bold text-sm">Data Analytics</div>
 							</div>
 							<div className="absolute bottom-12 left-10 p-4 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-card-hover">
-								<div className="text-sky-100 text-3xl mb-2" aria-hidden="true">
-									<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
-								</div>
-								<div className="text-white font-bold text-sm">Cloud Migration</div>
+								<span className="material-symbols-outlined text-accent text-3xl" aria-hidden="true">cloud_done</span>
+								<div className="mt-2 text-white font-bold text-sm">Cloud Migration</div>
 							</div>
 						</div>
 					</div>
@@ -109,7 +105,7 @@ export default function HeroSection() {
 					{trustIndicators.map((item) => (
 						<div key={item.label} className="flex items-center space-x-4">
 							<div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-500/10 border border-blue-400/20">
-								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-400"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+								<span className="material-symbols-outlined text-blue-400" aria-hidden="true">{item.icon}</span>
 							</div>
 							<div>
 								<div className="text-2xl font-black text-white">{item.value}</div>

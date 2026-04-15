@@ -25,18 +25,18 @@ export const getAboutData = (): AboutData => ({
 		"고객의 비즈니스 성장을 위한 맞춤형 IT 솔루션을 제공하며, 디지털 전환의 모든 과정을 함께합니다.",
 	coreValues: [
 		{
-			icon: "💡",
+			icon: "lightbulb",
 			title: "혁신",
 			description: "끊임없는 기술 혁신으로 최적의 솔루션을 제공합니다.",
 		},
 		{
-			icon: "🤝",
+			icon: "handshake",
 			title: "신뢰",
 			description:
 				"투명한 커뮤니케이션과 책임감 있는 서비스로 신뢰를 구축합니다.",
 		},
 		{
-			icon: "🎯",
+			icon: "shield",
 			title: "전문성",
 			description: "각 분야 최고의 전문가들이 프로젝트를 이끕니다.",
 		},
