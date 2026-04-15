@@ -23,7 +23,7 @@ Stitch (exported)
 
 ## Platform Strategy
 - Target platforms: Web (Desktop)
-- Responsive approach: Desktop-first
+- Responsive approach: Mobile-first
 
 ## Typography
 - Font family: Inter (headline, body, label)

@@ -1,0 +1,1 @@
+- [TechFlow E2E Testing Context](project_techflow_e2e.md) — dev server, component selectors, and Phase 1 test patterns for TechFlow landing page

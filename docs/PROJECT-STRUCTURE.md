@@ -18,15 +18,19 @@ TechFlow Landing Page -- an IT consulting company landing page built with React 
 ## Top-Level Directory Structure
 
 ```
-example/
+cc-ecosystem/
 ├── app/                    # Core application (Clean Architecture layers)
 │   ├── domain/             # Business rules and entity definitions
 │   ├── application/        # Business logic and use cases
-│   ├── infrastructure/     # External system implementations
+│   ├── infrastructure/     # External system implementations (scaffolded, not yet populated)
 │   ├── presentation/       # UI, routing, components, hooks
 │   ├── root.tsx            # React Router root component and Layout
 │   ├── routes.ts           # Route definitions
 │   └── app.css             # Global styles and TailwindCSS design tokens
+├── docs/                   # Project documentation (root only)
+│   ├── design-system/      # Design tokens and source HTML references
+│   └── reports/            # Pipeline-generated reports (code-review, design-review, failures)
+├── example/                # Reference implementation (standalone, excluded from tsconfig)
 ├── public/                 # Static assets (favicon, images)
 ├── biome.json              # Biome linter and formatter configuration
 ├── Dockerfile              # Multi-stage Docker build for production
@@ -40,6 +44,8 @@ example/
 
 **Key directories**:
 - `app/` - Core application (Clean Architecture layers)
+- `docs/` - All project documentation (root-level only, never in sub-packages)
+- `example/` - Standalone reference implementation (excluded from root build/typecheck)
 - `public/` - Static assets
 
 ---
@@ -71,7 +77,7 @@ app/domain/
     ├── contact-submission.schema.ts
     ├── types.ts
     └── __tests__/
-        └── contact-submission.entity.test.ts
+        └── contact-submission.schema.test.ts
 ```
 
 **Example entities/schemas**:
@@ -96,19 +102,14 @@ app/domain/
 ```
 app/application/
 └── contact/
-    ├── contact.service.ts
-    ├── contact.port.ts
-    └── __tests__/
-        └── contact.service.test.ts
+    └── contact.port.ts
 ```
 
 **Port and Service relationship**:
 - `*.port.ts` - Interface definition (what can be done)
 - `*.service.ts` - Business logic (how to do it)
 
-**Example services**:
-- `ContactService` - Processes contact form submissions via port interface
-- `ContactRepositoryPort` - Interface for persisting contact submissions
+**Current state**: `ContactRepositoryPort` interface defined; service implementation pending.
 
 ---
 
@@ -118,7 +119,7 @@ app/application/
 
 **Contains**:
 - **config/**: DI container (Composition Root)
-- **persistence/**: Repository implementations (e.g., console logger for contact submissions)
+- **persistence/**: Repository implementations
 
 **When to use**:
 - Creating new repository implementations → `persistence/`
@@ -127,16 +128,12 @@ app/application/
 **Structure**:
 ```
 app/infrastructure/
-├── config/
-│   └── container.ts
+├── config/                 # (scaffolded, awaiting DI container)
 └── persistence/
-    └── contact/
-        └── console-contact.repository.ts
+    └── contact/            # (scaffolded, awaiting repository implementation)
 ```
 
-**Example integrations**:
-- `ConsoleContactRepository` - Implements ContactRepositoryPort by logging to console
-- DI container wiring services with their infrastructure implementations
+**Current state**: Directory structure scaffolded but not yet populated. Will house concrete implementations of application-layer ports.
 
 ---
 
@@ -145,25 +142,33 @@ app/infrastructure/
 **Role**: UI, routing, user interface related
 
 **Contains**:
-- **components/**: UI components (common reusable components and section-specific components)
-- **hooks/**: Custom React hooks
+- **components/**: UI components organized by concern
+  - **common/**: Reusable UI primitives (Button, Card, Input, etc.) -- scaffolded, awaiting implementation
+  - **sections/**: Page section components (Hero, About, Services, Contact)
+  - **layout/**: Persistent structural components (Header, Footer)
+- **hooks/**: Custom React hooks -- scaffolded, awaiting implementation
 - **routes/**: Pages (React Router v7 route modules)
 
 **When to use**:
 - Adding new pages → `routes/`
-- Creating UI components → `components/`
+- Creating reusable UI primitives → `components/common/`
+- Creating page sections → `components/sections/`
+- Creating layout components → `components/layout/`
 - When custom hooks are needed → `hooks/`
 
 **Structure**:
 ```
 app/presentation/
 ├── components/
-│   ├── common/          # Reusable UI primitives (Button, Card, Input, etc.)
-│   └── sections/        # Page section components (Hero, About, Services, Contact)
-├── hooks/
+│   ├── common/          # Reusable UI primitives (scaffolded)
+│   ├── sections/        # Page section components (Hero, About, Services, Contact)
+│   └── layout/          # Structural layout components (Header, Footer)
+├── hooks/               # Custom React hooks (scaffolded)
 └── routes/
     └── home.tsx         # Landing page index route
 ```
+
+**Current state**: Section and layout components exist as shell implementations with placeholder content and TailwindCSS styling. Common components and hooks directories are scaffolded for future use.
 
 **Route file conventions (React Router v7)**:
 - `_layout.tsx` - Layout wrapper
@@ -172,7 +177,7 @@ app/presentation/
 - `route.tsx` - Route component
 
 **Example routes**:
-- `home.tsx` - Landing page with all sections (Hero, About, Services, Contact)
+- `home.tsx` - Landing page composing Header, all sections (Hero, About, Services, Contact), and Footer
 
 ---
 
@@ -187,6 +192,21 @@ app/presentation/
 ---
 
 ## Other Key Directories
+
+### docs/
+
+**Role**: All project documentation (root-level only per project convention)
+
+**Contains**:
+- **design-system/**: Design tokens (`tokens.json`), design system guide, and source HTML references used for implementation
+- **reports/**: Pipeline-generated reports for code review, design review, and failures
+- Top-level docs: `PROJECT-STRUCTURE.md`, `ROADMAP.md`, `PRD.md`
+
+### example/
+
+**Role**: Standalone reference implementation of the same landing page concept
+
+**Contains**: A fully implemented version with its own `package.json`, build config, and complete CA layer implementations. Excluded from root `tsconfig.json` and serves as an architectural reference only.
 
 ### public/
 
@@ -206,7 +226,7 @@ app/presentation/
 **Usage example**:
 ```typescript
 import { ContactSubmission } from "~/domain/contact/contact-submission.entity";
-import { ContactService } from "~/application/contact/contact.service";
+import { ContactRepositoryPort } from "~/application/contact/contact.port";
 ```
 
 ---
@@ -217,6 +237,8 @@ import { ContactService } from "~/application/contact/contact.service";
 |------|----------|
 | Add new page | `app/presentation/routes/` |
 | Add UI component | `app/presentation/components/` |
+| Add layout component | `app/presentation/components/layout/` |
+| Add section component | `app/presentation/components/sections/` |
 | Add business logic | `app/application/{domain}/` |
 | Define types/entities | `app/domain/{domain}/` |
 | Add repository implementation | `app/infrastructure/persistence/` |
@@ -224,3 +246,4 @@ import { ContactService } from "~/application/contact/contact.service";
 | Write test files | Co-located `__tests__/` directories (e.g., `app/{layer}/{domain}/__tests__/`) |
 | Add static files | `public/` |
 | Modify design tokens | `app/app.css` (`@theme` block) |
+| Update design system docs | `docs/design-system/` |
